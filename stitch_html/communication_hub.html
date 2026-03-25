@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b4332", // Deep Moroccan Green
+                        "secondary": "#d4af37", // Moroccan Gold
+                        "accent": "#2d6a4f",
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#081c15",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-72 bg-primary dark:bg-background-dark flex flex-col border-r border-primary/10">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-secondary p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary font-bold">school</span>
+</div>
+<div>
+<h1 class="text-white text-lg font-bold leading-tight">Atlas Academy</h1>
+<p class="text-secondary/80 text-xs font-medium uppercase tracking-wider">Communication Hub</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary text-primary rounded-xl shadow-lg transition-all" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-sm font-bold">Messages</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="text-sm font-medium">Annonces</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-sm font-medium">Journal de notifications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Paramètres</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<button class="w-full flex items-center justify-center gap-2 bg-secondary text-primary py-3 rounded-xl font-bold shadow-lg hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">add_comment</span>
+<span>Nouveau Message</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark">
+<!-- Header -->
+<header class="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-secondary focus:border-secondary" placeholder="Rechercher une conversation..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+<button class="px-3 py-1 text-xs font-bold bg-white dark:bg-slate-700 rounded shadow-sm">FR</button>
+<button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-primary transition-colors">AR</button>
+</div>
+<button class="relative p-2 text-slate-500 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+<div class="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-800">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Yassine El Amrani</p>
+<p class="text-xs text-slate-500 uppercase tracking-tighter font-semibold">Admin Scolaire</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-secondary object-cover" data-alt="Admin user profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5Djq7MMZeES32gfwStdSJP__WXc0DdWzd6NMk7FXe4PvHLuRNihLfEcVdHVWUUUgsI5n6ZrfRY_sQfSYp1T8vJq8wKv3PQoSMH-gf9Lm9DsZ1euE5pTB_03LmmV1WPBnqmwbBR3YTItcIxIZ4mp7DPXSFQ7vCyfkDUQ8S4mIcEHdzNZbjTtK4CnLC5RDLvZchuyzYZaFJrHLV65eGCct_KWystf0suV1JcrWAQju5r5BZ_aLgnQpsW8e0c1QeNExKpNVLyWJ--Ekz"/>
+</div>
+</div>
+</header>
+<!-- Messaging Hub -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Inbox List -->
+<div class="w-80 flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+<div class="p-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-2">
+<button class="flex-1 py-2 text-xs font-bold rounded-lg bg-primary text-white">Inbox</button>
+<button class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Archivés</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto scrollbar-hide">
+<!-- Active Conversation -->
+<div class="p-4 border-l-4 border-secondary bg-primary/5 cursor-pointer">
+<div class="flex items-start gap-3">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Parent profile picture Mme. Bennani" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCla0dHj52vySW038m6IUf3UyUSIf3CZ6RfiXn8CyHKXyBWi5HxUl2Qu4mCK-CjY3Q0bChmWVTgpG5BKSY4gyW_WFrBBdHGxOFW8PMPx8FPr-zMF25405ZvJVNtpEGD5NS_hGBug1lgl89rro6zTMdo3H0tzDp2unbaN8hTs5jfWf80nXCC1TejKKIMqY_Li6z4ujY2ml8Bc60suZKxcegUpXfftloRAbVn49FJSNMtgT9nLsipUOzND8jbw_h3ZAjxGN-z_YzFAJ42"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold truncate">Mme. Bennani (CP-B)</h3>
+<span class="text-[10px] text-slate-500">10:42</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Merci pour le suivi concernant l'absence de Sofia...</p>
+</div>
+</div>
+</div>
+<!-- More Conversations -->
+<div class="p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+<div class="flex items-start gap-3">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Parent profile picture M. Tazi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMRooc-edXWLhDEG13E6vz1CzBEWerotBk2LtmxxO6M7JhqtiT-_-RFxvdZLUpg1GVE_hGJFqKMLC3vFH3qeUMqsBizzEjHV4CkZ4-rGsHzIkHFCqI2kcWdyn7DtMA8Wjm3dabEbHR_PrQnAdKgOrmYFm00cHDbRIHaZN4y7S6u-BD1n5K4PD-nF36nSTUXaq_lGHCjed2URC2ISU7Ic5edDJx82t2brB5Es0yA5eXP03H_RJoVpduKu20SXf6DZrYGWJwlOkSvVAv"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold truncate">M. Tazi (3ème A)</h3>
+<span class="text-[10px] text-slate-500">Hier</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Est-ce que l'excursion de demain est maintenue malgré la pluie ?</p>
+</div>
+</div>
+</div>
+<div class="p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+<div class="flex items-start gap-3">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Teacher profile picture M. Alaoui" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDt06G6TQmGr_WMkE9rTx0WIgdMvG2qWrk7fj6_2vRaBymFfhMFaMS9Qqvg3Ain9o9l9ki_JTzC5TB44qYW1s9DLb_0EEfuUYqTmlZ_-LB4fFfb_bzpUBhfY-3COVXj3MQXBgcVEYa4XNeM-SU1I--EDdK5_o6DKxelDOJFzyVaOPUyhe-dMHHA9NKD07wLCdey2k7zYCZUakTktaML1_-gv2xRLHDQ_Ebp9XnGiq0wiUX8LvWpUYJUrXtqKWIzOXO4qIDCvD6W24Iz"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold truncate">M. Alaoui (Maths)</h3>
+<span class="text-[10px] text-slate-500">Mar</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Les notes du contrôle n°2 sont prêtes à être publiées.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Chat Area -->
+<div class="flex-1 flex flex-col bg-white dark:bg-slate-900">
+<div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Active conversation profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnxFFlWevUvE5BBNpoku94sR5AXvfamQ02TLd2z7cRxjWUOQl47VEFFd5MePs_OriQ-g9g9zPCY7-US7Ekc09bP8PP-Pzti9XZZVZ0EqUd7zPwzx4ceG8KCJhjeDVzbDX8Bx-Pa_jLqCSLs0412wvpgkwx47RGZksBrFZYqCJlanvRK0comd2uhfYUZRBLqua22Y-EVPKlhj_mLhz8nWnDuZheEewmtIvt1hkbWzWupVhM7_0at2aOHBMFRgfbIJovNKjGIi53z6F1"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<div>
+<h2 class="text-sm font-bold">Mme. Bennani (Parent de Sofia - CP-B)</h2>
+<p class="text-[10px] text-green-600 font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> En ligne
+                                </p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined">call</span></button>
+<button class="p-2 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined">video_call</span></button>
+<button class="p-2 text-slate-400 hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/30 dark:bg-slate-900/10">
+<!-- Message Received -->
+<div class="flex items-end gap-3 max-w-[80%]">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf9yOcW9_UI4EmrTws66f5Antx6IvKHcBgJFUn9kNKbaoyWeh0alcK4q49V7UdpxZrFBcr-zfqHwJi-LyGOBrCp6iCig2LzOhAfgno8Mj8d-qio6SZU1982GBTXlxlEDUMrtDqzynQLJ2skjpVemRdaicEESVHaifbmTTE6Y6wsur4OtlOuzGRUyNA-KAYy2a5aJSvYPyoI5HcCGAvR8APKOKrl3sj0HhNQW-pS7T9fjk8Ca2W6DeZ5zfUIEZUMDW6SuNjHCZ5sgn3"/>
+<div class="bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100 dark:border-slate-700">
+<p class="text-sm">Bonjour, je voulais savoir si Sofia a pu rattraper les cours de lundi dernier ? Elle était souffrante.</p>
+<span class="text-[10px] text-slate-400 mt-1 block">10:40</span>
+</div>
+</div>
+<!-- Message Sent -->
+<div class="flex items-end gap-3 justify-end ml-auto max-w-[80%]">
+<div class="bg-primary text-white p-3 rounded-2xl rounded-br-none shadow-sm">
+<p class="text-sm">Bonjour Mme Bennani. Oui, son enseignante lui a transmis les supports de cours. Elle se porte mieux ?</p>
+<span class="text-[10px] text-white/60 mt-1 block text-right">10:42</span>
+</div>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Sender profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJwWEx-d5zzdyp2tNxAtJvHp3ZtYN66dIL_CsNFlu7ent6KIfEs_JOgueLVojLTBANw27BQLwinM62j7RdnC7AudNkVm3p895muR-nb6b2ZeUQhT3yYlAQKj2CjHukcDJP2Sn5IC9NXJk3NBw2hLFVe5E3SgPU2IpUnGk4rZvQqyZfG0cWs4spl7okSC7oX-oh1aa8KB3LJwY1AqV0BmndMXny1E52TQHIgInH5J3hM2QTCoknkMO_lToTcnL7HlJeMyUO8T1c0LA0"/>
+</div>
+<!-- Message Received -->
+<div class="flex items-end gap-3 max-w-[80%]">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnosz-sFjhmsjz1qKf_kDUqadzxeiWbY1c8TcgSNqLEMBRVvpS7eqVfkTem5Guu0tkRAURs_348RNBYBulZ58aP32XH-IFx35rwbm0rTSXzRj_8A0syXr99f5J87wWq5zv_BCWOR7hOpHbNZ6Xz7Vx7ewhyObb98wCM-iPRjXeSZjBUfLQJ6CGIgBAQ6w0_J9JJWQaNu059qrrADNmOZNBt9r_k9e16GqgJ6fuyhrs9eYjrfLB_shcVQI-nFCvgTIBBoSonQh6F0wZ"/>
+<div class="bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100 dark:border-slate-700">
+<p class="text-sm">Oui, beaucoup mieux merci. Merci pour le suivi concernant l'absence de Sofia, nous apprécions beaucoup.</p>
+<span class="text-[10px] text-slate-400 mt-1 block">10:45</span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-2 rounded-2xl">
+<button class="p-2 text-slate-400 hover:text-primary"><span class="material-symbols-outlined">attach_file</span></button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-sm" placeholder="Écrire votre message..." type="text"/>
+<button class="p-2 text-slate-400 hover:text-secondary"><span class="material-symbols-outlined">mood</span></button>
+<button class="bg-secondary text-primary p-3 rounded-xl shadow-lg hover:brightness-110">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Panels -->
+<div class="w-96 border-l border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col overflow-y-auto scrollbar-hide">
+<!-- Announcements Quick View -->
+<div class="p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-primary dark:text-secondary uppercase tracking-wider text-xs">Annonces Générales</h3>
+<button class="text-xs font-bold text-secondary hover:underline">Voir tout</button>
+</div>
+<div class="space-y-4">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between mb-2">
+<span class="text-[10px] font-bold py-0.5 px-2 bg-secondary/10 text-secondary rounded">URGENT</span>
+<span class="text-[10px] text-slate-400">Aujourd'hui</span>
+</div>
+<h4 class="text-sm font-bold mb-1">Rappel: Réunion Parents</h4>
+<p class="text-xs text-slate-600 dark:text-slate-400 mb-3">La réunion pour le 1er trimestre se tiendra ce samedi à 10h.</p>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-xs text-slate-400" title="SMS envoyé">sms</span>
+<span class="material-symbols-outlined text-xs text-slate-400" title="Email envoyé">mail</span>
+<span class="material-symbols-outlined text-xs text-primary" title="App notification">notifications_active</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between mb-2">
+<span class="text-[10px] font-bold py-0.5 px-2 bg-primary/10 text-primary rounded">INFO</span>
+<span class="text-[10px] text-slate-400">Hier</span>
+</div>
+<h4 class="text-sm font-bold mb-1">Cantine: Menu Octobre</h4>
+<p class="text-xs text-slate-600 dark:text-slate-400">Le nouveau menu pour le mois d'octobre est disponible sur l'app.</p>
+</div>
+</div>
+<!-- Draft Announcement -->
+<div class="mt-8">
+<h3 class="font-bold text-primary dark:text-secondary uppercase tracking-wider text-xs mb-4">Nouvelle Annonce</h3>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700">
+<select class="w-full text-xs font-medium bg-slate-50 dark:bg-slate-700 border-none rounded-lg mb-3">
+<option>Toute l'école</option>
+<option>Cycle Primaire</option>
+<option>Classe CP-B</option>
+</select>
+<textarea class="w-full text-xs bg-slate-50 dark:bg-slate-700 border-none rounded-lg p-3 h-24 mb-3 resize-none" placeholder="Contenu de l'annonce..."></textarea>
+<div class="flex gap-2 mb-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-[10px] font-medium">App</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-[10px] font-medium">Email</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-[10px] font-medium">SMS</span>
+</label>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-lg text-xs font-bold hover:brightness-110 transition-all">Envoyer l'annonce</button>
+</div>
+</div>
+</div>
+<!-- Delivery Logs -->
+<div class="p-6 border-t border-slate-200 dark:border-slate-800">
+<h3 class="font-bold text-primary dark:text-secondary uppercase tracking-wider text-xs mb-4">Journal de notifications</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-[11px] p-2 bg-white dark:bg-slate-800 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+<span class="font-medium">Réunion Parents</span>
+</div>
+<span class="text-slate-400">100% Déliveré</span>
+</div>
+<div class="flex items-center justify-between text-[11px] p-2 bg-white dark:bg-slate-800 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-500 text-sm">pending</span>
+<span class="font-medium">Menu Cantine</span>
+</div>
+<span class="text-slate-400">85% En cours...</span>
+</div>
+<div class="flex items-center justify-between text-[11px] p-2 bg-white dark:bg-slate-800 rounded-lg opacity-60">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-sm">history</span>
+<span class="font-medium">Rentrée 2024</span>
+</div>
+<span class="text-slate-400">12 Sep</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d4af37",
+                        "moroccan-green": "#006233",
+                        "deep-emerald": "#043927",
+                        "moroccan-gold": "#d4af37",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .zellige-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15-15 15-15-15L30 0zm0 30l15 15-15 15-15-15 15-15z' fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #043927 0%, #00291a 100%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 zellige-pattern min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-row overflow-x-hidden">
+<!-- Sidebar -->
+<aside class="flex w-72 flex-col sidebar-gradient text-white p-4 gap-6 shrink-0 sticky top-0 h-screen">
+<div class="flex items-center gap-3 px-2 py-2 border-b border-white/10">
+<div class="bg-moroccan-gold size-10 rounded-full flex items-center justify-center text-deep-emerald shadow-lg font-bold">
+                AA
+            </div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight tracking-wider uppercase">Atlas Academy</h1>
+<p class="text-white/60 text-[10px] font-medium uppercase tracking-widest">Marrakech Campus</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Tableau de bord / لوحة القيادة</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/10 text-moroccan-gold transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">menu_book</span>
+<span class="text-sm font-bold">Inventaire / المخزون</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">sync_alt</span>
+<span class="text-sm font-medium">Emprunts / الإعارات</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Étudiants / الطلاب</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Amendes / الغرامات</span>
+</a>
+<div class="my-4 border-t border-white/10"></div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Paramètres / الإعدادات</span>
+</a>
+</nav>
+<div class="mt-auto p-3 bg-black/20 border border-white/5 rounded-xl">
+<div class="flex items-center gap-3">
+<img alt="Profile picture of the library administrator" class="size-10 rounded-full border border-moroccan-gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9ekE3aRRvmcHoAZCqz4T9XsZcLi0i_hCKCaomaWd5VKp2EO_2D_8LCvqt1Ke42R-WvxBy8CuF1gW4qwzKVFxEq2iavLEtqj92NhZ0zM0bzTtoIJvhJjB1HFVWYGuTgZzW8YMDToVbG-SJL8UHeKpJwzMdvCKEtjJaYhcabz49FjZUf4gnbVCsVYd-XPt_LgPoh0uUrpGuWUf0480tYLyUo8N3OplGDNm-NmhdBcSdP9Qct5SfBCqDHO3qwyYNIintPLX-JOB_ARPh"/>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-bold truncate text-white">Admin Atlas</p>
+<p class="text-xs text-white/60 truncate">Librarian</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Header -->
+<header class="h-20 flex items-center justify-between px-8 bg-white border-b border-slate-100 shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-8 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-moroccan-green/20 focus:border-moroccan-green outline-none transition-all text-sm" placeholder="Rechercher par titre, auteur, ou ISBN... / بحث..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-slate-100 p-1 rounded-lg mr-2">
+<button class="px-3 py-1 rounded-md bg-white shadow-sm text-xs font-bold text-moroccan-green">FR</button>
+<button class="px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-moroccan-green transition-colors">عربي</button>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-600 rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
+<span class="material-symbols-outlined">translate</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 flex flex-col gap-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h2 class="text-2xl font-black tracking-tight text-slate-900">Gestion de la Bibliothèque / إدارة المكتبة</h2>
+<p class="text-slate-500">Suivi des livres, des emprunts et des retours tardifs.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all text-slate-700">
+<span class="material-symbols-outlined text-[20px]">file_download</span>
+                        Exporter
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-moroccan-green text-white rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-moroccan-green/20 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Ajouter un livre
+                    </button>
+</div>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-moroccan-green">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-moroccan-green bg-moroccan-green/10 p-3 rounded-xl">auto_stories</span>
+<span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">+12%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Total Livres</p>
+<p class="text-2xl font-black text-slate-900">4,280</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-blue-500 bg-blue-500/10 p-3 rounded-xl">outbound</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Emprunts actifs</p>
+<p class="text-2xl font-black text-slate-900">156</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-600">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-red-600 bg-red-600/10 p-3 rounded-xl">error</span>
+<span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">Urgent</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Retards (Overdue)</p>
+<p class="text-2xl font-black text-slate-900">24</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-moroccan-gold">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-moroccan-gold bg-moroccan-gold/10 p-3 rounded-xl">account_balance_wallet</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Amendes collectées</p>
+<p class="text-2xl font-black text-slate-900">1,450 DH</p>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-slate-200">
+<button class="px-6 py-4 text-sm font-bold text-moroccan-green border-b-2 border-moroccan-green">
+                    Inventaire / المخزون
+                </button>
+<button class="px-6 py-4 text-sm font-medium text-slate-500 hover:text-moroccan-green transition-colors">
+                    Emprunteurs / المستعيرون
+                </button>
+<button class="px-6 py-4 text-sm font-medium text-slate-500 hover:text-moroccan-green transition-colors">
+                    Retards &amp; Amendes / المتأخرات
+                </button>
+</div>
+<!-- Data Table Container -->
+<div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50/50 border-b border-slate-200">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Livre / Title</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Auteur / Author</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">ISBN</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Catégorie</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Qté</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-moroccan-gold/5 rounded border border-moroccan-gold/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-moroccan-gold text-xl">book_2</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Le Petit Prince</p>
+<p class="text-xs text-slate-500">الأمير الصغير</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-slate-700">Antoine de Saint-Exupéry</td>
+<td class="px-6 py-4 text-sm font-mono text-slate-500">978-0156012195</td>
+<td class="px-6 py-4 text-sm text-slate-600">Littérature</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">Disponible</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">12</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-moroccan-green transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-moroccan-gold/5 rounded border border-moroccan-gold/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-moroccan-gold text-xl">book_2</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Introduction to Algorithms</p>
+<p class="text-xs text-slate-500">خوارزميات</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-slate-700">Thomas H. Cormen</td>
+<td class="px-6 py-4 text-sm font-mono text-slate-500">978-0262033848</td>
+<td class="px-6 py-4 text-sm text-slate-600">Informatique</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Peu d'exemplaires</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">2</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-moroccan-green transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 - Overdue Example -->
+<tr class="hover:bg-slate-50 transition-colors bg-red-50/20">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-red-100 rounded border border-red-200 flex items-center justify-center">
+<span class="material-symbols-outlined text-red-600 text-xl">warning</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Mathematical Analysis</p>
+<p class="text-xs text-slate-500">التحليل الرياضي</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-slate-700">Walter Rudin</td>
+<td class="px-6 py-4 text-sm font-mono text-slate-500">978-0070542358</td>
+<td class="px-6 py-4 text-sm text-slate-600">Sciences</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 italic">En retard (Overdue)</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">0/5</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-red-600">Fine: 25 DH</span>
+<button class="text-slate-400 hover:text-moroccan-green transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-moroccan-gold/5 rounded border border-moroccan-gold/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-moroccan-gold text-xl">book_2</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">L'Étranger</p>
+<p class="text-xs text-slate-500">الغريب</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium text-slate-700">Albert Camus</td>
+<td class="px-6 py-4 text-sm font-mono text-slate-500">978-0679720201</td>
+<td class="px-6 py-4 text-sm text-slate-600">Philosophie</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">Disponible</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900">8</td>
+<td class="px-6 py-4">
+<button class="text-slate-400 hover:text-moroccan-green transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/30">
+<p class="text-sm text-slate-500">Affichage de 1-4 sur 1,240 résultats</p>
+<div class="flex gap-2">
+<button class="p-2 border border-slate-200 rounded-lg hover:bg-white disabled:opacity-50 transition-all">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="size-9 bg-moroccan-green text-white rounded-lg text-sm font-bold shadow-sm">1</button>
+<button class="size-9 border border-slate-200 rounded-lg text-sm font-medium hover:bg-white transition-all text-slate-600">2</button>
+<button class="size-9 border border-slate-200 rounded-lg text-sm font-medium hover:bg-white transition-all text-slate-600">3</button>
+<button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-all">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recent Overdue Activity -->
+<div class="mt-4">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-2 h-6 bg-red-600 rounded-full"></span>
+<h3 class="text-lg font-bold text-slate-900">Retards récents / تأخيرات حديثة</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Overdue Card 1 -->
+<div class="bg-white p-5 rounded-xl border border-l-4 border-l-red-600 border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+<div class="flex items-center gap-4">
+<img alt="Student avatar for Mehdi" class="size-12 rounded-full border-2 border-slate-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXmbIJ1309LX_7IlW0SbLnZVSy7eRc1FjnpsDUwtW8RVxrmdA9aa3Sn1j1E2YhDYbMFhFRE6IzrJnRei-ko56WbJUK5L9hDPztSSIBRg0eBBFNeXz9SLsLH8_uNM0PZVHwOgTYa5qKjbWYlkqKHn04yqaKhfYCqknorRT8fIqMGstY4Tq9XDiSXfYivC0xVbCW7qh3X9pnSB90PfikEpd8Y8F7p2hL6MMrHvFGRiaNoQw5RpyaPkeuFLY9rCJVpSWUoHvrpAM9tA7Y"/>
+<div>
+<p class="text-sm font-bold text-slate-900">Mehdi Berrada</p>
+<p class="text-xs text-slate-500 italic">"Introduction to Algorithms"</p>
+<p class="text-[10px] font-bold text-red-600 uppercase mt-1 tracking-wider">Retard de 5 jours</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-lg font-black text-red-600">25 DH</p>
+<button class="text-xs font-bold text-moroccan-green hover:underline">Rappeler</button>
+</div>
+</div>
+<!-- Overdue Card 2 -->
+<div class="bg-white p-5 rounded-xl border border-l-4 border-l-red-600 border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+<div class="flex items-center gap-4">
+<img alt="Student avatar for Salma" class="size-12 rounded-full border-2 border-slate-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEgs4Pp9LPrD37DeqrG9YBa7k3sBbksgJjdX7hTCXD_XTsnfzJd-iUFTABA9pqBn7YcchtYKHsp4W7wRJUkutRYU5BVRPU2i5ztFuLaOxwRrvYJE9aParR8B6f4nfG1-QOITqaZN0PrD4dxRi56Qjo9MzYi-jrVt1uH3of-MzdteLYpCdwoUUp1ZtESdx2blsKqZ9T7Gwn2TVxCkK9S2xkbqShumSiDLdRWBQcMtC3yHjP-kKze609_uO3RzzmJIZ1d_KRFWHbF44U"/>
+<div>
+<p class="text-sm font-bold text-slate-900">Salma Alaoui</p>
+<p class="text-xs text-slate-500 italic">"Mathematical Analysis"</p>
+<p class="text-[10px] font-bold text-red-600 uppercase mt-1 tracking-wider">Retard de 2 jours</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-lg font-black text-red-600">10 DH</p>
+<button class="text-xs font-bold text-moroccan-green hover:underline">Rappeler</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

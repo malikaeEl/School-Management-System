@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finance &amp; Fees Management | EduControl</title>
+<!-- Tailwind CSS CDN with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'moroccan-red': '#c1272d',
+            'moroccan-green': '#006233',
+            'moroccan-gold': '#d4af37',
+            'deep-emerald': '#043927'
+          }
+        }
+      }
+    }
+</script>
+<!-- Chart.js for accounting overview charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Custom Styles from Reference -->
+<style data-purpose="custom-patterns">
+    /* Subtle Moroccan Zellige Pattern Overlay */
+    .zellige-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15-15 15-15-15L30 0zm0 30l15 15-15 15-15-15 15-15z' fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+    
+    .sidebar-gradient {
+      background: linear-gradient(180deg, #043927 0%, #00291a 100%);
+    }
+
+    .arabic-font {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased zellige-pattern">
+<!-- BEGIN: MainContainer -->
+<div class="min-h-screen flex flex-col lg:row">
+<!-- BEGIN: Sidebar -->
+<aside class="fixed inset-y-0 left-0 w-64 sidebar-gradient text-white transition-all duration-300 z-50 flex flex-col" id="sidebar">
+<div class="p-6 flex items-center gap-3 border-b border-white/10">
+<div class="w-10 h-10 bg-moroccan-gold rounded-full flex items-center justify-center font-bold text-deep-emerald shadow-lg">
+        EC
+      </div>
+<div>
+<h1 class="text-xl font-bold tracking-wider" data-ar="إيدو كونترول" data-fr="EduControl">EduControl</h1>
+<p class="text-[10px] text-white/40 uppercase tracking-widest" data-ar="نظام إدارة المالية" data-fr="Finance Management">Finance Management</p>
+</div>
+</div>
+<nav class="mt-6 px-4 space-y-2 flex-1">
+<a class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="text-sm font-medium" data-ar="لوحة القيادة" data-fr="Dashboard">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg bg-white/10 text-moroccan-gold" href="#">
+<span class="text-sm font-medium" data-ar="الرسوم والفواتير" data-fr="Fees &amp; Invoices">Fees &amp; Invoices</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="text-sm font-medium" data-ar="المنح الدراسية" data-fr="Scholarships">Scholarships</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="text-sm font-medium" data-ar="هياكل الرسوم" data-fr="Fee Structures">Fee Structures</span>
+</a>
+<a class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="text-sm font-medium" data-ar="التقارير" data-fr="Reports">Reports</span>
+</a>
+</nav>
+<!-- Sidebar footer profile -->
+<div class="p-4 border-t border-white/10 bg-black/20">
+<div class="flex items-center gap-3">
+<img alt="Admin" class="w-10 h-10 rounded-full border border-moroccan-gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBncbgrjdq7Ldz1L8cbnkFXo0jmYk2rOvYW0JOyWQdOS_xZcuAUUxGhfLNbzDvE5_qcBmFV-OKMKU43tigQqXdbsIzru6Kxyk9V4vS2iA1cN0Ut_YYKkbEHzKFpN8foVL8DTP4RLTj7iSC_dn0naEO9IDo60slKaoUw5CQ41wMkpfKUrJ8QjeF0kcRUUrY2hB1gYR-AGp4aBPLnkYCucQtxlcava98yb7fjgF9d0tUQfORMHL0WKIOIrk62Aen0nkXCoq1mdVH6grnc"/>
+<div>
+<p class="text-sm font-semibold">Mohammed A.</p>
+<p class="text-xs text-white/60" data-ar="مدير مالي" data-fr="Finance Manager">Finance Manager</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: ContentArea -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen transition-all duration-300" id="main-content">
+<!-- BEGIN: Header -->
+<header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-40">
+<h2 class="text-xl font-bold text-slate-800" data-ar="نظرة عامة على المالية والرسوم" data-fr="Finance &amp; Fees Overview">Finance &amp; Fees Overview</h2>
+<div class="flex items-center space-x-4">
+<!-- Language Toggle -->
+<div class="flex bg-slate-100 p-1 rounded-lg">
+<button class="px-3 py-1 rounded-md bg-white shadow-sm text-xs font-bold text-moroccan-green" id="lang-fr">FR</button>
+<button class="px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-moroccan-green transition-colors" id="lang-ar">عربي</button>
+</div>
+<button class="bg-moroccan-green hover:bg-deep-emerald text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm" data-ar="+ إنشاء فاتورة" data-fr="+ Generate Invoice" data-purpose="btn-generate-invoice">
+            + Generate Invoice
+          </button>
+<div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+<img alt="User Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBncbgrjdq7Ldz1L8cbnkFXo0jmYk2rOvYW0JOyWQdOS_xZcuAUUxGhfLNbzDvE5_qcBmFV-OKMKU43tigQqXdbsIzru6Kxyk9V4vS2iA1cN0Ut_YYKkbEHzKFpN8foVL8DTP4RLTj7iSC_dn0naEO9IDo60slKaoUw5CQ41wMkpfKUrJ8QjeF0kcRUUrY2hB1gYR-AGp4aBPLnkYCucQtxlcava98yb7fjgF9d0tUQfORMHL0WKIOIrk62Aen0nkXCoq1mdVH6grnc"/>
+</div>
+</div>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: ScrollableContent -->
+<div class="flex-1 p-8 space-y-8">
+<!-- BEGIN: KeyMetrics -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-purpose="metrics-grid">
+<!-- Total Revenue Card -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm border-l-4 border-moroccan-green">
+<p class="text-sm text-slate-500 font-medium" data-ar="إجمالي الإيرادات" data-fr="Total Revenue">Total Revenue</p>
+<h3 class="text-2xl font-bold mt-1 text-slate-800">$452,100</h3>
+<span class="text-xs text-green-600 mt-2 block" data-ar="↑ 12٪ مقارنة بالشهر الماضي" data-fr="↑ 12% vs last month">↑ 12% vs last month</span>
+</div>
+<!-- Outstanding Card -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm border-l-4 border-moroccan-red">
+<p class="text-sm text-slate-500 font-medium" data-ar="الرصيد المستحق" data-fr="Outstanding Balance">Outstanding Balance</p>
+<h3 class="text-2xl font-bold mt-1 text-moroccan-red">$42,500</h3>
+<span class="text-xs text-slate-400 mt-2 block" data-ar="128 طالب قيد الانتظار" data-fr="128 Students Pending">128 Students Pending</span>
+</div>
+<!-- Collection Rate Card -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm border-l-4 border-moroccan-gold">
+<p class="text-sm text-slate-500 font-medium" data-ar="معدل التحصيل" data-fr="Collection Rate">Collection Rate</p>
+<h3 class="text-2xl font-bold mt-1 text-slate-800">92.4%</h3>
+<div class="w-full bg-slate-100 h-2 rounded-full mt-3 overflow-hidden">
+<div class="bg-moroccan-gold h-2 rounded-full" style="width: 92.4%"></div>
+</div>
+</div>
+<!-- Scholarships Card -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm border-l-4 border-deep-emerald">
+<p class="text-sm text-slate-500 font-medium" data-ar="المنح النشطة" data-fr="Active Scholarships">Active Scholarships</p>
+<h3 class="text-2xl font-bold mt-1 text-slate-800">84</h3>
+<span class="text-xs text-moroccan-green mt-2 block" data-ar="$12,400 إجمالي الخصم" data-fr="$12,400 Total Discount">$12,400 Total Discount</span>
+</div>
+</div>
+<!-- END: KeyMetrics -->
+<!-- BEGIN: ChartsSection -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Revenue Chart -->
+<div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold text-slate-800 flex items-center gap-2">
+<span class="w-2 h-6 bg-moroccan-green rounded-full"></span>
+<span data-ar="نظرة عامة محاسبية" data-fr="Accounting Overview">Accounting Overview</span>
+</h4>
+<select class="text-xs border-slate-200 rounded-md focus:ring-moroccan-green focus:border-moroccan-green">
+<option data-ar="آخر 6 أشهر" data-fr="Last 6 Months">Last 6 Months</option>
+<option data-ar="السنة الأكاديمية كاملة" data-fr="Full Academic Year">Full Academic Year</option>
+</select>
+</div>
+<div class="h-64">
+<canvas id="revenueChart"></canvas>
+</div>
+</div>
+<!-- Fee Structure Breakdown -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+<h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+<span class="w-2 h-6 bg-moroccan-gold rounded-full"></span>
+<span data-ar="توزيع هيكل الرسوم" data-fr="Fee Structure Breakdown">Fee Structure Breakdown</span>
+</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-3 h-3 bg-moroccan-green rounded-full"></span>
+<span class="text-sm text-slate-600" data-ar="رسوم التعليم" data-fr="Tuition Fees">Tuition Fees</span>
+</div>
+<span class="text-sm font-semibold">$320,000</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-3 h-3 bg-moroccan-gold rounded-full"></span>
+<span class="text-sm text-slate-600" data-ar="النقل" data-fr="Transport">Transport</span>
+</div>
+<span class="text-sm font-semibold">$85,000</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-3 h-3 bg-moroccan-red rounded-full"></span>
+<span class="text-sm text-slate-600" data-ar="المكتبة/المختبر" data-fr="Library/Lab">Library/Lab</span>
+</div>
+<span class="text-sm font-semibold">$47,100</span>
+</div>
+<div class="pt-4 border-t border-slate-100">
+<div class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-wider" data-ar="المنح / الخصومات المطبقة" data-fr="SCHOLARSHIP/DISCOUNTS APPLIED">SCHOLARSHIP/DISCOUNTS APPLIED</div>
+<div class="flex items-center justify-between text-moroccan-red italic">
+<span class="text-sm" data-ar="التخفيضات النشطة" data-fr="Active Reductions">Active Reductions</span>
+<span class="text-sm">-$12,400</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ChartsSection -->
+<!-- BEGIN: InvoiceTableSection -->
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden" data-purpose="invoice-table-container">
+<div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+<h4 class="font-bold text-slate-800 flex items-center gap-2">
+<span class="w-2 h-6 bg-deep-emerald rounded-full"></span>
+<span data-ar="المعاملات والفواتير الحديثة" data-fr="Recent Transactions &amp; Invoices">Recent Transactions &amp; Invoices</span>
+</h4>
+<div class="flex space-x-2">
+<input class="text-sm border-slate-200 rounded-lg w-64 focus:ring-moroccan-green focus:border-moroccan-green" placeholder="Search Student ID..." type="text"/>
+<button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-colors text-slate-400 hover:text-moroccan-green">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left" id="invoice-table">
+<thead class="bg-slate-50 text-[10px] uppercase text-slate-500 tracking-wider">
+<tr>
+<th class="px-6 py-4 font-bold" data-ar="رقم الفاتورة" data-fr="Invoice ID">Invoice ID</th>
+<th class="px-6 py-4 font-bold" data-ar="اسم الطالب" data-fr="Student Name">Student Name</th>
+<th class="px-6 py-4 font-bold" data-ar="فئة الرسوم" data-fr="Fee Category">Fee Category</th>
+<th class="px-6 py-4 font-bold" data-ar="التاريخ" data-fr="Date">Date</th>
+<th class="px-6 py-4 font-bold" data-ar="المبلغ" data-fr="Amount">Amount</th>
+<th class="px-6 py-4 font-bold" data-ar="الحالة" data-fr="Status">Status</th>
+<th class="px-6 py-4 font-bold text-right" data-ar="إجراء" data-fr="Action">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-sm">
+<!-- Row 1: Paid -->
+<tr>
+<td class="px-6 py-4 font-medium text-moroccan-green">#INV-8901</td>
+<td class="px-6 py-4">Alex Johnson <br/><span class="text-xs text-slate-400">ID: 2024-001</span></td>
+<td class="px-6 py-4">Tuition, Transport</td>
+<td class="px-6 py-4 text-slate-500">Oct 12, 2023</td>
+<td class="px-6 py-4 font-bold">$1,200.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase">Paid</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-moroccan-green font-medium">View</button>
+</td>
+</tr>
+<!-- Row 2: Pending -->
+<tr>
+<td class="px-6 py-4 font-medium text-moroccan-green">#INV-8902</td>
+<td class="px-6 py-4">Sarah Miller <br/><span class="text-xs text-slate-400">ID: 2024-114</span></td>
+<td class="px-6 py-4">Tuition (Academic)</td>
+<td class="px-6 py-4 text-slate-500">Oct 14, 2023</td>
+<td class="px-6 py-4 font-bold">$950.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-moroccan-gold/20 text-moroccan-gold text-[10px] font-bold uppercase">Pending</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-moroccan-green font-medium">View</button>
+</td>
+</tr>
+<!-- Row 3: Overdue -->
+<tr>
+<td class="px-6 py-4 font-medium text-moroccan-green">#INV-8903</td>
+<td class="px-6 py-4">David Chen <br/><span class="text-xs text-slate-400">ID: 2024-052</span></td>
+<td class="px-6 py-4">Library &amp; Lab Fees</td>
+<td class="px-6 py-4 text-slate-500">Sep 28, 2023</td>
+<td class="px-6 py-4 font-bold">$120.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-moroccan-red/10 text-moroccan-red text-[10px] font-bold uppercase">Overdue</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-moroccan-green font-medium">View</button>
+</td>
+</tr>
+<!-- Row 4: Discount/Scholarship -->
+<tr>
+<td class="px-6 py-4 font-medium text-moroccan-green">#INV-8904</td>
+<td class="px-6 py-4">Emily White <br/><span class="text-xs text-slate-400">ID: 2024-009</span></td>
+<td class="px-6 py-4 flex flex-col">
+<span>Tuition (Merit)</span>
+<span class="text-[10px] text-moroccan-green uppercase font-bold tracking-tight">-25% Scholarship Applied</span>
+</td>
+<td class="px-6 py-4 text-slate-500">Oct 15, 2023</td>
+<td class="px-6 py-4 font-bold">$712.50</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase">Paid</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-moroccan-green font-medium">View</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 bg-slate-50/30">
+<span data-ar="عرض 4 من 128 سجلاً نشطاً" data-fr="Showing 4 of 128 active records">Showing 4 of 128 active records</span>
+<div class="flex space-x-1">
+<button class="px-3 py-1 border border-slate-200 rounded hover:bg-white" data-ar="السابق" data-fr="Previous">Previous</button>
+<button class="px-3 py-1 border border-moroccan-green bg-moroccan-green/10 text-moroccan-green font-bold rounded">1</button>
+<button class="px-3 py-1 border border-slate-200 rounded hover:bg-white">2</button>
+<button class="px-3 py-1 border border-slate-200 rounded hover:bg-white" data-ar="التالي" data-fr="Next">Next</button>
+</div>
+</div>
+</div>
+<!-- END: InvoiceTableSection -->
+</div>
+<!-- END: ScrollableContent -->
+</main>
+<!-- END: ContentArea -->
+</div>
+<!-- END: MainContainer -->
+<!-- BEGIN: Logic Scripts -->
+<script data-purpose="language-switcher">
+    const langFrBtn = document.getElementById('lang-fr');
+    const langArBtn = document.getElementById('lang-ar');
+    const body = document.body;
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+
+    function toggleLanguage(lang) {
+      const isArabic = lang === 'ar';
+      
+      // Update document direction
+      document.documentElement.setAttribute('dir', isArabic ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('lang', lang);
+
+      // Update body font and classes
+      if (isArabic) {
+        body.classList.add('arabic-font');
+        sidebar.classList.remove('left-0');
+        sidebar.classList.add('right-0');
+        mainContent.classList.remove('ml-64');
+        mainContent.classList.add('mr-64');
+        langArBtn.classList.add('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langArBtn.classList.remove('text-slate-500');
+        langFrBtn.classList.remove('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langFrBtn.classList.add('text-slate-500');
+      } else {
+        body.classList.remove('arabic-font');
+        sidebar.classList.remove('right-0');
+        sidebar.classList.add('left-0');
+        mainContent.classList.remove('mr-64');
+        mainContent.classList.add('ml-64');
+        langFrBtn.classList.add('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langFrBtn.classList.remove('text-slate-500');
+        langArBtn.classList.remove('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langArBtn.classList.add('text-slate-500');
+      }
+
+      // Update text content
+      document.querySelectorAll('[data-fr]').forEach(el => {
+        el.textContent = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-fr');
+      });
+      
+      // Update inputs placeholders
+      document.querySelectorAll('input[placeholder]').forEach(el => {
+         if(el.getAttribute('data-purpose') === 'global-search') {
+            el.placeholder = isArabic ? 'بحث...' : 'Rechercher...';
+         }
+      });
+    }
+
+    langFrBtn.addEventListener('click', () => toggleLanguage('fr'));
+    langArBtn.addEventListener('click', () => toggleLanguage('ar'));
+</script>
+<!-- BEGIN: ChartScripts -->
+<script data-purpose="canvas-charts">
+    document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('revenueChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            label: 'Collection ($)',
+            data: [65000, 72000, 58000, 89000, 75000, 92000],
+            borderColor: '#006233',
+            backgroundColor: 'rgba(0, 98, 51, 0.05)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: '#006233'
+          },
+          {
+            label: 'Targets ($)',
+            data: [70000, 70000, 70000, 85000, 85000, 85000],
+            borderColor: '#d4af37',
+            borderDash: [5, 5],
+            tension: 0,
+            fill: false,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                boxWidth: 6,
+                font: {
+                  size: 11,
+                  weight: '600'
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#f8fafc'
+              },
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+</script>
+<!-- END: ChartScripts -->
+</body></html>

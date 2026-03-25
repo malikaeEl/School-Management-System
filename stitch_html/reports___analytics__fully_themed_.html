@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr-MA"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atlas Academy - Reports &amp; Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#C5A059", // Gold
+                        "brand-green": "#06402B", // Deep Dark Green
+                        "brand-accent": "#0A563A", // Slightly Lighter Green
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#042F20",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-item {
+            background-color: rgba(197, 160, 89, 0.15);
+            border-left: 4px solid #C5A059;
+        }
+    </style>
+</head>
+<body class="bg-background-light font-display text-slate-900">
+<div class="flex min-h-screen overflow-hidden">
+<!-- Side Navigation -->
+<aside class="w-72 bg-brand-green flex flex-col h-screen sticky top-0">
+<div class="p-8 flex items-center gap-4">
+<div class="size-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 overflow-hidden">
+<img alt="Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6BJEHGp73vS2D2GbTe5aXpBRz_7BTUjUvucbp3zp_niRPWXj0DElpK79zff9zf8R2e4rjlnx5_94dwyDVyuI8OocrVZHZ--bKdGUYZxcqWuT_BkD7sqQ-k1k88ghIxuiiIXiRMnl3vq3w5p6X1DTZh_FzjeBs5IAqhkt3eu_4E4O-KApekVhGXFvHSR3QMM_m-FZs06GWHbgQ94YdDSZ3jgxaCzY8iuJVViyZzja9OX2XhIdr_mNCtQear9lNEfQZ4yKvhZJVIoir"/>
+</div>
+<div>
+<h1 class="text-white text-lg font-bold leading-none tracking-tight">Atlas Academy</h1>
+<p class="text-primary text-[10px] mt-1 font-semibold uppercase tracking-widest">Excellence &amp; Tradition</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 mt-4">
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-medium">Tableau de bord / لوحة القيادة</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-sm font-medium">Étudiants / الطلاب</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">school</span>
+<span class="text-sm font-medium">Académique / الأكاديمية</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">event_available</span>
+<span class="text-sm font-medium">Présence / الحضور</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+<span class="text-sm font-medium">Finances / المالية</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3.5 rounded-lg text-primary bg-primary/10 border-r-4 border-primary">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1">analytics</span>
+<span class="text-sm font-bold">Analyses / التحليلات</span>
+</div>
+</nav>
+<div class="p-6 border-t border-white/10 mt-auto">
+<div class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all cursor-pointer group">
+<div class="size-10 rounded-full border-2 border-primary/30 overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9St5oq0WF_3g0cnWfb2-ywn3UvNQog-2KFpyUuwoOjzDwhCVNXQC5Z0AAs5B5XKCr3FZEyIeos92nC2vTCC39ueZjU3OdK35dolqdDrEQFyuhBP2Gwcl1g4VE0-0UBhGo8ZtxGROwlAjoiDSFBXd1QIs_Pd5Qbm2_N3VuBAuc4AXt_qmOjN0Fgtr0RKqlLP-XGll3bBXxifQZTVjazXmFxxmaf6G8d2sCLbMmerbFHugESeQcSyrS96QmcYCwbmnmc0lOl35VH4da"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-[13px] font-bold truncate">Admin Portal</p>
+<p class="text-slate-400 text-[10px] truncate">Directeur / المدير</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg group-hover:text-primary transition-colors">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50/50">
+<!-- Header -->
+<header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary font-bold">analytics</span>
+</div>
+<h2 class="text-xl font-bold text-brand-green">Rapports &amp; Analyses / التقارير والتحليلات</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-slate-100 p-1 rounded-xl">
+<button class="px-5 py-2 bg-white text-brand-green text-xs font-bold rounded-lg shadow-sm">PDF</button>
+<button class="px-5 py-2 text-slate-500 text-xs font-bold hover:text-brand-green transition-all">Excel</button>
+</div>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<button class="size-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+<!-- KPIs Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Enrollment / التسجيل</p>
+<div class="flex items-end justify-between">
+<h3 class="text-3xl font-extrabold text-brand-green leading-tight">1,240</h3>
+<span class="text-green-600 bg-green-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">+5% <span class="material-symbols-outlined text-sm">trending_up</span></span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Success Rate / النجاح</p>
+<div class="flex items-end justify-between">
+<h3 class="text-3xl font-extrabold text-brand-green leading-tight">92%</h3>
+<span class="text-red-500 bg-red-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">-2% <span class="material-symbols-outlined text-sm">trending_down</span></span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Attendance / الحضور</p>
+<div class="flex items-end justify-between">
+<h3 class="text-3xl font-extrabold text-brand-green leading-tight">95.4%</h3>
+<span class="text-green-600 bg-green-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">+1.2% <span class="material-symbols-outlined text-sm">trending_up</span></span>
+</div>
+</div>
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Revenue / الدخل</p>
+<div class="flex items-end justify-between">
+<h3 class="text-3xl font-extrabold text-brand-green leading-tight">4.2M <span class="text-xs font-medium text-slate-400">MAD</span></h3>
+<span class="text-green-600 bg-green-50 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">+12% <span class="material-symbols-outlined text-sm">trending_up</span></span>
+</div>
+</div>
+</div>
+<!-- Main Analytics Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Academic Performance Chart Visualization -->
+<div class="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-10">
+<div>
+<h4 class="text-xl font-bold text-brand-green">Performance Académique / الأداء الأكاديمي</h4>
+<p class="text-slate-500 text-sm mt-1">Évolution par niveau et matière</p>
+</div>
+<div class="relative">
+<select class="appearance-none bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold pl-5 pr-10 py-3 text-brand-green focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+<option>Année Scolaire 2023-2024</option>
+<option>2022-2023</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex-1 min-h-[350px] flex items-end gap-6 px-4 pb-4">
+<!-- Custom Chart Simulation with Brand Colors -->
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 60%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">12.5</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Français</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 85%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">17.0</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Arabe</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 70%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">14.0</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Maths</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 92%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">18.4</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Sciences</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 75%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">15.0</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Histoire</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-full bg-slate-100 rounded-t-xl transition-all duration-300 group-hover:bg-primary relative" style="height: 80%">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">16.2</div>
+</div>
+<span class="text-[11px] font-bold text-slate-500 group-hover:text-brand-green transition-colors">Arts</span>
+</div>
+</div>
+</div>
+<!-- Financial Health Summary -->
+<div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+<h4 class="text-xl font-bold text-brand-green mb-8">Santé Financière / الصحة المالية</h4>
+<div class="space-y-8 flex-1">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Collecte des frais / تحصيل الرسوم</span>
+<span class="text-sm font-extrabold text-primary">88%</span>
+</div>
+<div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 88%"></div>
+</div>
+</div>
+<div class="flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Balances impayées</p>
+<p class="text-xl font-extrabold text-brand-green">482,000 <span class="text-xs font-medium">MAD</span></p>
+</div>
+<div class="size-12 rounded-full bg-red-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-red-500">payments</span>
+</div>
+</div>
+<div class="flex justify-between items-center p-5 bg-slate-50 rounded-2xl border border-slate-100">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Dépenses Opérationnelles</p>
+<p class="text-xl font-extrabold text-brand-green">1.8M <span class="text-xs font-medium">MAD</span></p>
+</div>
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-4 bg-brand-green text-white rounded-2xl text-sm font-bold hover:bg-brand-accent transition-all shadow-lg shadow-brand-green/10 active:scale-[0.98]">
+                        Voir Rapport Financier / تقرير مالي
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Attendance Trends -->
+<div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h4 class="text-xl font-bold text-brand-green">Tendances de Présence / اتجاهات الحضور</h4>
+<p class="text-slate-500 text-sm mt-1">Analyse mensuelle globale</p>
+</div>
+<div class="flex gap-4">
+<span class="flex items-center gap-2 text-[11px] font-bold text-slate-500"><span class="size-3 rounded-full bg-primary"></span> Présence</span>
+<span class="flex items-center gap-2 text-[11px] font-bold text-slate-500"><span class="size-3 rounded-full bg-slate-200"></span> Absence</span>
+</div>
+</div>
+<div class="h-64 flex items-center justify-center relative">
+<div class="absolute inset-0 flex flex-col justify-between py-2">
+<div class="w-full border-t border-slate-100 h-0"></div>
+<div class="w-full border-t border-slate-100 h-0"></div>
+<div class="w-full border-t border-slate-100 h-0"></div>
+<div class="w-full border-t border-slate-100 h-0"></div>
+</div>
+<svg class="w-full h-full relative z-10" preserveaspectratio="none" viewbox="0 0 400 100">
+<path d="M0,80 Q50,40 100,60 T200,30 T300,50 T400,20" fill="none" stroke="#C5A059" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="0" cy="80" fill="white" r="4" stroke="#C5A059" stroke-width="2"></circle>
+<circle cx="100" cy="60" fill="white" r="4" stroke="#C5A059" stroke-width="2"></circle>
+<circle cx="200" cy="30" fill="white" r="4" stroke="#C5A059" stroke-width="2"></circle>
+<circle cx="300" cy="50" fill="white" r="4" stroke="#C5A059" stroke-width="2"></circle>
+<circle cx="400" cy="20" fill="white" r="4" stroke="#C5A059" stroke-width="2"></circle>
+</svg>
+<div class="absolute bottom-0 left-0 right-0 flex justify-between text-[11px] font-bold text-slate-400 px-2 mt-4">
+<span>SEP</span><span>NOV</span><span>JAN</span><span>MAR</span><span>MAI</span>
+</div>
+</div>
+</div>
+<!-- Departmental Performance Table -->
+<div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+<div class="p-8 pb-4">
+<h4 class="text-xl font-bold text-brand-green">Performance des Départements / أداء الأقسام</h4>
+<p class="text-slate-500 text-sm mt-1">Scores basés sur les indicateurs de réussite</p>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left text-sm">
+<thead class="bg-slate-50 text-slate-500 uppercase text-[10px] font-extrabold tracking-widest border-y border-slate-100">
+<tr>
+<th class="px-8 py-5">Département / القسم</th>
+<th class="px-4 py-5 text-center">Score</th>
+<th class="px-4 py-5 text-center">Statut</th>
+<th class="px-8 py-5 text-right">Budget (%)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-8 py-5 font-bold text-brand-green">Académique</td>
+<td class="px-4 py-5 text-center text-slate-600 font-medium">4.8/5.0</td>
+<td class="px-4 py-5 text-center">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-extrabold uppercase">Optimal</span>
+</td>
+<td class="px-8 py-5 text-right font-bold text-brand-green">100%</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-8 py-5 font-bold text-brand-green">Administration</td>
+<td class="px-4 py-5 text-center text-slate-600 font-medium">4.2/5.0</td>
+<td class="px-4 py-5 text-center">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-extrabold uppercase">Stable</span>
+</td>
+<td class="px-8 py-5 text-right font-bold text-brand-green">92%</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-8 py-5 font-bold text-brand-green">Sports &amp; Loisirs</td>
+<td class="px-4 py-5 text-center text-slate-600 font-medium">3.9/5.0</td>
+<td class="px-4 py-5 text-center">
+<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-[10px] font-extrabold uppercase">Monitoring</span>
+</td>
+<td class="px-8 py-5 text-right font-bold text-brand-green">75%</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-8 py-5 font-bold text-brand-green">Maintenance</td>
+<td class="px-4 py-5 text-center text-slate-600 font-medium">4.5/5.0</td>
+<td class="px-4 py-5 text-center">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-[10px] font-extrabold uppercase">Optimal</span>
+</td>
+<td class="px-8 py-5 text-right font-bold text-brand-green">88%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Feedback -->
+<footer class="p-8 border-t border-slate-200 mt-auto bg-white/50 text-center">
+<p class="text-slate-400 text-xs font-medium tracking-wide uppercase">© 2024 Atlas Academy. Tous les droits réservés. / جميع الحقوق محفوظة.</p>
+</footer>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atlas Academy - Academic Timetable &amp; Attendance</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for Atlas Academy Theme -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#006233',
+            secondary: '#64748b',
+            accent: '#d4af37',
+            success: '#006233',
+            danger: '#c1272d',
+            'moroccan-red': '#c1272d',
+            'moroccan-green': '#006233',
+            'moroccan-gold': '#d4af37',
+            'deep-emerald': '#043927'
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout-styles">
+    /* Custom scrollbar for better UI */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    /* Fixed column height for timetable grid alignment */
+    .timetable-slot {
+      min-height: 100px;
+    }
+    /* Zellige Pattern */
+    .zellige-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15-15 15-15-15L30 0zm0 30l15 15-15 15-15-15 15-15z' fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+    .sidebar-gradient {
+      background: linear-gradient(180deg, #043927 0%, #00291a 100%);
+    }
+    .arabic-font {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans transition-colors duration-300 zellige-pattern min-h-screen">
+<!-- BEGIN: Sidebar -->
+<aside class="fixed inset-y-0 left-0 w-64 sidebar-gradient text-white transition-all duration-300 z-50 hidden lg:block" id="sidebar">
+<div class="p-6 flex items-center gap-3 border-b border-white/10">
+<div class="w-10 h-10 bg-moroccan-gold rounded-full flex items-center justify-center font-bold text-deep-emerald shadow-lg">
+      AA
+    </div>
+<span class="text-xl font-bold tracking-wider">ATLAS ACADEMY</span>
+</div>
+<nav class="mt-6 px-4 space-y-2">
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="nav-text" data-ar="الإدارة" data-fr="Admin">Admin</span>
+</a>
+<a class="flex items-center p-3 bg-white/10 rounded-lg text-moroccan-gold" href="#">
+<svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="nav-text" data-ar="الأكاديمي" data-fr="Académique">Académique</span>
+</a>
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="nav-text" data-ar="الموارد البشرية" data-fr="RH">RH</span>
+</a>
+</nav>
+<div class="absolute bottom-0 w-full p-4 border-t border-white/10 bg-black/20">
+<div class="flex items-center gap-3">
+<img alt="Admin" class="w-8 h-8 rounded-full border border-moroccan-gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfOrNSylmRMXStFSdYqWdlvhCr3EbsXHWv4NliODSwiK29KqGNUTjNW90g0aoFBnGFXtp_4TgCiaLTE2W-Z-y2k2aRJ3AJXI7N4EN_Xpiu7E78savftQiJV_6z4pq6oCN7Kphlu-nZ44WR0qyCUG79rWJDevaysMmR8RXLPDs-hwstec-HFPC4CsNqzaBA3RVB2aNfoq2M-P4Okm36yIIh5f_YiET8kIoDJKbTEocdKkgwx-wDfUDWCSXNQO2Iy8YE5CpUm-iQhP0j"/>
+<div>
+<p class="text-sm font-semibold">Dr. Sarah Johnson</p>
+<p class="text-xs text-white/60">Professeur</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<main class="lg:ml-64 transition-all duration-300" id="main-content">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-100 sticky top-0 z-40 p-4 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-bold tracking-tight text-slate-800" data-ar="الجدول الدراسي" data-fr="Emploi du temps">Emploi du temps</h1>
+</div>
+<div class="flex items-center gap-3">
+<!-- Language Toggle -->
+<div class="flex bg-slate-100 p-1 rounded-lg">
+<button class="px-3 py-1 rounded-md bg-white shadow-sm text-xs font-bold text-moroccan-green" id="lang-fr">FR</button>
+<button class="px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-moroccan-green transition-colors" id="lang-ar">عربي</button>
+</div>
+<!-- User Profile (Mobile Only) -->
+<img alt="Avatar" class="w-8 h-8 rounded-full border border-moroccan-gold lg:hidden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfOrNSylmRMXStFSdYqWdlvhCr3EbsXHWv4NliODSwiK29KqGNUTjNW90g0aoFBnGFXtp_4TgCiaLTE2W-Z-y2k2aRJ3AJXI7N4EN_Xpiu7E78savftQiJV_6z4pq6oCN7Kphlu-nZ44WR0qyCUG79rWJDevaysMmR8RXLPDs-hwstec-HFPC4CsNqzaBA3RVB2aNfoq2M-P4Okm36yIIh5f_YiET8kIoDJKbTEocdKkgwx-wDfUDWCSXNQO2Iy8YE5CpUm-iQhP0j"/>
+</div>
+</header>
+<!-- END: MainHeader -->
+<div class="p-4 sm:p-6 lg:p-8">
+<!-- BEGIN: DashboardControls -->
+<section class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="text-2xl font-bold text-slate-800" data-ar="الجدول الأسبوعي" data-fr="Hebdomadaire">Hebdomadaire</h2>
+<p class="text-slate-500 text-sm mt-1" data-ar="الأسبوع 12 (خريف 2023)" data-fr="Semaine 12 (Automne 2023)">Semaine 12 (Automne 2023)</p>
+</div>
+<div class="flex items-center gap-2">
+<select class="rounded-lg border-slate-200 text-sm focus:ring-moroccan-green focus:border-moroccan-green">
+<option>Batch 2023 - CS Section A</option>
+<option>Batch 2023 - CS Section B</option>
+<option>Batch 2022 - EE Section A</option>
+</select>
+<button class="bg-moroccan-gold text-deep-emerald px-4 py-2 rounded-lg text-sm font-bold hover:bg-yellow-500 transition-colors shadow-sm" data-ar="طباعة" data-fr="Imprimer">
+          Imprimer
+        </button>
+</div>
+</section>
+<!-- END: DashboardControls -->
+<!-- BEGIN: TimetableGrid -->
+<div class="overflow-x-auto custom-scrollbar bg-white rounded-xl shadow-sm border border-slate-100" data-purpose="timetable-container">
+<table class="w-full border-collapse min-w-[800px]">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200">
+<th class="p-4 text-left font-semibold text-slate-600 border-r border-slate-100 w-32" data-ar="الوقت" data-fr="Heure">Heure</th>
+<th class="p-4 text-center font-semibold text-slate-600" data-ar="الإثنين" data-fr="Lundi">Lundi</th>
+<th class="p-4 text-center font-semibold text-slate-600" data-ar="الثلاثاء" data-fr="Mardi">Mardi</th>
+<th class="p-4 text-center font-semibold text-slate-600" data-ar="الأربعاء" data-fr="Mercredi">Mercredi</th>
+<th class="p-4 text-center font-semibold text-slate-600" data-ar="الخميس" data-fr="Jeudi">Jeudi</th>
+<th class="p-4 text-center font-semibold text-slate-600" data-ar="الجمعة" data-fr="Vendredi">Vendredi</th>
+</tr>
+</thead>
+<tbody>
+<!-- Row 08:00 AM -->
+<tr class="border-b border-slate-50">
+<td class="p-4 font-medium text-slate-500 text-sm border-r border-slate-100 bg-slate-50/30">08:00 - 09:30</td>
+<td class="p-2">
+<div class="bg-moroccan-green/5 border-l-4 border-moroccan-green p-3 rounded-r-lg timetable-slot hover:shadow-md transition-shadow cursor-pointer" onclick="openAttendanceModal('Data Structures', 'CS-A')">
+<p class="text-xs font-bold text-moroccan-green uppercase">CS301</p>
+<p class="text-sm font-semibold text-slate-800">Data Structures</p>
+<p class="text-xs text-slate-500 mt-1">Room 402 • 45 Students</p>
+</div>
+</td>
+<td class="p-2"></td>
+<td class="p-2">
+<div class="bg-deep-emerald/5 border-l-4 border-deep-emerald p-3 rounded-r-lg timetable-slot hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-deep-emerald uppercase">EE102</p>
+<p class="text-sm font-semibold text-slate-800">Digital Logic</p>
+<p class="text-xs text-slate-500 mt-1">Lab 01 • 30 Students</p>
+</div>
+</td>
+<td class="p-2"></td>
+<td class="p-2">
+<div class="bg-moroccan-green/5 border-l-4 border-moroccan-green p-3 rounded-r-lg timetable-slot hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-moroccan-green uppercase">CS301</p>
+<p class="text-sm font-semibold text-slate-800">Data Structures</p>
+<p class="text-xs text-slate-500 mt-1">Room 402 • 45 Students</p>
+</div>
+</td>
+</tr>
+<!-- Row 10:00 AM -->
+<tr class="border-b border-slate-50">
+<td class="p-4 font-medium text-slate-500 text-sm border-r border-slate-100 bg-slate-50/30">10:00 - 11:30</td>
+<td class="p-2"></td>
+<td class="p-2">
+<div class="bg-moroccan-gold/10 border-l-4 border-moroccan-gold p-3 rounded-r-lg timetable-slot hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-moroccan-gold uppercase">MA201</p>
+<p class="text-sm font-semibold text-slate-800">Linear Algebra</p>
+<p class="text-xs text-slate-500 mt-1">Room 105 • 60 Students</p>
+</div>
+</td>
+<td class="p-2"></td>
+<td class="p-2">
+<div class="bg-moroccan-gold/10 border-l-4 border-moroccan-gold p-3 rounded-r-lg timetable-slot hover:shadow-md transition-shadow cursor-pointer">
+<p class="text-xs font-bold text-moroccan-gold uppercase">MA201</p>
+<p class="text-sm font-semibold text-slate-800">Linear Algebra</p>
+<p class="text-xs text-slate-500 mt-1">Room 105 • 60 Students</p>
+</div>
+</td>
+<td class="p-2"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- END: TimetableGrid -->
+<!-- BEGIN: QuickAttendanceSection -->
+<section class="mt-12">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-xl font-bold text-slate-800" data-ar="الحضور قيد الانتظار" data-fr="Présence en attente">Présence en attente</h3>
+<p class="text-slate-500 text-sm" data-ar="دروس اكتملت اليوم" data-fr="Cours terminés aujourd'hui">Cours terminés aujourd'hui</p>
+</div>
+<span class="bg-moroccan-red/10 text-moroccan-red text-xs font-bold px-2 py-1 rounded-full animate-pulse">2 ACTIONS REQUIRED</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Attendance Card 1 -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center gap-6" data-purpose="attendance-marking-card">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">CS301</span>
+<span class="text-xs font-medium text-slate-400">08:00 - 09:30</span>
+</div>
+<h4 class="font-bold text-slate-800 text-lg">Data Structures &amp; Algorithms</h4>
+<div class="flex items-center gap-4 mt-3">
+<div class="text-center">
+<p class="text-2xl font-bold text-slate-800">42</p>
+<p class="text-[10px] text-slate-400 uppercase font-bold" data-ar="حاضر" data-fr="Présent">Présent</p>
+</div>
+<div class="h-8 w-px bg-slate-100"></div>
+<div class="text-center">
+<p class="text-2xl font-bold text-moroccan-red">3</p>
+<p class="text-[10px] text-slate-400 uppercase font-bold" data-ar="غائب" data-fr="Absent">Absent</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 w-full sm:w-auto">
+<button class="bg-moroccan-green text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition-all shadow-sm flex items-center justify-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span data-ar="تأكيد" data-fr="Confirmer">Confirmer</span>
+</button>
+<button class="text-slate-500 hover:text-moroccan-green px-6 py-2 rounded-lg text-sm font-semibold transition-all" data-ar="تعديل" data-fr="Modifier">
+              Modifier
+            </button>
+</div>
+</div>
+<!-- Attendance Card 2 (Empty/Placeholder) -->
+<div class="bg-white/50 p-6 rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-slate-400 italic text-sm">
+          No other classes requiring immediate action.
+        </div>
+</div>
+</section>
+<!-- END: QuickAttendanceSection -->
+<!-- BEGIN: AbsenceAlerts -->
+<section class="mt-12 bg-white border border-moroccan-red/10 rounded-xl p-6 shadow-sm">
+<div class="flex items-start gap-4">
+<div class="bg-moroccan-red p-2 rounded-lg">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="flex-1">
+<h3 class="text-slate-800 font-bold" data-ar="تنبيهات الغياب الحرجة" data-fr="Alertes d'absence critiques">Alertes d'absence critiques</h3>
+<p class="text-slate-500 text-sm mt-1" data-ar="الطلاب الذين غابوا أكثر من 3 دروس متتالية." data-fr="Étudiants ayant manqué plus de 3 cours consécutifs.">Étudiants ayant manqué plus de 3 cours consécutifs.</p>
+<div class="mt-4 space-y-3">
+<div class="bg-slate-50 p-3 rounded-lg flex items-center justify-between border border-slate-100">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-10 h-10 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNmjSCo38DISCTWBtMfyLCHoPpbx0pbsJtxQPp4KBvPRk6eQCA9qyQiIxzY3uogjvQpfjDOTcRAapCOQRjp8nJ2md9aftvnBhmadsLQtRX4H_Hd1_dV1nmm6wm8ngurfKi43a4uDP-OU0nKBoq88_ISWRkIxngucQINj8vFLywLINxHtodWfm514q6heSJme_-JasH5nYOOZnmPp1mRfkxvPcdMIlhc1hQ-ty2DZcnoHmc_5DM0e_YMt88-QQiRgZN_ObwSpsysd3m"/>
+<div>
+<p class="text-sm font-bold text-slate-800">Ahmad Al-Farsi</p>
+<p class="text-xs text-slate-500">ID: #2023-0881 | 4 Absences</p>
+</div>
+</div>
+<button class="bg-moroccan-red text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-red-800" data-ar="إبلاغ الوالدين" data-fr="Notifier parents">Notifier parents</button>
+</div>
+<div class="bg-slate-50 p-3 rounded-lg flex items-center justify-between border border-slate-100">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-10 h-10 rounded-full border border-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB61eaqZ6USI420Jn87hU6o_hULi2SKceIAXLDJNXka21D1e6OUMe38qJ1f25Zd2ejDxJYZOOF22xI4EivS3OfYmznEhoi07V1KjbvBCkC76QKxkd_qoVewM1IIrlzM9kASglExH-GZ51ygXGPiQ4t8XFyrJjospLw-SHrl6vDzESy_FPOTlFmq4s-fxwiuMGhg5X7G9vSvB-ZhrKwaIoRuB_uKJYGT5Ci9RZ80pQblj80lWldx-ZfwlgyeAV_KfTZZBx4ddG-17f4"/>
+<div>
+<p class="text-sm font-bold text-slate-800">Emma Watson</p>
+<p class="text-xs text-slate-500">ID: #2023-1022 | 5 Absences</p>
+</div>
+</div>
+<button class="bg-moroccan-red text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-red-800" data-ar="إبلاغ الوالدين" data-fr="Notifier parents">Notifier parents</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: AbsenceAlerts -->
+</div>
+<footer class="mt-20 border-t border-slate-100 bg-white py-12">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<p class="text-slate-400 text-sm">© 2023 Atlas Academy Academic Systems. All rights reserved.</p>
+</div>
+</footer>
+</main>
+<!-- BEGIN: AttendanceModal -->
+<div class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-deep-emerald/60 backdrop-blur-sm" id="attendance-modal">
+<div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+<div class="p-6 border-b border-slate-100 flex justify-between items-center bg-moroccan-green text-white">
+<div>
+<h2 class="text-xl font-bold" id="modal-title">Mark Attendance</h2>
+<p class="text-sm text-white/80" id="modal-subtitle">CS301 - Data Structures (Section A)</p>
+</div>
+<button class="text-white/60 hover:text-white" onclick="closeAttendanceModal()">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="max-h-[60vh] overflow-y-auto p-6 custom-scrollbar">
+<div class="space-y-3">
+<!-- Student Row Template -->
+<div class="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-xs font-medium text-slate-400 w-6 text-center">01</span>
+<div>
+<p class="text-sm font-semibold text-slate-800">Aaron Smith</p>
+<p class="text-xs text-slate-400">ID: 2023-001</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moroccan-green relative"></div>
+<span class="ms-3 text-sm font-medium text-slate-600">Present</span>
+</label>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-xs font-medium text-slate-400 w-6 text-center">02</span>
+<div>
+<p class="text-sm font-semibold text-slate-800">Beatrix Potter</p>
+<p class="text-xs text-slate-400">ID: 2023-002</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<label class="inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moroccan-green relative"></div>
+<span class="ms-3 text-sm font-medium text-slate-600">Present</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+<button class="px-6 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors" onclick="closeAttendanceModal()">Cancel</button>
+<button class="px-6 py-2 text-sm font-semibold text-white bg-moroccan-green rounded-lg hover:bg-emerald-900 transition-colors">Submit Attendance</button>
+</div>
+</div>
+</div>
+<!-- END: AttendanceModal -->
+<script data-purpose="ui-handlers">
+    const langFrBtn = document.getElementById('lang-fr');
+    const langArBtn = document.getElementById('lang-ar');
+    const body = document.body;
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+
+    function toggleLanguage(lang) {
+      const isArabic = lang === 'ar';
+      
+      document.documentElement.setAttribute('dir', isArabic ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('lang', lang);
+
+      if (isArabic) {
+        body.classList.add('arabic-font');
+        if(sidebar) {
+            sidebar.classList.remove('left-0');
+            sidebar.classList.add('right-0');
+        }
+        if(mainContent) {
+            mainContent.classList.remove('lg:ml-64');
+            mainContent.classList.add('lg:mr-64');
+        }
+        langArBtn.classList.add('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langArBtn.classList.remove('text-slate-500');
+        langFrBtn.classList.remove('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langFrBtn.classList.add('text-slate-500');
+      } else {
+        body.classList.remove('arabic-font');
+        if(sidebar) {
+            sidebar.classList.remove('right-0');
+            sidebar.classList.add('left-0');
+        }
+        if(mainContent) {
+            mainContent.classList.remove('lg:mr-64');
+            mainContent.classList.add('lg:ml-64');
+        }
+        langFrBtn.classList.add('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langFrBtn.classList.remove('text-slate-500');
+        langArBtn.classList.remove('bg-white', 'shadow-sm', 'text-moroccan-green');
+        langArBtn.classList.add('text-slate-500');
+      }
+
+      document.querySelectorAll('[data-fr]').forEach(el => {
+        el.textContent = isArabic ? el.getAttribute('data-ar') : el.getAttribute('data-fr');
+      });
+
+      // Sidebar icon margin fix
+      document.querySelectorAll('.nav-text').forEach(el => {
+        const svg = el.previousElementSibling;
+        if (svg && svg.tagName === 'svg') {
+          if (isArabic) {
+            svg.classList.remove('mr-3');
+            svg.classList.add('ml-3');
+          } else {
+            svg.classList.remove('ml-3');
+            svg.classList.add('mr-3');
+          }
+        }
+      });
+    }
+
+    langFrBtn.addEventListener('click', () => toggleLanguage('fr'));
+    langArBtn.addEventListener('click', () => toggleLanguage('ar'));
+
+    function openAttendanceModal(title, batch) {
+      document.getElementById('attendance-modal').classList.remove('hidden');
+      document.getElementById('modal-title').innerText = 'Attendance: ' + title;
+      document.getElementById('modal-subtitle').innerText = 'Batch: ' + batch;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAttendanceModal() {
+      document.getElementById('attendance-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+  </script>
+</body></html>

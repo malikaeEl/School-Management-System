@@ -1,0 +1,11 @@
+# Project Exclusions
+node_modules/
+.env
+package.json
+package-lock.json
+
+# Build and IDE
+dist/
+.vscode/
+.DS_Store
+*.log

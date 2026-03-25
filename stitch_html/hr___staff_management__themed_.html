@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atlas Academy - HR Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d4af37", // Moroccan Gold
+                        "moroccan-green": "#006233",
+                        "moroccan-gold": "#d4af37",
+                        "deep-emerald": "#043927",
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#00291a",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        .zellige-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15-15 15-15-15L30 0zm0 30l15 15-15 15-15-15 15-15z' fill='%23d4af37' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #043927 0%, #00291a 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen zellige-pattern">
+<div class="layout-container flex h-full grow flex-row">
+<!-- Sidebar -->
+<aside class="hidden lg:flex flex-col w-64 sidebar-gradient text-white sticky top-0 h-screen shrink-0 border-r border-white/10">
+<div class="p-6 flex items-center gap-3 border-b border-white/10">
+<div class="size-10 bg-moroccan-gold rounded-full flex items-center justify-center font-bold text-deep-emerald shadow-lg">
+                AA
+            </div>
+<span class="text-xl font-bold tracking-wider">ATLAS ACADEMY</span>
+</div>
+<nav class="mt-6 px-4 space-y-2 grow">
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center p-3 bg-white/10 rounded-lg text-moroccan-gold" href="#">
+<span class="material-symbols-outlined mr-3 text-moroccan-gold">badge</span>
+<span class="text-sm font-bold">RH / الموارد البشرية</span>
+</a>
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">school</span>
+<span class="text-sm font-medium">Académique</span>
+</a>
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="text-sm font-medium">Finance</span>
+</a>
+<a class="flex items-center p-3 hover:bg-white/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">library_books</span>
+<span class="text-sm font-medium">Bibliothèque</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/10 bg-black/20">
+<div class="flex items-center gap-3">
+<img alt="Admin" class="size-10 rounded-full border border-moroccan-gold object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM7Cf48-qlkC9lCVA1hL4px5ggSdoEdJZqI2o22nG1GNCspCXPcK0tiK2SB_30i2RUvjxTtNqkyI3GvsZqvldw0d_b5OZLA78tvbi1-iGkjhkCK3jFVEPEKTmNdwQU0bPWAtm_IAkiF5qxTLLeGr3UbBE4bWg7sThon_EGtsnXjin6Ca28IUmpZucvFjbSQlYbSJSebKh0U36uY8bdH0Ns0i66mNT3iae31UbPrsbcpsUjlVTyXxFm9F4b2P2gycKWB7898pgrVC5j"/>
+<div class="min-w-0">
+<p class="text-sm font-semibold truncate">Mohammed A.</p>
+<p class="text-[10px] text-white/60">Super Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex flex-col grow">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white dark:bg-deep-emerald px-6 py-3 sticky top-0 z-50 shadow-sm">
+<div class="flex items-center gap-8">
+<div class="lg:hidden flex items-center gap-3">
+<div class="flex items-center justify-center size-10 bg-moroccan-gold rounded-xl text-deep-emerald">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight dark:text-white">Atlas Academy</h2>
+</div>
+<div class="hidden md:flex items-center gap-2">
+<span class="text-xs font-bold text-moroccan-green dark:text-moroccan-gold uppercase tracking-widest">HR Management Portal</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-white/5 border-none rounded-xl text-sm focus:ring-2 focus:ring-moroccan-green w-64" placeholder="Rechercher... / ابحث..." type="text"/>
+</div>
+<!-- Language Toggle -->
+<div class="flex bg-slate-100 dark:bg-white/10 p-1 rounded-lg">
+<button class="px-3 py-1 rounded-md bg-white dark:bg-deep-emerald shadow-sm text-xs font-bold text-moroccan-green dark:text-moroccan-gold">FR</button>
+<button class="px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-moroccan-green transition-colors">عربي</button>
+</div>
+<button class="p-2 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 relative">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-moroccan-gold rounded-full"></span>
+</button>
+</div>
+</header>
+<main class="p-6 max-w-7xl mx-auto w-full flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
+                        Ressources Humaines / <span class="text-moroccan-green dark:text-moroccan-gold">الموارد البشرية</span>
+</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Personnel Management &amp; Administrative Dashboard</p>
+</div>
+<button class="bg-moroccan-green dark:bg-moroccan-gold text-white dark:text-deep-emerald px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 shadow-lg transition-all">
+<span class="material-symbols-outlined">person_add</span>
+                    Add New Staff / إضافة موظف
+                </button>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-deep-emerald p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4 border-l-4 border-l-moroccan-green dark:border-l-moroccan-gold">
+<div class="size-12 rounded-lg bg-moroccan-green/10 text-moroccan-green dark:text-moroccan-gold flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Employees</p>
+<h3 class="text-2xl font-bold dark:text-white">124</h3>
+<p class="text-xs text-green-600 font-bold flex items-center">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 2% from last month
+                        </p>
+</div>
+</div>
+<div class="bg-white dark:bg-deep-emerald p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4 border-l-4 border-l-moroccan-gold">
+<div class="size-12 rounded-lg bg-moroccan-gold/10 text-moroccan-gold flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">record_voice_over</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Teachers</p>
+<h3 class="text-2xl font-bold dark:text-white">86</h3>
+<p class="text-xs text-slate-400">70% of total staff</p>
+</div>
+</div>
+<div class="bg-white dark:bg-deep-emerald p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4 border-l-4 border-l-slate-400">
+<div class="size-12 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">engineering</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Support Staff</p>
+<h3 class="text-2xl font-bold dark:text-white">32</h3>
+<p class="text-xs text-red-500 font-bold flex items-center">
+<span class="material-symbols-outlined text-xs">arrow_downward</span> 3% vacancies
+                        </p>
+</div>
+</div>
+<div class="bg-white dark:bg-deep-emerald p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4 border-l-4 border-l-moroccan-green">
+<div class="size-12 rounded-lg bg-moroccan-green/10 text-moroccan-green dark:text-moroccan-gold flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">event_busy</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">On Leave</p>
+<h3 class="text-2xl font-bold dark:text-white">6</h3>
+<p class="text-xs text-slate-400">Current active requests</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Payroll & Leave Actions (Left) -->
+<div class="lg:col-span-1 flex flex-col gap-8">
+<!-- Payroll Summary -->
+<section class="bg-white dark:bg-deep-emerald p-6 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-lg font-bold flex items-center gap-2 dark:text-white">
+<span class="material-symbols-outlined text-moroccan-gold">payments</span>
+                                Payroll Summary
+                            </h2>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">October 2023</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center p-3 bg-slate-50 dark:bg-white/5 rounded-lg">
+<span class="text-sm text-slate-600 dark:text-slate-400 font-medium">Monthly Total</span>
+<span class="text-lg font-bold dark:text-white">€142,500</span>
+</div>
+<div class="flex justify-between items-center p-3 border-b border-slate-100 dark:border-white/10">
+<span class="text-sm text-slate-600 dark:text-slate-400">Paid Amount</span>
+<span class="text-sm font-bold text-green-600">€138,200</span>
+</div>
+<div class="flex justify-between items-center p-3 border-b border-slate-100 dark:border-white/10">
+<span class="text-sm text-slate-600 dark:text-slate-400">Pending</span>
+<span class="text-sm font-bold text-moroccan-gold">€4,300</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2.5 bg-moroccan-green dark:bg-moroccan-gold text-white dark:text-deep-emerald rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                            View Full Payroll Report
+                        </button>
+</section>
+<!-- Leave Requests -->
+<section class="bg-white dark:bg-deep-emerald p-6 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold flex items-center gap-2 dark:text-white">
+<span class="material-symbols-outlined text-moroccan-gold">pending_actions</span>
+                                Leave Requests
+                            </h2>
+<a class="text-xs font-bold text-moroccan-green dark:text-moroccan-gold" href="#">View All</a>
+</div>
+<div class="space-y-4">
+<!-- Request Item 1 -->
+<div class="p-4 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+<div class="flex gap-3 mb-3">
+<div class="size-10 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-white/10">
+<img class="w-full h-full object-cover" data-alt="Staff profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4ss2gM9bzRt2J4QyqnRJlfLdn_L-aIeqTYS-wkcUQg8FMCnedK92mgWIZlZjIUIMIvRWpg66KHdsJz6oyx8ck-L8DeBvsTZWjFzik8LWudkIRQ_oPZ8Py-g5LnodSswgSSO5efHLQuJ7xXQuSikaEqK9t8GQ2aQ_u3lUhysUhvZqaOzku_lygx7NygI49YggvGJ8By4SulnG4l8OBx4bTkA2GP8ah_qVVNQ9rTgkN6E4_nmXeyRf0I5-GHm7nZ3I2ojmEolqNsaQ"/>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold truncate dark:text-white">Sarah Johnson</p>
+<p class="text-xs text-slate-500">Math Teacher • 3 Days</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 bg-moroccan-green/10 text-moroccan-green dark:text-moroccan-gold dark:bg-moroccan-gold/10 rounded-lg text-xs font-bold hover:bg-moroccan-green/20 transition-colors">Approve</button>
+<button class="flex-1 py-1.5 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-200 transition-colors">Reject</button>
+</div>
+</div>
+<!-- Request Item 2 -->
+<div class="p-4 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+<div class="flex gap-3 mb-3">
+<div class="size-10 rounded-full overflow-hidden shrink-0 border border-slate-200 dark:border-white/10">
+<img class="w-full h-full object-cover" data-alt="Staff profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3jDg_sWKDDXUCv3wwGFAq74lh58IYhLEFrDcQFxHl-Tj7Tt-r0OmALKe5L8Cemrq2ExmkYoeYqI5o-y9ffgppT_3UPvi4YmIM5No-wWjVwZa0Bfu-Y1hJsvUDl1l2a8nxVuhn67lmZRycE4EAORYSzyXMDzwCr6VByIvZcC5opoo65HUmVz84gO2giSYeJXlIgzJCA8j6z4kR1Kq7FYhxAC7H7Jt8G1q1zR76yJgAlqaD0Ev5nDEI4aNCK3r9SJWOb9_IICpt5Jk-"/>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold truncate dark:text-white">Ahmed Mansour</p>
+<p class="text-xs text-slate-500">IT Administrator • 1 Day</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 bg-moroccan-green/10 text-moroccan-green dark:text-moroccan-gold dark:bg-moroccan-gold/10 rounded-lg text-xs font-bold hover:bg-moroccan-green/20 transition-colors">Approve</button>
+<button class="flex-1 py-1.5 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-200 transition-colors">Reject</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Staff Directory (Right) -->
+<div class="lg:col-span-2">
+<section class="bg-white dark:bg-deep-emerald rounded-xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<h2 class="text-lg font-bold flex items-center gap-2 dark:text-white">
+<span class="material-symbols-outlined text-moroccan-gold">badge</span>
+                                Staff Directory / دليل الموظفين
+                            </h2>
+<div class="flex items-center gap-2">
+<select class="text-xs font-bold bg-slate-100 dark:bg-white/5 border-none rounded-lg focus:ring-moroccan-green py-1.5 pl-3 pr-8 dark:text-white">
+<option>All Departments</option>
+<option>Teaching</option>
+<option>Administration</option>
+<option>Maintenance</option>
+</select>
+<button class="p-1.5 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10">
+<span class="material-symbols-outlined text-lg dark:text-slate-300">filter_list</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-white/5">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employee / الموظف</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role / الدور</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Department</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Contact</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-white/10">
+<tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-moroccan-green/20 flex items-center justify-center font-bold text-moroccan-green dark:text-moroccan-gold">MS</div>
+<div class="min-w-0">
+<p class="text-sm font-bold dark:text-white">Marc Dubois</p>
+<p class="text-[10px] text-slate-400 font-medium">ID: #AA-402</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium dark:text-slate-300">Head Teacher</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">French Dept.</td>
+<td class="px-6 py-4 text-sm dark:text-slate-400">marc.d@atlas.edu</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-black rounded uppercase">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-moroccan-gold transition-colors dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden border border-slate-200 dark:border-white/10">
+<img class="w-full h-full object-cover" data-alt="Employee profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6WTr_DoKnd5mwADnIVIbGSdhLG0MVAM8ceu9v97VkhiW2eFQTU27uHdrCv38fGwN710zxA4JqPis_YUmOj47dPsD4vTHviiieEqRChfLsC8ZnCg_8tZrkLM4ubRsac40qikYQ_Mrw9IPbkJh2zVI5xMKNa35JKZT1rdCr7C8WXYEZUaNcU3NJ-1IIKa-9kiNo8TxNPHzKGWenTimD4Sid9apDFaAb21cvrrQdsprRbmnV8eaouLgS64vRE-75YvOTCEsF66bh-mrk"/>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-bold dark:text-white">Fatima Al-Sayed</p>
+<p class="text-[10px] text-slate-400 font-medium">ID: #AA-155</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium dark:text-slate-300">Accountant</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Finance</td>
+<td class="px-6 py-4 text-sm dark:text-slate-400">fatima@atlas.edu</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-black rounded uppercase">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-moroccan-gold transition-colors dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center font-bold dark:text-slate-300">EL</div>
+<div class="min-w-0">
+<p class="text-sm font-bold dark:text-white">Eric Lemaire</p>
+<p class="text-[10px] text-slate-400 font-medium">ID: #AA-390</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium dark:text-slate-300">Admin Staff</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Operations</td>
+<td class="px-6 py-4 text-sm dark:text-slate-400">eric.l@atlas.edu</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black rounded uppercase">On Leave</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-moroccan-gold transition-colors dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-white/5 flex items-center justify-between border-t border-slate-100 dark:border-white/10">
+<p class="text-xs text-slate-500 font-medium">Showing 1 to 4 of 124 entries</p>
+<div class="flex items-center gap-1">
+<button class="size-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-lg dark:text-slate-300">chevron_left</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-lg bg-moroccan-green dark:bg-moroccan-gold text-white dark:text-deep-emerald font-bold text-xs">1</button>
+<button class="size-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 transition-colors font-bold text-xs dark:text-slate-300">2</button>
+<button class="size-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 transition-colors font-bold text-xs dark:text-slate-300">3</button>
+<button class="size-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-lg dark:text-slate-300">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-white/10 p-6 bg-white dark:bg-deep-emerald/50 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs font-medium">
+<p>© 2023 Atlas Academy. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-moroccan-green dark:hover:text-moroccan-gold" href="#">Privacy Policy</a>
+<a class="hover:text-moroccan-green dark:hover:text-moroccan-gold" href="#">Terms of Service</a>
+<a class="hover:text-moroccan-green dark:hover:text-moroccan-gold" href="#">Support Center</a>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
