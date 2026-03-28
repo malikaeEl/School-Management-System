@@ -26,6 +26,7 @@ import Timetable from './pages/Timetable';
 import InventoryManagement from './pages/InventoryManagement';
 import StudentDashboard from './pages/StudentDashboard';
 import ParentDashboard from './pages/ParentDashboard';
+import TeacherDashboard from './pages/TeacherDashboard';
 import Login from './pages/Login';
 import EnrollmentLanding from './pages/EnrollmentLanding';
 import UserManagement from './pages/UserManagement';
@@ -33,11 +34,11 @@ import UserManagement from './pages/UserManagement';
 const MainLayout = ({ children }) => {
   const { lang, t } = useLanguage();
   return (
-    <div className={`flex h-screen overflow-hidden bg-slate-50 text-slate-900 ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className={`flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-50 ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <Sidebar />
       <div className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden ${lang === 'ar' ? 'mr-64' : 'ml-64'}`}>
         <Header />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
@@ -72,18 +73,22 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
 
+      <Route path="/teacher-dashboard" element={
+        <ProtectedRoute allowedRoles={['teacher', 'admin']}>
+          <MainLayout><TeacherDashboard /></MainLayout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/hr" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><HRStaffManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/finance" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><FinanceManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/academic" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><AcademicManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/attendance" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><AcademicAttendance /></MainLayout></ProtectedRoute>} />
-      <Route path="/transport" element={<ProtectedRoute allowedRoles={['admin']}><MainLayout><TransportGPS /></MainLayout></ProtectedRoute>} />
+      <Route path="/transport" element={<ProtectedRoute allowedRoles={['admin', 'parent']}><MainLayout><TransportGPS /></MainLayout></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><ReportsAnalytics /></MainLayout></ProtectedRoute>} />
-      <Route path="/messaging" element={<ProtectedRoute><MainLayout><CommunicationHub /></MainLayout></ProtectedRoute>} />
       <Route path="/students" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><StudentManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/students/:id" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><StudentProfile /></MainLayout></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><MainLayout><UserManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/admission" element={<ProtectedRoute allowedRoles={['admin']}><MainLayout><AdmissionsEnrollment /></MainLayout></ProtectedRoute>} />
-      <Route path="/online-learning" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}><MainLayout><OnlineLearningPortal /></MainLayout></ProtectedRoute>} />
       <Route path="/library" element={<ProtectedRoute allowedRoles={['admin', 'librarian', 'student']}><MainLayout><LibraryManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/events" element={<ProtectedRoute><MainLayout><EventsCalendar /></MainLayout></ProtectedRoute>} />
       <Route path="/exams" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><MainLayout><ExamsGrades /></MainLayout></ProtectedRoute>} />

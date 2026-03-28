@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useLocation } from 'react-router-dom';
 import { SCHOOL_CYCLES, ALL_LEVELS } from '../constants/schoolLevels';
 import userService from '../services/userService';
 
@@ -16,11 +17,16 @@ const emptyForm = {
   phone: '',
   role: 'student',
   grade: 'CP',
+  classes: [],
+  subject: '',
   password: '',
+  hasLogin: true,
+  parentId: '',
 };
 
 const UserManagement = () => {
   const { lang } = useLanguage();
+  const location = useLocation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -52,6 +58,20 @@ const UserManagement = () => {
 
   useEffect(() => { fetchUsers(); }, []);
 
+  // Handle prefilled data from navigation state (e.g. from Admissions)
+  useEffect(() => {
+    if (location.state?.prefill) {
+      setForm({
+        ...emptyForm,
+        ...location.state.prefill
+      });
+      setEditUser(null);
+      setShowModal(true);
+      // Clean up the window history to avoid re-opening modal on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   const openCreate = () => {
     setEditUser(null);
     setForm(emptyForm);
@@ -67,6 +87,10 @@ const UserManagement = () => {
       phone: user.phone || '',
       role: user.role,
       grade: user.grade || 'N/A',
+      classes: user.classes || [],
+      subject: user.subject || '',
+      hasLogin: !!user.email,
+      parentId: user.parentId || '',
     });
     setShowModal(true);
   };
@@ -82,10 +106,12 @@ const UserManagement = () => {
       } else {
         const created = await userService.create(form);
         setUsers(prev => [created, ...prev]);
-        setSuccessData({
-          email: created.email,
-          password: form.password || 'Généré (voir email)'
-        });
+        if (form.hasLogin) {
+          setSuccessData({
+            email: created.email,
+            password: form.password || 'Généré (voir email)'
+          });
+        }
         showToast('Compte créé avec succès.');
       }
       setShowModal(false);
@@ -207,26 +233,6 @@ const UserManagement = () => {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Total', value: stats.total, icon: 'group', color: 'from-slate-700 to-slate-900' },
-          { label: 'Élèves', value: stats.students, icon: 'school', color: 'from-moroccan-green to-emerald-600' },
-          { label: 'Enseignants', value: stats.teachers, icon: 'person_book', color: 'from-amber-500 to-orange-600' },
-          { label: 'Parents', value: stats.parents, icon: 'family_restroom', color: 'from-blue-500 to-indigo-600' },
-        ].map((s, i) => (
-          <div key={i} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4">
-            <div className={`w-12 h-12 bg-linear-to-br ${s.color} text-white rounded-xl flex items-center justify-center shadow-md`}>
-              <span className="material-symbols-outlined">{s.icon}</span>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-slate-800 dark:text-white">{s.value}</p>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Filter Tabs + Search */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl">
@@ -273,7 +279,7 @@ const UserManagement = () => {
               <tr>
                 <th className="px-6 py-4">Utilisateur</th>
                 <th className="px-6 py-4">Rôle</th>
-                <th className="px-6 py-4">Classe</th>
+                <th className="px-6 py-4">Classe / Matière</th>
                 <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
@@ -298,9 +304,19 @@ const UserManagement = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-slate-600 dark:text-slate-300">
-                    {user.grade && user.grade !== 'N/A' ? user.grade : <span className="text-slate-300">—</span>}
+                    {user.role === 'teacher' ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-amber-600">{user.subject || <span className="text-slate-300">—</span>}</span>
+                        {user.classes?.length > 0 && <span className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded w-fit">{user.classes.length} classe(s) assignée(s)</span>}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        {user.grade && user.grade !== 'N/A' ? <span>{user.grade}</span> : <span className="text-slate-300">—</span>}
+                        {user.subject && <span className="text-[11px] font-bold text-amber-600 dark:text-amber-500">{user.subject}</span>}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">{user.email}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">{user.email || <span className="text-[10px] uppercase font-black text-slate-300 tracking-widest">Aucun accès</span>}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => openEdit(user)} className="p-2 text-slate-400 hover:text-moroccan-green hover:bg-moroccan-green/10 rounded-xl transition-all">
@@ -348,7 +364,7 @@ const UserManagement = () => {
                     <button
                       type="button"
                       key={r.value}
-                      onClick={() => setForm(p => ({ ...p, role: r.value, grade: r.value === 'student' ? 'CP' : 'N/A' }))}
+                      onClick={() => setForm(p => ({ ...p, role: r.value, grade: r.value === 'student' ? 'CP' : 'N/A', subject: r.value === 'teacher' ? '' : 'N/A' }))}
                       className={`py-3 rounded-2xl border-2 text-xs font-black uppercase tracking-widest flex flex-col items-center gap-1 transition-all ${form.role === r.value ? 'border-moroccan-green bg-moroccan-green/5 text-moroccan-green' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
                     >
                       <span className="material-symbols-outlined text-lg">{r.icon}</span>
@@ -370,11 +386,29 @@ const UserManagement = () => {
                 </div>
               </div>
 
+              {/* Login Toggle */}
+              {form.role === 'student' && !editUser && (
+                <div>
+                  <label className="flex items-center justify-between cursor-pointer p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all hover:border-moroccan-green/30">
+                    <div>
+                      <p className="text-sm font-black text-slate-800 dark:text-white">Créer un accès de connexion</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Générer email & mot de passe pour cet élève</p>
+                    </div>
+                    <div className="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" checked={form.hasLogin} onChange={e => setForm(p => ({ ...p, hasLogin: e.target.checked }))} className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" style={{ right: form.hasLogin ? '0' : '1.5rem', borderColor: form.hasLogin ? '#1C5B42' : '#e2e8f0', backgroundColor: form.hasLogin ? '#1C5B42' : '#e2e8f0' }}/>
+                        <label className="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer" style={{ backgroundColor: form.hasLogin ? '#1C5B42' : '#e2e8f0' }}></label>
+                    </div>
+                  </label>
+                </div>
+              )}
+
               {/* Email */}
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email</label>
-                <input type="email" required value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="exemple@email.com" className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all" />
-              </div>
+              {((form.role !== 'student') || form.hasLogin) && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email</label>
+                  <input type="email" required={form.hasLogin} value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="exemple@email.com" className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all" />
+                </div>
+              )}
 
               {/* Phone */}
               <div>
@@ -396,8 +430,55 @@ const UserManagement = () => {
                 </div>
               )}
 
+              {/* Subject — for teachers and students */}
+              {['teacher', 'student'].includes(form.role) && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Matière</label>
+                  <input type="text" value={form.subject || ''} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} placeholder="ex: Mathématiques, Physique..." className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all" />
+                </div>
+              )}
+
+              {/* Multiple Classes (Checkboxes) — only for teachers */}
+              {form.role === 'teacher' && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Classes assignées</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                    {ALL_LEVELS.map(level => (
+                      <label key={level} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.classes?.includes(level)}
+                          onChange={(e) => {
+                            const newClasses = e.target.checked
+                              ? [...(form.classes || []), level]
+                              : (form.classes || []).filter(c => c !== level);
+                            setForm(p => ({ ...p, classes: newClasses }));
+                          }}
+                          className="w-4 h-4 text-moroccan-green bg-white border-slate-300 rounded focus:ring-moroccan-green dark:focus:ring-moroccan-green dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-800 dark:border-slate-600"
+                        />
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{level}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Parent */}
+              {form.role === 'student' && (
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Parent Lié (Obligatoire pour les élèves)</label>
+                  <select required value={form.parentId} onChange={e => setForm(p => ({ ...p, parentId: e.target.value }))} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all">
+                    <option value="" disabled>Sélectionner un parent...</option>
+                    {users.filter(u => u.role === 'parent').map(p => (
+                      <option key={p._id} value={p._id}>{p.firstName} {p.lastName} {p.email ? `(${p.email})` : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Password */}
-              <div>
+              {((form.role !== 'student') || form.hasLogin) && (
+                <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
                   Mot de passe {editUser ? '(Laisser vide pour ne pas modifier)' : ''}
                 </label>
@@ -409,8 +490,9 @@ const UserManagement = () => {
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all" 
                 />
               </div>
+              )}
 
-              {!editUser && !form.password && (
+              {((form.role !== 'student') || form.hasLogin) && !editUser && !form.password && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 flex items-start gap-3">
                   <span className="material-symbols-outlined text-blue-500 text-xl mt-0.5">info</span>
                   <div>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import admissionService from '../services/admissionService';
 
 const AdmissionsEnrollment = () => {
   const { lang, t } = useLanguage();
+  const navigate = useNavigate();
   const [admissions, setAdmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -48,6 +50,26 @@ const AdmissionsEnrollment = () => {
     } catch {
       showToast('Erreur suppression.', 'bg-moroccan-red');
     }
+  };
+
+  const convertToAccount = (admission) => {
+    // Attempt to split first and last name (naive split)
+    const nameParts = admission.studentName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    navigate('/users', {
+      state: {
+        prefill: {
+          firstName,
+          lastName,
+          email: admission.email,
+          phone: admission.phone,
+          role: 'student',
+          grade: admission.grade,
+        }
+      }
+    });
   };
 
   const exportCSV = () => {
@@ -165,9 +187,16 @@ const AdmissionsEnrollment = () => {
                     </select>
                   </td>
                   <td className="px-8 py-5 text-right">
-                    <button onClick={() => handleDelete(a._id)} className="p-2 text-slate-300 hover:text-moroccan-red transition-colors">
-                      <span className="material-symbols-outlined text-lg">delete</span>
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      {a.status === 'Qualified' && (
+                        <button onClick={() => convertToAccount(a)} title="Convertir en compte" className="p-2 text-moroccan-green hover:bg-moroccan-green/10 rounded-xl transition-colors">
+                          <span className="material-symbols-outlined text-lg">person_add</span>
+                        </button>
+                      )}
+                      <button onClick={() => handleDelete(a._id)} title="Supprimer" className="p-2 text-slate-300 hover:text-moroccan-red hover:bg-moroccan-red/10 rounded-xl transition-colors">
+                        <span className="material-symbols-outlined text-lg">delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

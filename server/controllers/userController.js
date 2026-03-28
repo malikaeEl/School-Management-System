@@ -82,31 +82,48 @@ export const getUsers = async (req, res) => {
 // ── POST /api/users — admin creates a new account ─────────────────────────
 export const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, role, grade, phone, parentId } = req.body;
-
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'Un compte avec cet email existe déjà.' });
+    const { firstName, lastName, email, role, grade, subject, phone, parentId, hasLogin = true, classes = [] } = req.body;
+    let rawPassword = req.body.password;
+    if (!firstName || !lastName || !role) {
+      return res.status(400).json({ message: 'FirstName, LastName, and Role are required' });
     }
 
-    const rawPassword = req.body.password || generatePassword();
+    const isStudent = role === 'student';
+    let finalEmail = email;
 
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: rawPassword,
-      role,
-      grade: grade || 'N/A',
-      phone: phone || '',
-      parentId: parentId || null,
-    });
+    if (isStudent && hasLogin) {
+      finalEmail = `${firstName.toLowerCase()}@Atlas.com`.replace(/\s+/g, '');
+    }
 
-    // Try to send welcome email
-    try {
-      await sendWelcomeEmail({ email, firstName, lastName, password: rawPassword, role });
-    } catch (emailErr) {
-      console.error('Email send failed:', emailErr.message);
+    if (hasLogin && !finalEmail) {
+      return res.status(400).json({ message: 'Email required for accounts with login access.' });
+    }
+
+    if (hasLogin && finalEmail) {
+      const existingUser = await User.findOne({ email: finalEmail });
+      if (existingUser) return res.status(400).json({ message: 'User with this email already exists' });
+    }
+
+    if (hasLogin && !rawPassword) {
+      rawPassword = Math.random().toString(36).slice(-8);
+    }
+
+    const userData = {
+      firstName, lastName, role, grade: grade || 'N/A', subject: subject || '', phone: phone || '', parentId: parentId || null, isActive: true, classes: classes
+    };
+
+    if (hasLogin) {
+      userData.email = finalEmail;
+      userData.password = rawPassword;
+    }
+
+    const user = await User.create(userData);
+
+    // Send welcome email asynchronously if hasLogin is true
+    if (hasLogin) {
+      sendWelcomeEmail({ email, firstName, lastName, password: rawPassword, role }).catch(emailErr => {
+        console.error('Email send failed:', emailErr.message);
+      });
     }
 
     res.status(201).json({
@@ -116,6 +133,7 @@ export const createUser = async (req, res) => {
       email: user.email,
       role: user.role,
       grade: user.grade,
+      classes: user.classes,
       phone: user.phone,
       isActive: user.isActive,
       createdAt: user.createdAt,
@@ -139,7 +157,7 @@ export const getUserById = async (req, res) => {
 // ── PUT /api/users/:id — update a user ────────────────────────────────────
 export const updateUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, role, grade, phone, isActive, password } = req.body;
+    const { firstName, lastName, email, role, grade, subject, classes, phone, isActive, password } = req.body;
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'Utilisateur introuvable.' });
 
@@ -149,6 +167,8 @@ export const updateUser = async (req, res) => {
     user.role      = role      ?? user.role;
     user.grade     = grade     ?? user.grade;
     user.phone     = phone     ?? user.phone;
+    if (subject !== undefined) user.subject = subject;
+    if (classes !== undefined) user.classes = classes;
     if (typeof isActive !== 'undefined') user.isActive = isActive;
     if (password && password.trim() !== '') user.password = password;
 
@@ -161,6 +181,7 @@ export const updateUser = async (req, res) => {
       email: user.email,
       role: user.role,
       grade: user.grade,
+      classes: user.classes,
       phone: user.phone,
       isActive: user.isActive,
     });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -36,11 +37,32 @@ const TransportGPS = () => {
     { name: 'Said Tazi', route: 'Ligne Inezgane', id: 'BUS-07', status: 'En route', color: 'text-blue-500' }
   ];
 
+  const { user } = useAuth();
+  const isParent = user?.role === 'parent';
+
   const [studentAssignments, setStudentAssignments] = React.useState([
-    { id: 1, name: 'Sofia Kabbaj', initials: 'SK', bus: 'BUS-04', route: 'Ligne Tikiouine', stop: 'Tikiouine Agadir', status: 'À bord' },
-    { id: 2, name: 'Adam Mansouri', initials: 'AM', bus: 'BUS-12', route: 'Ligne Talborjt', stop: 'Place El Amal', status: 'En attente' },
-    { id: 3, name: 'Lina Bennani', initials: 'LB', bus: 'BUS-07', route: 'Ligne Inezgane', stop: 'Souq Inezgane', status: 'À bord' }
+    { id: 1, name: 'Sofia Kabbaj', initials: 'SK', bus: 'BUS-04', route: 'Ligne Tikiouine', stop: 'Tikiouine Agadir', status: 'À bord', parentName: 'Kabbaj' },
+    { id: 2, name: 'Adam Mansouri', initials: 'AM', bus: 'BUS-12', route: 'Ligne Talborjt', stop: 'Place El Amal', status: 'En attente', parentName: 'Mansouri' },
+    { id: 3, name: 'Lina Bennani', initials: 'LB', bus: 'BUS-07', route: 'Ligne Inezgane', stop: 'Souq Inezgane', status: 'À bord', parentName: 'Bennani' }
   ]);
+
+  const filteredAssignments = React.useMemo(() => {
+    if (!isParent) return studentAssignments;
+    
+    // Filter assignments that match the parent's last name
+    const matches = studentAssignments.filter(s => 
+      user?.lastName && s.name.toLowerCase().includes(user.lastName.toLowerCase())
+    );
+
+    // If no matching mock data exists for this parent, generate dummy children so the UI works
+    if (matches.length === 0 && user?.lastName) {
+      return [
+        { id: parseInt(`${Math.random() * 1000}`), name: `Amine ${user.lastName}`, initials: `A${user.lastName[0]}`, bus: 'BUS-04', route: 'Ligne Tikiouine', stop: 'Arrêt Principal', status: 'À bord', parentName: user.lastName },
+        { id: parseInt(`${Math.random() * 1000}`), name: `Salma ${user.lastName}`, initials: `S${user.lastName[0]}`, bus: 'BUS-12', route: 'Ligne Talborjt', stop: 'Avenue Hassan II', status: 'En attente', parentName: user.lastName }
+      ];
+    }
+    return matches;
+  }, [isParent, user, studentAssignments]);
 
   const [formData, setFormData] = React.useState({
     studentName: '',
@@ -335,7 +357,7 @@ const TransportGPS = () => {
                 </tr>
              </thead>
              <tbody className="divide-y divide-slate-50/50">
-               {studentAssignments.map((item) => (
+               {filteredAssignments.map((item) => (
                  <tr key={item.id} className="hover:bg-slate-50/30 transition-colors group">
                     <td className="px-8 py-5">
                        <div className="flex items-center gap-4">

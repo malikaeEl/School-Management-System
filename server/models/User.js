@@ -16,14 +16,13 @@ const SCHOOL_LEVELS = [
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    sparse: true,
     unique: true,
     lowercase: true,
     trim: true,
   },
   password: {
     type: String,
-    required: true,
   },
   role: {
     type: String,
@@ -45,6 +44,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: SCHOOL_LEVELS,
     default: 'N/A',
+  },
+  // For teachers: their subject
+  subject: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  // For teachers: multiple classes they teach
+  classes: {
+    type: [{ type: String }],
+    default: [],
   },
   // For students: linked parent user ID
   parentId: {

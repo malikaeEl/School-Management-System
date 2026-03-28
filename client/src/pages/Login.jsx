@@ -23,7 +23,7 @@ const Login = () => {
       } else if (user.role === 'parent') {
         navigate('/parent-dashboard');
       } else if (user.role === 'teacher') {
-        navigate('/academic');
+        navigate('/teacher-dashboard');
       } else if (user.role === 'admin') {
         navigate('/');
       } else {

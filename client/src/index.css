@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   --color-moroccan-red: #c1272d;
   --color-moroccan-green: #006233;

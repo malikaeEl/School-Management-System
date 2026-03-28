@@ -12,6 +12,7 @@ import admissionRoutes from './routes/admissionRoutes.js';
 import examRoutes from './routes/examRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
 import libraryRoutes from './routes/libraryRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/admissions', admissionRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/library', libraryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)

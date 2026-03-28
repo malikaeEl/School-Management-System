@@ -19,21 +19,6 @@ const Topbar = () => {
       </div>
       
       <div className="flex items-center gap-4 lg:gap-6">
-        {/* Language Toggle */}
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700">
-          <button 
-            onClick={() => setLang('fr')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${lang === 'fr' ? 'bg-white dark:bg-slate-700 shadow-sm text-moroccan-green' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-          >
-            FR
-          </button>
-          <button 
-            onClick={() => setLang('ar')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${lang === 'ar' ? 'bg-white dark:bg-slate-700 shadow-sm text-moroccan-green' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-          >
-            عربي
-          </button>
-        </div>
 
         {/* Theme Toggle */}
         <button 

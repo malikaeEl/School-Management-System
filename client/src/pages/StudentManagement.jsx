@@ -3,8 +3,9 @@ import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import userService from '../services/userService';
 import { SCHOOL_CYCLES } from '../constants/schoolLevels';
+import { useAuth } from '../context/AuthContext';
 
-const emptyForm = { firstName: '', lastName: '', email: '', role: 'student', grade: 'CP', phone: '' };
+const emptyForm = { firstName: '', lastName: '', email: '', role: 'student', grade: 'CP', subject: '', phone: '' };
 
 const StudentManagement = () => {
   const { lang } = useLanguage();
@@ -14,6 +15,7 @@ const StudentManagement = () => {
   const [loading, setLoading]       = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); 
+  const [gradeFilter, setGradeFilter] = useState('all');
   const [showFilter, setShowFilter] = useState(false);
   const [showModal, setShowModal]   = useState(false);
   const [form, setForm]             = useState(emptyForm);
@@ -43,11 +45,15 @@ const StudentManagement = () => {
 
   // ── Filtering ──────────────────────────────────────
   const filtered = students.filter(s => {
+    const isAccessible = isAdmin || (user?.classes?.includes(s.grade));
+    if (!isAccessible) return false;
+
     const fullName = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
     const matchSearch = fullName.includes(searchTerm.toLowerCase()) ||
                         (s.email && s.email.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchStatus = filterStatus === 'all' || (filterStatus === 'active' ? s.isActive : !s.isActive);
-    return matchSearch && matchStatus;
+    const matchGrade = gradeFilter === 'all' || s.grade === gradeFilter;
+    return matchSearch && matchStatus && matchGrade;
   });
 
   // ── Export CSV ─────────────────────────────────────
@@ -92,6 +98,9 @@ const StudentManagement = () => {
     }
   };
 
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   return (
     <div className={`animate-in fade-in duration-500 space-y-8 ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
 
@@ -134,15 +143,21 @@ const StudentManagement = () => {
                 <input type="tel" placeholder="+212 6..." value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10" />
               </div>
 
-              <div>
-                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Classe</label>
-                <select value={form.grade} onChange={e => setForm(p => ({ ...p, grade: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm">
-                  {Object.values(SCHOOL_CYCLES).map(cycle => (
-                    <optgroup key={cycle.label} label={cycle.label}>
-                      {cycle.levels.map(l => <option key={l} value={l}>{l}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Classe</label>
+                  <select value={form.grade} onChange={e => setForm(p => ({ ...p, grade: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm">
+                    {Object.values(SCHOOL_CYCLES).map(cycle => (
+                      <optgroup key={cycle.label} label={cycle.label}>
+                        {cycle.levels.map(l => <option key={l} value={l}>{l}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Matière</label>
+                  <input type="text" placeholder="Général, Sciences..." value={form.subject || ''} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:ring-4 focus:ring-moroccan-green/10" />
+                </div>
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -186,11 +201,13 @@ const StudentManagement = () => {
             {loading ? 'Chargement...' : `${filtered.length} inscrit(s)`}
           </p>
         </div>
-        <button onClick={() => setShowModal(true)}
-          className="flex items-center justify-center gap-2 bg-moroccan-green text-white px-7 py-3.5 rounded-2xl font-black shadow-lg shadow-moroccan-green/20 hover:bg-deep-emerald transition-all transform hover:-translate-y-1">
-          <span className="material-symbols-outlined">person_add</span>
-          Ajouter un Étudiant
-        </button>
+        {isAdmin && (
+          <button onClick={() => setShowModal(true)}
+            className="flex items-center justify-center gap-2 bg-moroccan-green text-white px-7 py-3.5 rounded-2xl font-black shadow-lg shadow-moroccan-green/20 hover:bg-deep-emerald transition-all transform hover:-translate-y-1">
+            <span className="material-symbols-outlined">person_add</span>
+            Ajouter un Étudiant
+          </button>
+        )}
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
@@ -209,11 +226,27 @@ const StudentManagement = () => {
             />
           </div>
           <div className="flex gap-2 w-full lg:w-auto relative">
+            <select
+              value={gradeFilter}
+              onChange={e => setGradeFilter(e.target.value)}
+              className="px-5 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl text-[11px] font-black uppercase tracking-widest outline-none focus:border-moroccan-green transition-all"
+            >
+              <option value="all">Toutes les classes</option>
+              {isAdmin ? (
+                Object.values(SCHOOL_CYCLES).flatMap(c => c.levels).map(l => (
+                    <option key={l} value={l}>{l}</option>
+                ))
+              ) : (
+                user?.classes?.map(l => (
+                    <option key={l} value={l}>{l}</option>
+                ))
+              )}
+            </select>
             <button
               onClick={() => setShowFilter(v => !v)}
               className={`flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border ${filterStatus !== 'all' ? 'bg-moroccan-green text-white border-moroccan-green shadow-lg' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'}`}>
               <span className="material-symbols-outlined text-lg">filter_list</span>
-              Filtrer
+              Statut
             </button>
             {showFilter && (
               <div className="absolute top-full right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-20 p-2 min-w-[200px] animate-in slide-in-from-top-2">
@@ -250,7 +283,7 @@ const StudentManagement = () => {
               <thead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-400 uppercase text-[10px] tracking-[0.2em] font-black">
                 <tr>
                   <th className="px-8 py-5">Étudiant</th>
-                  <th className="px-6 py-5">Classe</th>
+                  <th className="px-6 py-5">Classe / Matière</th>
                   <th className="px-6 py-5">Email & Contact</th>
                   <th className="px-6 py-5">Statut</th>
                   <th className="px-8 py-5 text-right font-black">Gestion</th>
@@ -272,7 +305,8 @@ const StudentManagement = () => {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="text-[11px] font-black text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">{s.grade}</span>
+                      <span className="text-[11px] font-black text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 mr-2">{s.grade}</span>
+                      {s.subject && <span className="text-[11px] font-bold text-amber-600 dark:text-amber-500">{s.subject}</span>}
                     </td>
                     <td className="px-6 py-5">
                       <p className="text-xs font-black text-slate-700 dark:text-slate-300">{s.email}</p>
@@ -290,10 +324,12 @@ const StudentManagement = () => {
                           className="p-2.5 text-slate-400 hover:text-moroccan-green hover:bg-moroccan-green/10 rounded-xl transition-all">
                           <span className="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
-                        <button onClick={() => setDeleteId(s._id)}
-                          className="p-2.5 text-slate-400 hover:text-moroccan-red hover:bg-moroccan-red/10 rounded-xl transition-all">
-                          <span className="material-symbols-outlined text-[20px]">delete_forever</span>
-                        </button>
+                        {isAdmin && (
+                          <button onClick={() => setDeleteId(s._id)}
+                            className="p-2.5 text-slate-400 hover:text-moroccan-red hover:bg-moroccan-red/10 rounded-xl transition-all">
+                            <span className="material-symbols-outlined text-[20px]">delete_forever</span>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
