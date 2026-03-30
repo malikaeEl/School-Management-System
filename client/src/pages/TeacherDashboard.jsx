@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import dashboardService from '../services/dashboardService';
+import { getSubjectBarStyle, getSubjectAccentStyle } from '../utils/subjectColors';
 import { useNavigate } from 'react-router-dom';
 
 const TeacherDashboard = () => {
@@ -8,6 +9,7 @@ const TeacherDashboard = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [localProgress, setLocalProgress] = useState({});
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -23,6 +25,37 @@ const TeacherDashboard = () => {
     fetchDashboard();
   }, []);
 
+  useEffect(() => {
+    if (data?.subjects) {
+      const initial = {};
+      data.subjects.forEach(s => { initial[s._id] = s.progress || 0 });
+      setLocalProgress(initial);
+    }
+  }, [data?.subjects]);
+
+  const handleSliderChange = (subjectId, val) => {
+    setLocalProgress(prev => ({ ...prev, [subjectId]: val }));
+  };
+
+  const handleProgressCommit = async (subjectId) => {
+    const val = localProgress[subjectId];
+    if (val === undefined) return;
+    
+    setData(prev => {
+      if (!prev || !prev.subjects) return prev;
+      const newSubjects = prev.subjects.map(s => 
+        s._id === subjectId ? { ...s, progress: val } : s
+      );
+      return { ...prev, subjects: newSubjects };
+    });
+    
+    try {
+      await dashboardService.updateSubjectProgress(subjectId, val);
+    } catch (err) {
+      console.error('Failed to update progress:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
@@ -31,7 +64,7 @@ const TeacherDashboard = () => {
     );
   }
 
-  const { profile, subjects, studentsCount, timetable } = data || {};
+  const { profile, subjects, studentsCount, students, timetable } = data || {};
 
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
@@ -53,6 +86,9 @@ const TeacherDashboard = () => {
             <button onClick={() => navigate('/exams')} className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
               Saisir les Notes
             </button>
+            <button onClick={() => navigate('/teacher/leaves')} className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
+              Demander un Congé
+            </button>
           </div>
         </div>
         <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[240px] text-white/5 rotate-12 pointer-events-none">auto_stories</span>
@@ -62,7 +98,7 @@ const TeacherDashboard = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
              <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-moroccan-green/10 text-moroccan-green flex items-center justify-center">
                    <span className="material-symbols-outlined">groups</span>
@@ -81,6 +117,15 @@ const TeacherDashboard = () => {
                    <h3 className="text-xl font-black text-slate-800">{subjects?.length || 0}</h3>
                 </div>
              </div>
+             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                   <span className="material-symbols-outlined">payments</span>
+                </div>
+                <div>
+                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Salaire Mensuel</p>
+                   <h3 className="text-xl font-black text-slate-800">{profile?.salary?.toLocaleString() || 0} MAD</h3>
+                </div>
+             </div>
           </div>
 
           {/* Timetable Overview */}
@@ -90,48 +135,154 @@ const TeacherDashboard = () => {
               Emploi du temps
             </h2>
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-50">
-              {timetable?.length > 0 ? timetable.map((item, i) => (
+              {timetable?.length > 0 ? timetable.map((item, i) => {
+                const subjectName = item.teacher?.subject || item.subject?.name || '';
+                return (
                 <div key={i} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                   <div className="flex items-center gap-6">
-                    <div className="w-1 h-12 rounded-full bg-moroccan-green"></div>
+                    <div className="w-1 h-12 rounded-full" style={getSubjectBarStyle(subjectName)}></div>
                     <div>
-                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{item.day} · {item.startTime} - {item.endTime}</p>
-                      <h3 className="text-lg font-black text-slate-900 group-hover:text-moroccan-green transition-colors uppercase tracking-tight">{item.subject?.name}</h3>
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
+                        {{
+                          'monday': 'Lundi',
+                          'tuesday': 'Mardi',
+                          'wednesday': 'Mercredi',
+                          'thursday': 'Jeudi',
+                          'friday': 'Vendredi',
+                          'saturday': 'Samedi'
+                        }[item.day?.toLowerCase()] || item.day} · {item.startTime} - {item.endTime}
+                      </p>
+                      <h3 className="text-lg font-black uppercase tracking-tight" style={getSubjectAccentStyle(subjectName)}>{subjectName}</h3>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-black text-slate-300 uppercase italic">Salle {item.room}</p>
                   </div>
                 </div>
-              )) : (
+              );
+              }) : (
                 <div className="p-12 text-center">
                   <p className="text-slate-400 font-black uppercase text-xs tracking-widest">Aucun cours trouvé</p>
                 </div>
               )}
             </div>
           </div>
+
+          {/* New Sections: Leaves & Salary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Leaves Section */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
+                  <span className="w-2 h-6 bg-moroccan-green rounded-full"></span>
+                  Mes Congés
+                </h2>
+                <button onClick={() => navigate('/teacher/leaves')} className="text-[10px] font-black text-moroccan-green uppercase tracking-widest hover:underline">Voir tout</button>
+              </div>
+              <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-4">
+                {data?.leaveRequests?.length > 0 ? data.leaveRequests.slice(0, 3).map((lv, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100/50">
+                    <div>
+                      <p className="text-[10px] font-black text-slate-800 uppercase leading-none mb-1">{lv.type}</p>
+                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{new Date(lv.startDate).toLocaleDateString('fr-FR')} - {new Date(lv.endDate).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${lv.status === 'Approved' ? 'bg-emerald-50 text-emerald-600' : lv.status === 'Rejected' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
+                      {lv.status}
+                    </span>
+                  </div>
+                )) : (
+                  <div className="py-4 text-center">
+                    <p className="text-[10px] text-slate-300 font-black uppercase italic">Aucune demande</p>
+                  </div>
+                )}
+                <button onClick={() => navigate('/teacher/leaves')} className="w-full py-3 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-100 hover:text-moroccan-green transition-all flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-sm">add_circle</span>
+                  Nouvelle Demande
+                </button>
+              </div>
+            </div>
+
+            {/* Salary Section */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
+                <span className="w-2 h-6 bg-amber-500 rounded-full"></span>
+                Détails Salaire
+              </h2>
+              <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+                <div className="p-6 bg-linear-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100 mb-4">
+                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">Salaire de Base</p>
+                   <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-black text-slate-800 tracking-tighter">{profile?.salary?.toLocaleString() || 0}</span>
+                      <span className="text-xs font-black text-slate-400 capitalize">MAD / mois</span>
+                   </div>
+                </div>
+                <div className="space-y-3">
+                   <div className="flex justify-between items-center px-2">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Statut</span>
+                      <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Actif ✓</span>
+                   </div>
+                   <div className="flex justify-between items-center px-2">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Dernier Paiement</span>
+                      <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">02 Mars 2026</span>
+                   </div>
+                   <div className="pt-2 border-t border-slate-50">
+                      <p className="text-[9px] text-slate-300 font-bold uppercase italic leading-relaxed">Les fiches de paie sont disponibles auprès de l'administration RH.</p>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Right Sidebar */}
         <div className="space-y-8">
-           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <div className="flex items-center gap-3 px-2">
+            <span className="w-1.5 h-6 bg-moroccan-green rounded-full"></span>
+            <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Section Enseignant</h2>
+          </div>
+          
+          {/* Students list */}
+          <div className="bg-white rounded-4xl border border-slate-100 shadow-sm p-8 relative overflow-hidden">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center justify-between">
+              Mes Étudiants
+              <span className="px-2 py-0.5 bg-moroccan-green/10 text-moroccan-green rounded text-[10px]">{students?.length || 0}</span>
+            </h3>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {students?.length > 0 ? students.slice(0, 10).map((s, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer group" onClick={() => navigate(`/students/${s._id}`)}>
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs text-slate-400 group-hover:bg-moroccan-green group-hover:text-white transition-all overflow-hidden border border-slate-200">
+                    {s.avatar ? <img src={`http://localhost:5000${s.avatar}`} className="w-full h-full object-cover" /> : `${s.firstName?.[0]}${s.lastName?.[0]}`}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-black text-slate-800 truncate leading-none mb-1">{s.firstName} {s.lastName}</p>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{s.grade}</p>
+                  </div>
+                  <span className="material-symbols-outlined text-slate-300 text-sm opacity-0 group-hover:opacity-100">visibility</span>
+                </div>
+              )) : (
+                <p className="text-center py-6 text-[10px] font-black text-slate-300 uppercase italic">Aucun élève trouvé</p>
+              )}
+              {students?.length > 10 && (
+                <button onClick={() => navigate('/students')} className="w-full py-3 text-[10px] font-black text-moroccan-green uppercase tracking-widest hover:underline text-center">
+                  Voir tous les élèves ({students.length})
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
               <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight mb-6">Matières Enseignées</h3>
               <div className="space-y-4">
-                {subjects?.map((s, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-                    <span className="text-xs font-black text-slate-700 uppercase">{s.name}</span>
-                    <span className="text-[10px] font-black px-2 py-1 bg-moroccan-green/10 text-moroccan-green rounded-lg">{s.grade}</span>
-                  </div>
-                ))}
+               {subjects?.map((s, i) => (
+                 <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-6 bg-moroccan-green rounded-full"></div>
+                      <span className="text-xs font-black text-slate-700 uppercase">{s.name}</span>
+                    </div>
+                    <span className="text-[10px] font-black px-3 py-1 bg-white border border-slate-100 text-moroccan-green rounded-lg shadow-sm">{s.grade}</span>
+                 </div>
+               ))}
               </div>
-           </div>
-
-           <div className="bg-moroccan-gold/5 p-8 rounded-[2.5rem] border border-moroccan-gold/20 relative overflow-hidden">
-              <h3 className="text-lg font-black text-deep-emerald uppercase tracking-tight mb-2">Conseil du Jour</h3>
-              <p className="text-xs text-deep-emerald/70 leading-relaxed font-bold italic">
-                "Favoriser l'esprit critique permet aux élèves de mieux appréhender les défis de demain."
-              </p>
-              <span className="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-moroccan-gold/10">lightbulb</span>
            </div>
         </div>
       </div>

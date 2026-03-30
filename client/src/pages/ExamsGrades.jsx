@@ -24,6 +24,12 @@ const ExamsGrades = () => {
   const [marksData, setMarksData] = useState({}); // { studentId: { score, comments } }
   const [marksLoading, setMarksLoading] = useState(false);
 
+  // For Details Modal (Read-Only)
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedExamDetails, setSelectedExamDetails] = useState(null);
+  const [examDetailsMarks, setExamDetailsMarks] = useState([]);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+
   const isTeacher = user?.role === 'teacher';
   const isAdmin = user?.role === 'admin';
   const isStaff = isTeacher || isAdmin;
@@ -117,6 +123,23 @@ const ExamsGrades = () => {
     }
   };
 
+  const handleViewDetails = async (exam) => {
+    console.log("Détails clicked for exam:", exam._id);
+    setSelectedExamDetails(exam);
+    setShowDetailsModal(true);
+    setDetailsLoading(true);
+    try {
+      const grades = await examService.getGrades(exam._id);
+      console.log("Grades fetched:", grades);
+      setExamDetailsMarks(grades || []);
+    } catch (err) {
+      console.error("View Details Error:", err);
+      showToast('Erreur lors du chargement des notes', 'bg-moroccan-red');
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
       {toast && <div className={`fixed top-6 right-6 z-50 ${toast.color} text-white px-6 py-3 rounded-2xl shadow-2xl text-[10px] font-black uppercase tracking-widest animate-in slide-in-from-right`}>{toast.msg}</div>}
@@ -124,7 +147,7 @@ const ExamsGrades = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
+          <h1 className="text-3xl font-black tracking-widest text-slate-900 dark:text-white uppercase flex items-center gap-3">
              <span className="w-2 h-8 bg-moroccan-gold rounded-full"></span>
              Examens & Notes
           </h1>
@@ -132,7 +155,7 @@ const ExamsGrades = () => {
              Gestion des évaluations académiques et suivi des performances
           </p>
         </div>
-        {isStaff && (
+        {isTeacher && (
           <button onClick={() => setShowModal(true)} className="bg-moroccan-green text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-moroccan-green/20 hover:opacity-90 transition-all flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">event_available</span>
             Programmer
@@ -143,7 +166,7 @@ const ExamsGrades = () => {
       {/* Tabs */}
       <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-3xl w-fit border border-slate-200 dark:border-slate-700 backdrop-blur-sm self-start">
         <button onClick={() => setActiveTab('schedule')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'schedule' ? 'bg-white dark:bg-slate-900 text-moroccan-green shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Examens</button>
-        {isStaff && <button onClick={() => setActiveTab('marks')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'marks' ? 'bg-white dark:bg-slate-900 text-moroccan-green shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Saisir Notes</button>}
+        {isTeacher && <button onClick={() => setActiveTab('marks')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'marks' ? 'bg-white dark:bg-slate-900 text-moroccan-green shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Saisir Notes</button>}
       </div>
 
       {activeTab === 'schedule' && (
@@ -167,10 +190,16 @@ const ExamsGrades = () => {
                      <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">schedule</span> {new Date(exam.date).toLocaleDateString()} · {exam.duration}</span>
                   </div>
                   <div className="mt-6 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                     <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest italic flex items-center gap-1">
+                     <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
                         <span className="material-symbols-outlined text-xs">person</span> {exam.teacher?.firstName} {exam.teacher?.lastName}
-                     </span>
-                     <button className="text-[10px] font-black text-moroccan-green uppercase tracking-widest hover:underline">Détails</button>
+                     </h3>
+                     <button 
+                        onClick={() => handleViewDetails(exam)} 
+                        className="text-[12px] font-black text-moroccan-green uppercase tracking-widest hover:text-moroccan-gold transition-colors flex items-center gap-1.5 group/btn"
+                     >
+                        <span>{user.role === 'student' ? 'Consulter ma Note' : (user.role === 'parent' ? 'Consulter les Notes' : 'Consulter les Détails')}</span>
+                        <span className="material-symbols-outlined text-[16px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                     </button>
                   </div>
                </div>
             </div>
@@ -305,6 +334,66 @@ const ExamsGrades = () => {
                 <button type="submit" className="flex-1 py-3 bg-moroccan-green text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-moroccan-green/20 hover:opacity-90 transition-all">Programmer</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Details Modal (Read-Only) */}
+      {showDetailsModal && selectedExamDetails && (
+        <div className="fixed inset-0 bg-deep-emerald/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in duration-200 border dark:border-slate-800">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-linear-to-r from-deep-emerald to-moroccan-green text-white shrink-0">
+              <div>
+                <h2 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                  <span className="material-symbols-outlined">assignment</span>
+                  {user.role === 'student' ? 'Mes Résultats' : (user.role === 'parent' ? 'Résultats des Enfants' : 'Détails des Notes')}
+                </h2>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/70 mt-1">
+                  {selectedExamDetails.subject?.name} · {selectedExamDetails.grade} · {new Date(selectedExamDetails.date).toLocaleDateString()}
+                </p>
+              </div>
+              <button 
+                onClick={() => { setShowDetailsModal(false); setSelectedExamDetails(null); }} 
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            
+            <div className="p-8 overflow-y-auto flex-1">
+              {detailsLoading ? (
+                <div className="py-20 text-center flex flex-col items-center gap-4">
+                   <span className="material-symbols-outlined animate-spin text-4xl text-moroccan-green">progress_activity</span>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chargement des notes...</p>
+                </div>
+              ) : examDetailsMarks.length === 0 ? (
+                <div className="py-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl">
+                   <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">grading</span>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aucune note saisie pour cet examen</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {examDetailsMarks.map(grade => (
+                    <div key={grade._id} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 hover:border-moroccan-green/30 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-700 text-slate-500 shadow-sm flex items-center justify-center font-black uppercase text-xs">
+                           {grade.student?.firstName?.[0]}{grade.student?.lastName?.[0]}
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-slate-800 dark:text-white uppercase">{grade.student?.firstName} {grade.student?.lastName}</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5 max-w-xs truncate">{grade.comments || "Aucune observation"}</p>
+                        </div>
+                      </div>
+                      <div className="sm:text-right shrink-0">
+                        <span className="bg-moroccan-green/10 text-moroccan-green px-4 py-2 rounded-xl text-lg font-black block text-center min-w-[80px]">
+                          {grade.score}<span className="text-[10px] text-slate-400">/20</span>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

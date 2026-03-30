@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import subjectService from '../services/subjectService';
+import timetableService from '../services/timetableService';
 import userService from '../services/userService';
 import attendanceService from '../services/attendanceService';
+import { SCHOOL_CYCLES } from '../constants/schoolLevels';
 
 const AcademicAttendance = () => {
   const { lang, t } = useLanguage();
   const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(null);
+  const isTeacher = user?.role === 'teacher';
+  const isAdmin = user?.role === 'admin';
+  
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedGrade, setSelectedGrade] = useState('CP');
+  const [slots, setSlots] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const [students, setStudents] = useState([]);
   const [attendanceData, setAttendanceData] = useState({}); // { studentId: 'Present' | 'Absent' }
-  
-  const [loading, setLoading] = useState(true);
+  const [loadingStudents, setLoadingStudents] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const isTeacher = user?.role === 'teacher';
+  const ALL_GRADES = Object.values(SCHOOL_CYCLES).flatMap(c => c.levels);
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
@@ -27,42 +35,67 @@ const AcademicAttendance = () => {
   };
 
   useEffect(() => {
-    const fetchSubjects = async () => {
+    const fetchTimetable = async () => {
+      setLoading(true);
       try {
-        const data = await subjectService.getAll();
-        // If teacher, only show their subjects
-        const filtered = isTeacher ? data.filter(s => s.teacher?._id === user._id) : data;
-        setSubjects(filtered);
-      } catch {
-        showToast('Erreur lors du chargement des matières.', 'bg-moroccan-red');
+        const dateObj = new Date(selectedDate);
+        const dayOfWeek = dayNames[dateObj.getDay()]; // string 'monday', etc.
+        
+        let params = { day: dayOfWeek };
+        if (isTeacher) {
+          params.teacherId = user._id;
+        } else if (isAdmin) {
+          params.grade = selectedGrade;
+        }
+
+        const data = await timetableService.getAll(params);
+        setSlots(data);
+      } catch (err) {
+        showToast('Erreur lors du chargement de l\'emploi du temps.', 'bg-moroccan-red');
       } finally {
         setLoading(false);
       }
     };
-    fetchSubjects();
-  }, [isTeacher, user?._id]);
+    fetchTimetable();
+  }, [selectedDate, selectedGrade, isTeacher, isAdmin, user?._id]);
 
-  const openModal = async (subject) => {
-    setSelectedSubject(subject);
+  const openModal = async (slot) => {
+    setSelectedSlot(slot);
     setIsModalOpen(true);
-    setLoading(true);
+    setLoadingStudents(true);
     try {
-      const allUsers = await userService.getAll();
-      const gradeStudents = allUsers.filter(u => u.role === 'student' && u.grade === subject.grade);
+      // Fetch only students for the slot's grade directly from API
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/users?role=student&grade=${slot.grade}`, {
+        headers: { 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}` }
+      });
+      if (!response.ok) throw new Error();
+      const gradeStudents = await response.json();
+      console.log(`Fetched ${gradeStudents.length} students for grade: ${slot.grade}`);
       setStudents(gradeStudents);
       
-      // Initialize attendance state
+      // Fetch existing attendance for this timetable slot and date
+      const records = await attendanceService.getAll({ timetableSlotId: slot._id, date: selectedDate });
+      
       const initial = {};
-      gradeStudents.forEach(s => { initial[s._id] = 'Present'; });
+      if (records.length > 0 && records[0].students?.length > 0) {
+        records[0].students.forEach(s => {
+          initial[s.student._id || s.student] = s.status;
+        });
+      } else {
+        // Default to Present
+        gradeStudents.forEach(s => { initial[s._id] = 'Present'; });
+      }
       setAttendanceData(initial);
+      
     } catch {
-      showToast('Erreur lors du chargement des élèves.', 'bg-moroccan-red');
+      showToast('Erreur lors du chargement des données.', 'bg-moroccan-red');
     } finally {
-      setLoading(false);
+      setLoadingStudents(false);
     }
   };
 
   const handleStatusChange = (studentId, status) => {
+    if (!isTeacher) return; // Admins are view only
     setAttendanceData(prev => ({ ...prev, [studentId]: status }));
   };
 
@@ -73,7 +106,13 @@ const AcademicAttendance = () => {
         studentId: id,
         status
       }));
-      await attendanceService.submit(selectedSubject._id, formatted);
+      await attendanceService.submit({
+        timetableSlotId: selectedSlot._id,
+        subjectName: selectedSlot.teacher?.subject || '',
+        grade: selectedSlot.grade,
+        students: formatted,
+        date: selectedDate,
+      });
       showToast('Présence enregistrée avec succès ✓');
       setIsModalOpen(false);
     } catch {
@@ -95,7 +134,7 @@ const AcademicAttendance = () => {
              Suivi de Présence
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 font-bold uppercase text-[10px] tracking-[0.2em]">
-             Gestion des sessions quotidiennes et validation de la présence
+             Gestion des sessions basée sur l'emploi du temps
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -108,56 +147,90 @@ const AcademicAttendance = () => {
 
       <div className="flex flex-col gap-8">
         <section>
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                <span className="material-symbols-outlined text-moroccan-green">check_circle</span>
-                Sessions Disponibles
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mt-1 uppercase tracking-widest text-[10px]">
-                 Sélectionnez une matière pour démarrer l'appel
-              </p>
+          {/* Controls */}
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 bg-white dark:bg-slate-900 p-4 rounded-4xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="flex flex-col">
+                <label className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1 ml-2">Date de l'appel</label>
+                <input 
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-3 text-sm font-black text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-moroccan-green/20"
+                />
+              </div>
+              
+              {isAdmin && (
+                <div className="flex flex-col">
+                  <label className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1 ml-2">Classe</label>
+                  <select 
+                    value={selectedGrade} 
+                    onChange={(e) => setSelectedGrade(e.target.value)}
+                    className="bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-3 text-sm font-black text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-moroccan-green/20"
+                  >
+                    {ALL_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                </div>
+              )}
             </div>
-            <div className={`flex items-center gap-2 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-4 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 uppercase tracking-widest text-slate-500`}>
+
+            <div className={`flex items-center gap-2 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 uppercase tracking-widest text-slate-500`}>
                <span className="material-symbols-outlined text-sm">schedule</span>
-               {new Date().toLocaleDateString()}
+               {new Date(selectedDate).toLocaleDateString()}
             </div>
           </div>
 
+          <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2 mb-6 ml-2">
+            <span className="material-symbols-outlined text-moroccan-green">play_circle</span>
+            Programme du Jour
+          </h3>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {subjects.length === 0 ? (
-               <div className="lg:col-span-2 p-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl opacity-50">
-                  <span className="material-symbols-outlined text-4xl mb-4">event_busy</span>
-                  <p className="text-xs font-black uppercase tracking-widest">Aucune session programmée</p>
+            {loading ? (
+               <div className="lg:col-span-2 p-20 text-center flex justify-center">
+                  <span className="material-symbols-outlined animate-spin text-4xl text-moroccan-green">progress_activity</span>
                </div>
-            ) : subjects.map((s) => (
-              <div key={s._id} className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center gap-6 hover:shadow-xl transition-all group relative overflow-hidden">
+            ) : slots.length === 0 ? (
+               <div className="lg:col-span-2 p-20 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/50">
+                  <span className="material-symbols-outlined text-4xl mb-4 text-slate-300">event_busy</span>
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">Aucune séance programmée ce jour</p>
+               </div>
+            ) : slots.map((slot) => (
+              <div key={slot._id} className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center gap-6 hover:shadow-xl transition-all group relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-moroccan-green/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
                 
                 <div className="flex-1 relative">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[10px] font-black bg-moroccan-gold text-white px-2.5 py-1 rounded-lg uppercase tracking-widest shadow-sm">{s.grade}</span>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Session Ouverte</span>
+                    <span className="text-[10px] font-black bg-moroccan-gold text-white px-2.5 py-1 rounded-lg uppercase tracking-widest shadow-sm">{slot.grade}</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[12px]">schedule</span>
+                      {slot.startTime} - {slot.endTime}
+                    </span>
                   </div>
-                  <h4 className="font-black text-slate-800 dark:text-white text-2xl leading-tight mb-2">{s.name}</h4>
+                  <h4 className="font-black text-slate-800 dark:text-white text-2xl leading-tight mb-2">{slot.teacher?.subject || 'Matière'}</h4>
                   <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">person</span> {s.teacher?.firstName} {s.teacher?.lastName}</span>
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">person</span> {slot.teacher?.firstName} {slot.teacher?.lastName}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">meeting_room</span> {slot.room}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 w-full sm:w-auto shrink-0 relative">
+                <div className="flex flex-col gap-2 w-full sm:w-auto shrink-0 relative z-10">
                   {isTeacher ? (
                     <button 
-                      onClick={() => openModal(s)}
-                      className="bg-moroccan-green text-white px-8 py-4 rounded-2xl text-xs font-black hover:opacity-90 transition-all shadow-xl shadow-moroccan-green/20 flex items-center justify-center gap-2 uppercase tracking-widest"
+                      onClick={() => openModal(slot)}
+                      className="bg-moroccan-green text-white px-8 py-4 rounded-2xl text-xs font-black hover:bg-deep-emerald transition-all shadow-xl shadow-moroccan-green/20 flex items-center justify-center gap-2 uppercase tracking-widest"
                     >
                       <span className="material-symbols-outlined text-xl">how_to_reg</span>
                       <span>Faire l'appel</span>
                     </button>
                   ) : (
                     <button 
-                      onClick={() => openModal(s)}
-                      className="bg-slate-50 dark:bg-slate-800 text-slate-500 px-8 py-4 rounded-2xl text-xs font-black border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-2 uppercase tracking-widest"
+                      onClick={() => openModal(slot)}
+                      className="bg-slate-50 dark:bg-slate-800 text-slate-500 px-8 py-4 rounded-2xl text-xs font-black border border-slate-100 dark:border-slate-700 hover:bg-slate-100 flex items-center justify-center gap-2 uppercase tracking-widest"
                     >
                       <span className="material-symbols-outlined text-xl">visibility</span>
                       <span>Consulter</span>
@@ -173,15 +246,15 @@ const AcademicAttendance = () => {
       {/* Attendance Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-emerald/80 backdrop-blur-xl">
-          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 border dark:border-slate-800">
-            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-linear-to-r from-deep-emerald to-moroccan-green text-white relative">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 border dark:border-slate-800 flex flex-col max-h-[90vh]">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-linear-to-r from-deep-emerald to-moroccan-green text-white relative shrink-0">
               <div className="z-10 flex items-center gap-6">
                 <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20">
                    <span className="material-symbols-outlined text-3xl text-moroccan-gold">checklist</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mb-1">Registre d'appel</p>
-                  <h2 className="text-2xl font-black uppercase tracking-tight">{selectedSubject?.name} <span className="text-moroccan-gold opacity-100">· {selectedSubject?.grade}</span></h2>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mb-1">Registre d'appel - {new Date(selectedDate).toLocaleDateString()}</p>
+                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight">{selectedSlot?.teacher?.subject || 'Appel'}</h2>
                 </div>
               </div>
               <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white text-white hover:text-deep-emerald transition-all z-10" onClick={() => setIsModalOpen(false)}>
@@ -190,14 +263,14 @@ const AcademicAttendance = () => {
               <div className="absolute inset-0 zellige-pattern opacity-10 pointer-events-none"></div>
             </div>
 
-            <div className="max-h-[55vh] overflow-y-auto p-8 custom-scrollbar space-y-4 bg-slate-50/30 dark:bg-slate-900/50">
-                {loading ? (
+            <div className="overflow-y-auto p-4 md:p-8 custom-scrollbar space-y-4 bg-slate-50/30 dark:bg-slate-900/50 flex-1">
+                {loadingStudents ? (
                    <div className="py-20 text-center"><span className="material-symbols-outlined animate-spin text-moroccan-green">progress_activity</span></div>
                 ) : students.length === 0 ? (
                    <div className="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">Aucun élève trouvé pour ce niveau</div>
-                ) : students.map((s, i) => (
-                  <div key={s._id} className="flex items-center justify-between p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl hover:shadow-md transition-all group/row">
-                    <div className="flex items-center gap-5">
+                ) : students.map((s) => (
+                  <div key={s._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl hover:shadow-md transition-all group/row gap-4">
+                    <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center font-black text-slate-400 group-hover/row:bg-moroccan-green group-hover/row:text-white transition-all shadow-inner">
                          {s.firstName?.[0]}{s.lastName?.[0]}
                       </div>
@@ -207,18 +280,18 @@ const AcademicAttendance = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                       <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                       <div className="flex w-full p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
                           <button 
                             disabled={!isTeacher}
                             onClick={() => handleStatusChange(s._id, 'Present')}
-                            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${attendanceData[s._id] === 'Present' ? 'bg-moroccan-green text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>
+                            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${attendanceData[s._id] === 'Present' ? 'bg-moroccan-green text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>
                             Présent
                           </button>
                           <button 
                             disabled={!isTeacher}
                             onClick={() => handleStatusChange(s._id, 'Absent')}
-                            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${attendanceData[s._id] === 'Absent' ? 'bg-moroccan-red text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>
+                            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${attendanceData[s._id] === 'Absent' ? 'bg-moroccan-red text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>
                             Absent
                           </button>
                        </div>
@@ -227,19 +300,19 @@ const AcademicAttendance = () => {
                 ))}
             </div>
 
-            <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-between items-center">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center sm:text-left">
                  {Object.values(attendanceData).filter(v => v === 'Present').length} Présents · {Object.values(attendanceData).filter(v => v === 'Absent').length} Absents
               </div>
-              <div className="flex gap-4">
-                <button className="px-6 py-3 text-xs font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest" onClick={() => setIsModalOpen(false)}>
+              <div className="flex gap-4 w-full sm:w-auto">
+                <button className="flex-1 sm:flex-none px-6 py-3 text-xs font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest" onClick={() => setIsModalOpen(false)}>
                   Fermer
                 </button>
                 {isTeacher && students.length > 0 && (
                   <button 
                     disabled={submitting}
                     onClick={handleSubmit} 
-                    className="px-10 py-3.5 text-xs font-black text-white bg-moroccan-green rounded-2xl hover:opacity-90 transition-all shadow-xl shadow-moroccan-green/20 flex items-center gap-2 uppercase tracking-widest disabled:opacity-50"
+                    className="flex-1 sm:flex-none px-8 py-3.5 text-xs font-black text-white bg-moroccan-green rounded-2xl hover:bg-deep-emerald transition-all shadow-xl shadow-moroccan-green/20 flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50"
                   >
                      {submitting ? 'Validation...' : 'Valider Présence'}
                      <span className="material-symbols-outlined text-sm">check_circle</span>

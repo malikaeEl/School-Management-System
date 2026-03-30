@@ -23,7 +23,7 @@ const cycles = {
     matieres: ['Mathématiques', 'Physique-Chimie', 'SVT', 'Histoire-Géo', 'Arabe', 'Français', 'Anglais']
   },
   lycee: {
-    levels: ['T.C', '1ère année S.M', '1ère année S.Ex', '2ème année S.M', '2ème année SVT', '2ème année PC'],
+    levels: ['T.C', '1ère année S.M', '1ère année S.X', '2ème année S.M', '2ème année SVT', '2ème année PC'],
     matieres: ['Mathématiques', 'Physique-Chimie', 'SVT', 'Histoire-Géo', 'Arabe', 'Français', 'Anglais', 'Philosophie']
   }
 };

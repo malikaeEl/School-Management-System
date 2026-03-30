@@ -33,98 +33,129 @@ const AdminDashboard = () => {
 
   const { stats } = data || {};
 
+  const statCards = [
+    { label: 'Étudiants', value: stats?.students || 0, icon: 'group', color: 'bg-moroccan-green', text: 'text-moroccan-green' },
+    { label: 'Enseignants', value: stats?.teachers || 0, icon: 'work', color: 'bg-moroccan-red', text: 'text-moroccan-red' },
+    { label: 'Parents', value: stats?.parents || 0, icon: 'family_restroom', color: 'bg-moroccan-gold', text: 'text-moroccan-gold' },
+    { label: 'Matières', value: stats?.subjects || 0, icon: 'menu_book', color: 'bg-deep-emerald', text: 'text-deep-emerald' },
+  ];
+
   return (
-    <div className={`animate-in fade-in duration-500 ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
-      <h1 className="text-3xl font-black text-deep-emerald dark:text-moroccan-gold mb-8 flex items-center gap-3">
-        <span className="w-1.5 h-8 bg-moroccan-gold rounded-full"></span>
-        Tableau de Bord Administrateur
-      </h1>
+    <div className={`animate-in fade-in duration-500 space-y-10 ${lang === 'ar' ? 'font-arabic text-right' : 'font-sans'}`}>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+            <span className="w-2 h-8 bg-moroccan-gold rounded-full"></span>
+            Vue d'ensemble
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 uppercase text-[10px] font-black tracking-[0.2em]">Pilotage de l'établissement Atlas Academy</p>
+        </div>
+      </div>
       
       {/* Analytics Overview */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Students */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-          <div className="flex items-center justify-between relative z-10">
-            <div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Étudiants</p>
-              <h3 className="text-3xl font-black mt-1 text-deep-emerald dark:text-white">{stats?.students || 0}</h3>
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat, i) => (
+          <div key={i} className="bg-white dark:bg-slate-900 p-8 rounded-4xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group hover:border-moroccan-gold/20 transition-all">
+            <div className="relative z-10">
+              <p className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">{stat.label}</p>
+              <h3 className="text-4xl font-black mt-2 text-slate-900 dark:text-white leading-none">{stat.value}</h3>
             </div>
-            <div className="p-3 bg-moroccan-green/10 rounded-xl text-moroccan-green">
-              <span className="material-symbols-outlined">group</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Total Teachers */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-          <div className="flex items-center justify-between relative z-10">
-            <div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Enseignants</p>
-              <h3 className="text-3xl font-black mt-1 text-deep-emerald dark:text-white">{stats?.teachers || 0}</h3>
-            </div>
-            <div className="p-3 bg-moroccan-red/10 rounded-xl text-moroccan-red">
-              <span className="material-symbols-outlined">work</span>
+            <div className={`absolute -right-4 -bottom-4 w-20 h-20 ${stat.text} opacity-5 group-hover:opacity-10 transition-all transform group-hover:scale-125 group-hover:-rotate-12`}>
+              <span className="material-symbols-outlined text-8xl leading-none">{stat.icon}</span>
             </div>
           </div>
-        </div>
-        
-        {/* Total Parents */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-          <div className="flex items-center justify-between relative z-10">
-            <div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Parents</p>
-              <h3 className="text-3xl font-black mt-1 text-deep-emerald dark:text-white">{stats?.parents || 0}</h3>
-            </div>
-            <div className="p-3 bg-moroccan-gold/10 rounded-xl text-moroccan-gold">
-              <span className="material-symbols-outlined">family_restroom</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Total Subjects */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-          <div className="flex items-center justify-between relative z-10">
-            <div>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Matières</p>
-              <h3 className="text-3xl font-black mt-1 text-deep-emerald dark:text-white">{stats?.subjects || 0}</h3>
-            </div>
-            <div className="p-3 bg-deep-emerald/10 rounded-xl text-deep-emerald">
-              <span className="material-symbols-outlined">menu_book</span>
-            </div>
-          </div>
-        </div>
+        ))}
       </section>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
-           <h2 className="font-black text-deep-emerald dark:text-white mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-moroccan-green">insights</span>
-            Statistiques Rapides
+      <div className="space-y-8">
+        {/* Main Actions Area */}
+        <section className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 p-8 pt-10">
+          <h2 className="text-lg font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3 uppercase tracking-tight">
+            <span className="w-1.5 h-6 bg-moroccan-green rounded-full"></span>
+            Actions de Gestion
           </h2>
-          <div className="h-64 flex items-center justify-center border-2 border-dashed border-slate-50 rounded-2xl">
-             <p className="text-xs font-black text-slate-300 uppercase tracking-widest">Graphique de croissance (Bientôt disponible)</p>
-          </div>
-        </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <button 
+              onClick={() => navigate('/users')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-green hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-moroccan-green group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">person_add</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">Comptes Utilisateurs</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Admin, Profs, Parents</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+            </button>
 
-        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
-          <h2 className="font-black text-deep-emerald dark:text-white mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-moroccan-gold">bolt</span>
-            Actions Rapides
-          </h2>
-          <div className="space-y-4">
-            <button onClick={() => navigate('/users')} className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-green hover:text-white rounded-xl transition-all group">
-              <div className="flex items-center gap-4">
-                <span className="material-symbols-outlined p-2 bg-white dark:bg-slate-700 rounded-lg text-moroccan-green group-hover:bg-white/20 group-hover:text-white">person_add</span>
-                <span className="font-bold text-sm">Gérer les Utilisateurs</span>
+            <button 
+              onClick={() => navigate('/hr')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-gold hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-moroccan-gold group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">badge</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">RH & Personnel</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Équipe Atlas Academy</p>
+                </div>
               </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
             </button>
-            <button onClick={() => navigate('/academic')} className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-gold hover:text-white rounded-xl transition-all group">
-              <div className="flex items-center gap-4">
-                <span className="material-symbols-outlined p-2 bg-white dark:bg-slate-700 rounded-lg text-moroccan-gold group-hover:bg-white/20 group-hover:text-white">menu_book</span>
-                <span className="font-bold text-sm">Programmes Académiques</span>
+
+            <button 
+              onClick={() => navigate('/admission')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-deep-emerald hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-deep-emerald group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">how_to_reg</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">Inscriptions</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Nouveaux Élèves</p>
+                </div>
               </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
             </button>
+
+            <button 
+              onClick={() => navigate('/finance')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-slate-900 hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-slate-900 group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">account_balance</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">Finances</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Facturation & Paie</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+            </button>
+
+            <button 
+              onClick={() => navigate('/attendance')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-green hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-moroccan-green group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">edit_calendar</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">Présences</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Suivi Quotidien</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+            </button>
+
           </div>
         </section>
       </div>

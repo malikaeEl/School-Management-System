@@ -16,13 +16,20 @@ const LibraryManagement = () => {
   const [overview, setOverview] = useState(null);
   const [books, setBooks] = useState([]);
   const [borrows, setBorrows] = useState([]);
+  const [myBorrows, setMyBorrows] = useState([]);
   const [students, setStudents] = useState([]);
   
   const [showAddBook, setShowAddBook] = useState(false);
   const [bookForm, setBookForm] = useState({ title: '', author: '', isbn: '', category: 'Roman' });
 
+  const [showEditBook, setShowEditBook] = useState(false);
+  const [editBookForm, setEditBookForm] = useState({ _id: '', title: '', author: '', isbn: '', category: 'Roman' });
+
   const [showBorrowModal, setShowBorrowModal] = useState(false);
   const [borrowForm, setBorrowForm] = useState({ bookId: '', userId: '' });
+
+  const [showEditBorrow, setShowEditBorrow] = useState(false);
+  const [editBorrowForm, setEditBorrowForm] = useState({ _id: '', dueDate: '' });
 
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
@@ -32,17 +39,24 @@ const LibraryManagement = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const [overviewData, booksData] = await Promise.all([
+        libraryService.getOverview(),
+        libraryService.getBooks()
+      ]);
+      setOverview(overviewData);
+      setBooks(booksData);
+
       if (isStaff) {
-        const [overviewData, booksData, borrowsData, usersData] = await Promise.all([
-          libraryService.getOverview(),
-          libraryService.getBooks(),
+        const [borrowsData, usersData] = await Promise.all([
           libraryService.getBorrows(),
           userService.getAll()
         ]);
-        setOverview(overviewData);
-        setBooks(booksData);
         setBorrows(borrowsData);
         setStudents(usersData.filter(u => u.role === 'student'));
+      } else {
+        const myBorrowsData = await libraryService.getMyBorrows();
+        setMyBorrows(myBorrowsData);
+        setActiveTab('my-borrows'); // Default tab for students
       }
     } catch {
       showToast('Erreur chargement données', 'bg-moroccan-red');
@@ -81,29 +95,74 @@ const LibraryManagement = () => {
     }
   };
 
+  const handleEditBookSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await libraryService.updateBook(editBookForm._id, editBookForm);
+      showToast('Livre modifié ✓');
+      setShowEditBook(false);
+      fetchData();
+    } catch (err) {
+      showToast(err?.response?.data?.message || 'Erreur modification', 'bg-moroccan-red');
+    }
+  };
+
+  const handleDeleteBook = async (id) => {
+    if(!window.confirm('Voulez-vous supprimer ce livre ?')) return;
+    try {
+      await libraryService.deleteBook(id);
+      showToast('Livre supprimé ✓');
+      fetchData();
+    } catch (err) {
+      showToast(err?.response?.data?.message || 'Erreur suppression', 'bg-moroccan-red');
+    }
+  };
+
+  const openEditModal = (book) => {
+    setEditBookForm(book);
+    setShowEditBook(true);
+  };
+
+  const handleReturnBook = async (borrowId) => {
+    if(!window.confirm('Confirmer le retour de ce livre ?')) return;
+    try {
+      await libraryService.returnBook(borrowId);
+      showToast('Livre retourné ✓');
+      fetchData();
+    } catch (err) {
+      showToast(err?.response?.data?.message || 'Erreur retour', 'bg-moroccan-red');
+    }
+  };
+
+  const openEditBorrowModal = (borrow) => {
+    const dateStr = borrow.dueDate ? new Date(borrow.dueDate).toISOString().split('T')[0] : '';
+    setEditBorrowForm({ _id: borrow._id, dueDate: dateStr });
+    setShowEditBorrow(true);
+  };
+
+  const handleEditBorrowSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await libraryService.updateBorrow(editBorrowForm._id, { dueDate: editBorrowForm.dueDate });
+      showToast('Date de retour modifiée ✓');
+      setShowEditBorrow(false);
+      fetchData();
+    } catch (err) {
+      showToast(err?.response?.data?.message || 'Erreur modification', 'bg-moroccan-red');
+    }
+  };
+
   const exportCSV = () => {
     if (!books.length) return showToast('Aucun livre à exporter', 'bg-slate-500');
-    
     const headers = ['Titre', 'Auteur', 'ISBN', 'Catégorie', 'Statut'];
     const rows = books.map(b => [b.title, b.author, b.isbn, b.category, b.status]);
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-    
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'bibliotheque_atlas.csv'; a.click();
     URL.revokeObjectURL(url);
     showToast('Export CSV réussi ✓');
   };
-
-  if (!isStaff) {
-    return (
-      <div className="flex flex-col items-center justify-center p-20 animate-in fade-in zoom-in duration-500">
-        <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">gpp_bad</span>
-        <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">Accès Restreint</h2>
-        <p className="text-sm font-bold text-slate-400 mt-2">La gestion de la bibliothèque est réservée au personnel.</p>
-      </div>
-    );
-  }
 
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
@@ -145,6 +204,40 @@ const LibraryManagement = () => {
         </div>
       )}
 
+      {/* Edit Book Modal */}
+      {showEditBook && (
+        <div className="fixed inset-0 bg-deep-emerald/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl w-full max-w-md animate-in zoom-in duration-200 border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Modifier un Livre</h2>
+              <button onClick={() => setShowEditBook(false)} className="text-slate-400 hover:text-moroccan-red transition-colors bg-white dark:bg-slate-900 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"><span className="material-symbols-outlined text-sm">close</span></button>
+            </div>
+            <form onSubmit={handleEditBookSubmit} className="p-8 space-y-6">
+              {[
+                { key: 'title',  label: 'Titre' },
+                { key: 'author', label: 'Auteur' },
+                { key: 'isbn',   label: 'ISBN' },
+              ].map(f => (
+                <div key={f.key}>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">{f.label}</label>
+                  <input value={editBookForm[f.key]} onChange={e => setEditBookForm(p => ({...p, [f.key]: e.target.value}))} required className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all"/>
+                </div>
+              ))}
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Catégorie</label>
+                <select value={editBookForm.category} onChange={e => setEditBookForm(p => ({...p, category: e.target.value}))} className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest">
+                  {['Roman', 'Science', 'Histoire', 'Mathématiques', 'Philosophie', 'Informatique', 'Littérature', 'Autre'].map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onClick={() => setShowEditBook(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
+                <button type="submit" className="flex-1 py-4 rounded-2xl bg-moroccan-green text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-moroccan-green/20 hover:brightness-110 transition-all">Enregistrer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Borrow Book Modal */}
       {showBorrowModal && (
         <div className="fixed inset-0 bg-deep-emerald/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -177,27 +270,53 @@ const LibraryManagement = () => {
         </div>
       )}
 
+      {/* Edit Borrow Modal */}
+      {showEditBorrow && (
+        <div className="fixed inset-0 bg-deep-emerald/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl w-full max-w-sm animate-in zoom-in duration-200 border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Prolonger l'Emprunt</h2>
+              <button onClick={() => setShowEditBorrow(false)} className="text-slate-400 hover:text-moroccan-red transition-colors bg-white dark:bg-slate-900 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"><span className="material-symbols-outlined text-sm">close</span></button>
+            </div>
+            <form onSubmit={handleEditBorrowSubmit} className="p-8 space-y-6">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nouveau Retour Prévu</label>
+                <input type="date" required value={editBorrowForm.dueDate} onChange={e => setEditBorrowForm(p => ({...p, dueDate: e.target.value}))} className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all"/>
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onClick={() => setShowEditBorrow(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
+                <button type="submit" className="flex-1 py-4 rounded-2xl bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:brightness-110 transition-all">Valider</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
              <span className="w-2 h-8 bg-moroccan-green rounded-full"></span>
-             Tableau de Bord Libraire
+             Tableau de Bord {isStaff ? 'Libraire' : 'Bibliothèque'}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 uppercase text-[10px] font-black tracking-widest leading-relaxed">
-             Gérer les ressources de la bibliothèque, la circulation et les activités des membres
+             {isStaff ? 'Gérer les ressources de la bibliothèque, la circulation et les activités des membres' : 'Consultez le catalogue et gérez vos emprunts personnels'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <button onClick={exportCSV} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300 shadow-sm">
-            <span className="material-symbols-outlined text-lg">file_download</span> Exporter Excel
-          </button>
-          <button onClick={() => setShowAddBook(true)} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-8 py-3 bg-moroccan-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-moroccan-green/20">
-            <span className="material-symbols-outlined text-lg">add</span> Livre
-          </button>
-          <button onClick={() => setShowBorrowModal(true)} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-8 py-3 bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-blue-500/20">
-            <span className="material-symbols-outlined text-lg">outbound</span> Emprunt
-          </button>
+          {isStaff && (
+            <>
+              <button onClick={exportCSV} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300 shadow-sm">
+                <span className="material-symbols-outlined text-lg">file_download</span> Exporter Excel
+              </button>
+              <button onClick={() => setShowAddBook(true)} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-8 py-3 bg-moroccan-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-moroccan-green/20">
+                <span className="material-symbols-outlined text-lg">add</span> Livre
+              </button>
+              <button onClick={() => setShowBorrowModal(true)} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-8 py-3 bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-blue-500/20">
+                <span className="material-symbols-outlined text-lg">outbound</span> Emprunt
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -231,11 +350,64 @@ const LibraryManagement = () => {
 
           {/* Tabs Navigation */}
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-3xl w-fit border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
-            <button onClick={() => setActiveTab('inventory')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'inventory' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Inventaire</button>
-            <button onClick={() => setActiveTab('borrowers')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'borrowers' ? 'bg-white dark:bg-slate-900 text-blue-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Circulation ({borrows.length})</button>
+            {isStaff ? (
+              <>
+                <button onClick={() => setActiveTab('inventory')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'inventory' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Inventaire</button>
+                <button onClick={() => setActiveTab('borrowers')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'borrowers' ? 'bg-white dark:bg-slate-900 text-blue-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Circulation ({borrows.length})</button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => setActiveTab('my-borrows')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'my-borrows' ? 'bg-white dark:bg-slate-900 text-blue-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Mes Emprunts ({myBorrows.length})</button>
+                <button onClick={() => setActiveTab('inventory')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'inventory' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Catalogue</button>
+              </>
+            )}
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+            {activeTab === 'my-borrows' && !isStaff && (
+              <div className="overflow-x-auto min-h-[400px]">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50/50 dark:bg-slate-800/50">
+                    <tr>
+                      <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Livre</th>
+                      <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Emprunté Le</th>
+                      <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Retour Prévu</th>
+                      <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                    {myBorrows.length === 0 ? (
+                      <tr><td colSpan="4" className="px-8 py-20 text-center text-slate-400 uppercase tracking-widest text-[10px] font-black">Vous n'avez aucun emprunt en cours</td></tr>
+                    ) : myBorrows.map(borrow => (
+                      <tr key={borrow._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
+                        <td className="px-8 py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-moroccan-gold/5 flex items-center justify-center font-black text-moroccan-gold uppercase text-xs">
+                              <span className="material-symbols-outlined">book</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-black text-slate-800 dark:text-white uppercase leading-tight">{borrow.book?.title}</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">{borrow.book?.author}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-5 text-[11px] font-bold text-slate-500 uppercase tracking-widest">{new Date(borrow.borrowDate).toLocaleDateString()}</td>
+                        <td className="px-8 py-5 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-widest">{new Date(borrow.dueDate).toLocaleDateString()}</td>
+                        <td className="px-8 py-5">
+                          <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            borrow.status === 'Overdue' ? 'bg-moroccan-red/10 text-moroccan-red animate-pulse' :
+                            borrow.status === 'Active' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-100 text-slate-500'
+                          }`}>
+                            {borrow.status === 'Overdue' ? `En Retard` : borrow.status === 'Returned' ? 'Retourné' : 'En Cours'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            
             {activeTab === 'inventory' && (
               <div className="overflow-x-auto min-h-[400px]">
                 <table className="w-full text-left">
@@ -246,6 +418,7 @@ const LibraryManagement = () => {
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">ISBN</th>
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Catégorie</th>
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Statut</th>
+                      {isStaff && <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 text-right">Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -273,6 +446,18 @@ const LibraryManagement = () => {
                             {book.status}
                           </span>
                         </td>
+                        {isStaff && (
+                          <td className="px-8 py-5 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                               <button onClick={() => openEditModal(book)} className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-moroccan-green hover:bg-moroccan-green/10 flex items-center justify-center transition-all">
+                                 <span className="material-symbols-outlined text-sm">edit</span>
+                               </button>
+                               <button onClick={() => handleDeleteBook(book._id)} className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-moroccan-red hover:bg-moroccan-red/10 flex items-center justify-center transition-all">
+                                 <span className="material-symbols-outlined text-sm">delete</span>
+                               </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -280,7 +465,7 @@ const LibraryManagement = () => {
               </div>
             )}
 
-            {activeTab === 'borrowers' && (
+            {activeTab === 'borrowers' && isStaff && (
                <div className="overflow-x-auto min-h-[400px]">
                 <table className="w-full text-left">
                   <thead className="bg-slate-50/50 dark:bg-slate-800/50">
@@ -290,6 +475,7 @@ const LibraryManagement = () => {
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Emprunt Le</th>
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Retour Prévu</th>
                       <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Statut</th>
+                      <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -315,8 +501,22 @@ const LibraryManagement = () => {
                             borrow.status === 'Overdue' ? 'bg-moroccan-red/10 text-moroccan-red animate-pulse' :
                             borrow.status === 'Active' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-100 text-slate-500'
                           }`}>
-                            {borrow.status === 'Overdue' ? `Retard (${borrow.fine} MAD)` : borrow.status}
+                            {borrow.status === 'Overdue' ? `Retard (${borrow.fine} MAD)` : borrow.status === 'Returned' ? 'Retourné' : borrow.status}
                           </span>
+                        </td>
+                        <td className="px-8 py-5 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                             {borrow.status !== 'Returned' && (
+                               <>
+                                 <button onClick={() => openEditBorrowModal(borrow)} className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 flex items-center justify-center transition-all" title="Modifier la Date">
+                                   <span className="material-symbols-outlined text-sm">edit_calendar</span>
+                                 </button>
+                                 <button onClick={() => handleReturnBook(borrow._id)} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
+                                    Retourner
+                                 </button>
+                               </>
+                             )}
+                          </div>
                         </td>
                       </tr>
                     ))}

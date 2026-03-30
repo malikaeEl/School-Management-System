@@ -27,6 +27,20 @@ const subjectService = {
     const res = await axios.delete(`${API_URL}/subjects/${id}`, { headers: getAuthHeader() });
     return res.data;
   },
+
+  uploadMaterial: async (subjectId, file) => {
+    const formData = new FormData();
+    formData.append('document', file);
+    const res = await axios.post(`${API_URL}/subjects/${subjectId}/materials`, formData, {
+      headers: { ...getAuthHeader(), 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  },
+
+  deleteMaterial: async (subjectId, materialId) => {
+    const res = await axios.delete(`${API_URL}/subjects/${subjectId}/materials/${materialId}`, { headers: getAuthHeader() });
+    return res.data;
+  },
 };
 
 export default subjectService;

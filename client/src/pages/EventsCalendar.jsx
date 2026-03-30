@@ -21,10 +21,13 @@ const EventsCalendar = () => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 3000);
   };
+  
+  // Use relative API path (proxied via Vite)
+  const API_URL = '/api/events';
 
   const fetchEvents = async () => {
     try {
-      const resp = await axios.get('http://localhost:5000/api/events');
+      const resp = await axios.get(API_URL);
       setEvents(resp.data);
       setLoading(false);
     } catch (err) {
@@ -51,6 +54,7 @@ const EventsCalendar = () => {
 
   const { daysInMonth, firstDayOfMonth } = useMemo(() => {
     const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+    // Monday as start of week adjustment (0 is Sunday, so we want 1 to be Monday)
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     return { daysInMonth: lastDay, firstDayOfMonth: firstDay };
   }, [currentMonth, currentYear]);
@@ -71,7 +75,7 @@ const EventsCalendar = () => {
     e.preventDefault();
     if (!isAdmin) return;
     try {
-      await axios.post('http://localhost:5000/api/events', form);
+      await axios.post(API_URL, form);
       showToast('Événement ajouté avec succès ✓');
       setShowModal(false);
       setForm({title:'',date:'',time:'',type:'Académique',location:''});
@@ -82,16 +86,64 @@ const EventsCalendar = () => {
   };
 
   const deleteEvent = async (id, e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     if (!isAdmin) return;
     if (!window.confirm('Supprimer cet événement ?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/events/${id}`);
+      await axios.delete(`${API_URL}/${id}`);
       showToast('Événement supprimé');
       fetchEvents();
     } catch (err) {
       showToast('Erreur lors de la suppression', 'bg-moroccan-red');
     }
+  };
+
+  const handleExportICS = () => {
+    if (events.length === 0) {
+      showToast('Aucun événement à exporter', 'bg-moroccan-red');
+      return;
+    }
+
+    let icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Atlas Academy//Events Calendar//FR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH'
+    ].join('\r\n') + '\r\n';
+
+    events.forEach(ev => {
+      const date = ev.date.replace(/-/g, '');
+      const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      icsContent += [
+        'BEGIN:VEVENT',
+        `UID:${ev._id}@atlasacademy.com`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART;VALUE=DATE:${date}`,
+        `SUMMARY:${ev.title}`,
+        `DESCRIPTION:${ev.type} - ${ev.location || 'N/A'}`,
+        `LOCATION:${ev.location || 'Atlas Academy'}`,
+        'END:VEVENT'
+      ].join('\r\n') + '\r\n';
+    });
+
+    icsContent += 'END:VCALENDAR';
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', `Calendrier_Atlas_Academy_${currentYear}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Export ICS réussi ✓');
+  };
+
+  const handleExportPDF = () => {
+    showToast('Préparation de l\'impression...');
+    setTimeout(() => {
+      window.print();
+    }, 500);
   };
 
   const getEventsForDay = (day) => {
@@ -101,6 +153,22 @@ const EventsCalendar = () => {
 
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          body * { visibility: hidden; }
+          .calendar-print-area, .calendar-print-area * { visibility: visible; }
+          .calendar-print-area { 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%;
+            padding: 0;
+            margin: 0;
+          }
+          .no-print { display: none !important; }
+          .bg-slate-50\\/50 { background-color: #f8fafc !important; }
+        }
+      `}} />
 
       {toast && <div className={`fixed top-6 right-6 z-50 ${toast.color} text-white px-6 py-3 rounded-2xl shadow-2xl text-sm font-black uppercase tracking-widest`}>{toast.msg}</div>}
 
@@ -139,7 +207,7 @@ const EventsCalendar = () => {
       )}
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase flex items-center gap-3">
             Événements & Calendrier
@@ -163,14 +231,14 @@ const EventsCalendar = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Calendar View (Left) */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 calendar-print-area">
           <section className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden group">
             <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                <div className="flex items-center gap-4">
                   <h2 className="text-2xl font-black text-slate-800 tracking-tighter uppercase">
                     {`${monthNames[currentMonth]} ${currentYear}`}
                   </h2>
-                  <div className="flex items-center gap-1 bg-white p-1 rounded-xl shadow-inner border border-slate-100">
+                  <div className="flex items-center gap-1 bg-white p-1 rounded-xl shadow-inner border border-slate-100 no-print">
                     <button onClick={() => changeMonth(-1)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 transition-colors">
                        <span className="material-symbols-outlined">chevron_left</span>
                     </button>
@@ -179,7 +247,7 @@ const EventsCalendar = () => {
                     </button>
                   </div>
                </div>
-               <div className="flex p-1 bg-white rounded-2xl shadow-inner border border-slate-100">
+               <div className="flex p-1 bg-white rounded-2xl shadow-inner border border-slate-100 no-print">
                   <button className="px-5 py-2 text-[10px] font-black uppercase tracking-widest bg-moroccan-green text-white rounded-xl shadow-lg shadow-moroccan-green/20 transition-all">Mois</button>
                   <button className="px-5 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-moroccan-green transition-colors">Semaine</button>
                </div>
@@ -219,7 +287,7 @@ const EventsCalendar = () => {
                                   {ev.title}
                                 </div>
                                 {isAdmin && (
-                                  <button onClick={(e) => deleteEvent(ev._id, e)} className="absolute -top-1 -right-1 bg-white text-red-500 rounded-full w-3 h-3 flex items-center justify-center opacity-0 group-hover/ev:opacity-100 transition-opacity border border-slate-200">
+                                  <button onClick={(e) => deleteEvent(ev._id, e)} className="absolute -top-1 -right-1 bg-white text-red-500 rounded-full w-3 h-3 flex items-center justify-center opacity-0 group-hover/ev:opacity-100 transition-opacity border border-slate-200 no-print">
                                     <span className="material-symbols-outlined text-[8px] font-black">close</span>
                                   </button>
                                 )}
@@ -236,7 +304,7 @@ const EventsCalendar = () => {
         </div>
 
         {/* Sidebar Widgets (Right) */}
-        <div className="lg:col-span-1 flex flex-col gap-8">
+        <div className="lg:col-span-1 flex flex-col gap-8 no-print">
            <section className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm uppercase tracking-widest">
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 mb-8 text-slate-400 italic">
                 <span className="material-symbols-outlined text-moroccan-gold text-lg">event_upcoming</span>
@@ -269,14 +337,23 @@ const EventsCalendar = () => {
            <section className="bg-linear-to-br from-deep-emerald to-moroccan-green rounded-3xl p-8 text-white shadow-xl shadow-deep-emerald/20 relative overflow-hidden group">
               <div className="relative z-10">
                 <h3 className="text-lg font-black mb-2 uppercase tracking-tight">Exporter</h3>
-                <p className="text-white/60 text-[10px] font-bold mb-6 leading-relaxed uppercase tracking-[0.2em]">Download full calendar as PDF or ICS file.</p>
-                <button 
-                  onClick={() => showToast('Génération du calendrier...')}
-                  className="w-full py-4 bg-moroccan-gold text-deep-emerald rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-xl">download</span>
-                  Télécharger
-                </button>
+                <p className="text-white/60 text-[10px] font-bold mb-6 leading-relaxed uppercase tracking-[0.2em]">Exporter le calendrier complet</p>
+                <div className="grid grid-cols-1 gap-3">
+                  <button 
+                    onClick={handleExportICS}
+                    className="w-full py-4 bg-moroccan-gold text-deep-emerald rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-xl">calendar_today</span>
+                    Format ICS
+                  </button>
+                  <button 
+                    onClick={handleExportPDF}
+                    className="w-full py-4 bg-white/10 text-white border border-white/20 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-deep-emerald transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-xl">picture_as_pdf</span>
+                    Format PDF
+                  </button>
+                </div>
               </div>
               <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
            </section>

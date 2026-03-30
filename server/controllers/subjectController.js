@@ -41,14 +41,21 @@ export const updateSubject = async (req, res) => {
     const subject = await Subject.findById(req.params.id);
     if (!subject) return res.status(404).json({ message: 'Matière introuvable.' });
 
-    if (teacherId) {
-       const teacher = await User.findById(teacherId);
-       if (!teacher || teacher.role !== 'teacher') return res.status(400).json({ message: 'Enseignant invalide.' });
-       subject.teacher = teacherId;
+    // Ensure user is either Admin or the actual Teacher of this subject
+    if (req.user.role !== 'admin' && subject.teacher.toString() !== req.user._id.toString()) {
+       return res.status(403).json({ message: 'Non autorisé à modifier cette matière.' });
     }
 
-    subject.name     = name     ?? subject.name;
-    subject.grade    = grade    ?? subject.grade;
+    if (req.user.role === 'admin') {
+      if (teacherId) {
+         const teacher = await User.findById(teacherId);
+         if (!teacher || teacher.role !== 'teacher') return res.status(400).json({ message: 'Enseignant invalide.' });
+         subject.teacher = teacherId;
+      }
+      subject.name     = name     ?? subject.name;
+      subject.grade    = grade    ?? subject.grade;
+    }
+
     subject.progress = progress ?? subject.progress;
     subject.status   = status   ?? subject.status;
 
@@ -68,6 +75,55 @@ export const deleteSubject = async (req, res) => {
 
     await subject.deleteOne();
     res.json({ message: 'Matière supprimée.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── POST /api/subjects/:id/materials — upload a material ──────────────────
+export const uploadMaterial = async (req, res) => {
+  try {
+    const subject = await Subject.findById(req.params.id);
+    if (!subject) return res.status(404).json({ message: 'Matière introuvable.' });
+
+    if (req.user.role !== 'admin' && subject.teacher.toString() !== req.user._id.toString()) {
+       return res.status(403).json({ message: 'Non autorisé à modifier cette matière.' });
+    }
+
+    if (!req.file) return res.status(400).json({ message: 'Aucun fichier fourni.' });
+
+    const material = {
+      title: req.file.originalname,
+      url: `/uploads/${req.file.filename}`
+    };
+
+    subject.materials.push(material);
+    await subject.save();
+
+    const populated = await subject.populate('teacher', 'firstName lastName email');
+    res.status(201).json(populated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── DELETE /api/subjects/:id/materials/:materialId — delete a material ────
+export const deleteMaterial = async (req, res) => {
+  try {
+    const subject = await Subject.findById(req.params.id);
+    if (!subject) return res.status(404).json({ message: 'Matière introuvable.' });
+
+    if (req.user.role !== 'admin' && subject.teacher.toString() !== req.user._id.toString()) {
+       return res.status(403).json({ message: 'Non autorisé à modifier cette matière.' });
+    }
+
+    subject.materials = subject.materials.filter(m => m._id.toString() !== req.params.materialId);
+    
+    // We could use fs.unlink here to delete the physical file, but skipping for simplicity
+    await subject.save();
+
+    const populated = await subject.populate('teacher', 'firstName lastName email');
+    res.json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

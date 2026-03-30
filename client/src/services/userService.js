@@ -8,8 +8,11 @@ const getAuthHeader = () => {
 };
 
 const userService = {
-  getAll: async () => {
-    const res = await axios.get(`${API_URL}/users`, { headers: getAuthHeader() });
+  getAll: async (params = {}) => {
+    const res = await axios.get(`${API_URL}/users`, { 
+      headers: getAuthHeader(),
+      params: params
+    });
     return res.data;
   },
 
@@ -30,6 +33,11 @@ const userService = {
 
   remove: async (id) => {
     const res = await axios.delete(`${API_URL}/users/${id}`, { headers: getAuthHeader() });
+    return res.data;
+  },
+
+  changePassword: async (data) => {
+    const res = await axios.put(`${API_URL}/users/profile/password`, data, { headers: getAuthHeader() });
     return res.data;
   },
 };

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const getAuthHeader = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -30,6 +30,21 @@ const financeService = {
 
   updateFees: async (id, feeData) => {
     const res = await axios.put(`${API_URL}/finance/fees/${id}`, feeData, { headers: getAuthHeader() });
+    return res.data;
+  },
+  
+  updateTransactionStatus: async (transactionId, status) => {
+    const res = await axios.put(`${API_URL}/finance/transactions/${transactionId}/status`, { status }, { headers: getAuthHeader() });
+    return res.data;
+  },
+
+  updateTransaction: async (id, data) => {
+    const res = await axios.put(`${API_URL}/finance/transactions/${id}`, data, { headers: getAuthHeader() });
+    return res.data;
+  },
+
+  deleteTransaction: async (id) => {
+    const res = await axios.delete(`${API_URL}/finance/transactions/${id}`, { headers: getAuthHeader() });
     return res.data;
   },
 };

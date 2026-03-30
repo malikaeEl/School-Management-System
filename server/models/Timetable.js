@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 
 const timetableSchema = new mongoose.Schema({
-  subject: {
+  teacher: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Subject',
+    ref: 'User',
+    required: true,
+  },
+  grade: {
+    type: String,
     required: true,
   },
   day: {

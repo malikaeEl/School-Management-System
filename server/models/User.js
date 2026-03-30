@@ -7,7 +7,7 @@ const SCHOOL_LEVELS = [
   // Collège
   '1ère année collège', '2ème année collège', '3ème année collège',
   // Lycée
-  'T.C', '1ère année S.M', '1ère année S.Ex',
+  'T.C', '1ère année S.M', '1ère année S.X',
   '2ème année S.M', '2ème année SVT', '2ème année PC',
   // N/A for staff
   'N/A'
@@ -70,6 +70,22 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
+  },
+  avatar: {
+    type: String,
+    default: '',
+  },
+  documents: [
+    {
+      name: String,
+      path: String,
+      mimetype: String,
+      uploadedAt: { type: Date, default: Date.now },
+    }
+  ],
+  salary: {
+    type: Number,
+    default: 0,
   },
 }, { timestamps: true });
 

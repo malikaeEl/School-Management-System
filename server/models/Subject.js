@@ -26,6 +26,11 @@ const subjectSchema = new mongoose.Schema({
     enum: ['On Track', 'Ahead', 'Behind', 'Critical'],
     default: 'On Track',
   },
+  materials: [{
+    title: String,
+    url: String,
+    uploadedAt: { type: Date, default: Date.now }
+  }],
 }, { timestamps: true });
 
 const Subject = mongoose.model('Subject', subjectSchema);

@@ -10,6 +10,15 @@ const AdmissionsEnrollment = () => {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
+  const statusMap = {
+    'Pending': 'En attente',
+    'Inquiry': 'Information',
+    'Assessment': 'Évaluation',
+    'Interview': 'Entretien',
+    'Qualified': 'Qualifié',
+    'Rejected': 'Refusé'
+  };
+
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 3000);
@@ -80,7 +89,7 @@ const AdmissionsEnrollment = () => {
       a.parentName,
       a.email,
       a.phone,
-      a.status,
+      statusMap[a.status] || a.status,
       new Date(a.createdAt).toLocaleDateString()
     ]);
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
@@ -170,9 +179,14 @@ const AdmissionsEnrollment = () => {
                       {a.grade}
                     </span>
                   </td>
-                  <td className="px-6 py-5">
-                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300">{a.parentName}</p>
-                    <p className="text-[10px] text-slate-400">{a.email}</p>
+                   <td className="px-6 py-5 max-w-[200px]">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-300 uppercase">{a.parentName}</p>
+                    <p className="text-[10px] text-slate-400 font-medium mb-1">{a.email}</p>
+                    {a.message && (
+                      <div className="mt-2 p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 border-dashed">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 italic leading-relaxed">"{a.message}"</p>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-5 text-xs font-bold text-slate-500">{a.phone}</td>
                   <td className="px-6 py-5">
@@ -183,7 +197,7 @@ const AdmissionsEnrollment = () => {
                         a.status === 'Qualified' ? 'text-moroccan-green' : a.status === 'Pending' ? 'text-amber-500' : 'text-slate-400'
                       }`}
                     >
-                      {['Pending', 'Inquiry', 'Assessment', 'Interview', 'Qualified', 'Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
+                      {Object.entries(statusMap).map(([val, label]) => <option key={val} value={val}>{label}</option>)}
                     </select>
                   </td>
                   <td className="px-8 py-5 text-right">

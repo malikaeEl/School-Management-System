@@ -1,20 +1,29 @@
 import express from 'express';
-import { getLibraryOverview, getBooks, addBook, getBorrows, borrowBook } from '../controllers/libraryController.js';
+import { getLibraryOverview, getBooks, addBook, getBorrows, borrowBook, updateBook, deleteBook, returnBook, updateBorrow, getMyBorrows } from '../controllers/libraryController.js';
 import { protect, staffOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(protect);
-router.use(staffOnly); // Only teachers and admins can manage the library
 
+// Public Library Stats & Books (Accessible to all authenticated users)
 router.get('/overview', getLibraryOverview);
+router.get('/books', getBooks);
 
-router.route('/books')
-  .get(getBooks)
-  .post(addBook);
+// Student/User Specific (Self-service)
+router.get('/borrows/my', getMyBorrows);
+
+// Staff Only Management Routes
+router.post('/books', staffOnly, addBook);
+router.route('/books/:id')
+  .put(staffOnly, updateBook)
+  .delete(staffOnly, deleteBook);
 
 router.route('/borrows')
-  .get(getBorrows)
-  .post(borrowBook);
+  .get(staffOnly, getBorrows)
+  .post(staffOnly, borrowBook);
+
+router.put('/borrows/:id', staffOnly, updateBorrow);
+router.post('/borrows/:id/return', staffOnly, returnBook);
 
 export default router;

@@ -8,7 +8,6 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 
 import AdminDashboard from './pages/AdminDashboard';
-import AcademicManagement from './pages/AcademicManagement';
 import HRStaffManagement from './pages/HRManagement';
 import FinanceManagement from './pages/FinanceManagement';
 import AcademicAttendance from './pages/AcademicAttendance';
@@ -24,12 +23,15 @@ import EventsCalendar from './pages/EventsCalendar';
 import ExamsGrades from './pages/ExamsGrades';
 import Timetable from './pages/Timetable';
 import InventoryManagement from './pages/InventoryManagement';
+import PersonnelProfile from './pages/PersonnelProfile';
 import StudentDashboard from './pages/StudentDashboard';
 import ParentDashboard from './pages/ParentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import Login from './pages/Login';
 import EnrollmentLanding from './pages/EnrollmentLanding';
 import UserManagement from './pages/UserManagement';
+import TeacherLeaves from './pages/TeacherLeaves';
+import LeaveManagement from './pages/LeaveManagement';
 
 const MainLayout = ({ children }) => {
   const { lang, t } = useLanguage();
@@ -46,6 +48,16 @@ const MainLayout = ({ children }) => {
   );
 };
 
+const RoleHome = () => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
+  if (user.role === 'admin') return <AdminDashboard />;
+  if (user.role === 'student') return <Navigate to="/student-dashboard" />;
+  if (user.role === 'teacher') return <Navigate to="/teacher-dashboard" />;
+  if (user.role === 'parent') return <Navigate to="/parent-dashboard" />;
+  return <Navigate to="/login" />;
+};
+
 function AppRoutes() {
   const { user } = useAuth();
   
@@ -56,8 +68,8 @@ function AppRoutes() {
       
       {/* Protected Routes */}
       <Route path="/" element={
-        <ProtectedRoute allowedRoles={['admin']}>
-          <MainLayout><AdminDashboard /></MainLayout>
+        <ProtectedRoute>
+          <MainLayout><RoleHome /></MainLayout>
         </ProtectedRoute>
       } />
       
@@ -80,8 +92,8 @@ function AppRoutes() {
       } />
 
       <Route path="/hr" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><HRStaffManagement /></MainLayout></ProtectedRoute>} />
+      <Route path="/hr/:id" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><PersonnelProfile /></MainLayout></ProtectedRoute>} />
       <Route path="/finance" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><FinanceManagement /></MainLayout></ProtectedRoute>} />
-      <Route path="/academic" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><AcademicManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/attendance" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><AcademicAttendance /></MainLayout></ProtectedRoute>} />
       <Route path="/transport" element={<ProtectedRoute allowedRoles={['admin', 'parent']}><MainLayout><TransportGPS /></MainLayout></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><ReportsAnalytics /></MainLayout></ProtectedRoute>} />
@@ -94,6 +106,9 @@ function AppRoutes() {
       <Route path="/exams" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><MainLayout><ExamsGrades /></MainLayout></ProtectedRoute>} />
       <Route path="/timetable" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}><MainLayout><Timetable /></MainLayout></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute allowedRoles={['admin', 'librarian', 'finance']}><MainLayout><InventoryManagement /></MainLayout></ProtectedRoute>} />
+      
+      <Route path="/teacher/leaves" element={<ProtectedRoute allowedRoles={['teacher']}><MainLayout><TeacherLeaves /></MainLayout></ProtectedRoute>} />
+      <Route path="/admin/leaves" element={<ProtectedRoute allowedRoles={['admin']}><MainLayout><LeaveManagement /></MainLayout></ProtectedRoute>} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

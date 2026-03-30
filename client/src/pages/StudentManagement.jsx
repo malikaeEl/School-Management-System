@@ -23,6 +23,9 @@ const StudentManagement = () => {
   const [toast, setToast]           = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 3500);
@@ -97,9 +100,6 @@ const StudentManagement = () => {
       showToast('Erreur lors de la suppression.', 'bg-moroccan-red');
     }
   };
-
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
 
   return (
     <div className={`animate-in fade-in duration-500 space-y-8 ${lang === 'ar' ? 'font-arabic' : 'font-sans'}`}>

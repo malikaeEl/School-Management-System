@@ -1,5 +1,7 @@
 import express from 'express';
 import Event from '../models/Event.js';
+import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -25,6 +27,22 @@ router.post('/', async (req, res) => {
 
   try {
     const newEvent = await event.save();
+    
+    // Notify all relevant users
+    const users = await User.find({ role: { $in: ['teacher', 'student', 'parent'] } }).select('_id');
+    const notifications = users.map(u => ({
+      recipient: u._id,
+      type: 'event',
+      title: 'Nouvel Événement',
+      message: `L'événement "${req.body.title}" a été ajouté pour le ${new Date(req.body.date).toLocaleDateString()}.`,
+      link: '/events'
+    }));
+    
+    if (notifications.length > 0) {
+      // Chunk insertMany if too many users, but for a school it should be fine
+      await Notification.insertMany(notifications);
+    }
+    
     res.status(201).json(newEvent);
   } catch (err) {
     res.status(400).json({ message: err.message });

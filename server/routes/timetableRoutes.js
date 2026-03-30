@@ -1,5 +1,5 @@
 import express from 'express';
-import { getTimetable, addSlot, deleteSlot } from '../controllers/timetableController.js';
+import { getTimetable, addSlot, deleteSlot, updateSlot } from '../controllers/timetableController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -11,6 +11,7 @@ router.route('/')
   .post(adminOnly, addSlot);
 
 router.route('/:id')
+  .put(adminOnly, updateSlot)
   .delete(adminOnly, deleteSlot);
 
 export default router;

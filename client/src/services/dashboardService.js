@@ -14,8 +14,16 @@ const getDashboardData = async () => {
   return response.data;
 };
 
+const updateSubjectProgress = async (subjectId, progress) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const config = { headers: { Authorization: `Bearer ${user.token}` } };
+  const response = await axios.put(`http://localhost:5000/api/subjects/${subjectId}`, { progress }, config);
+  return response.data;
+};
+
 const dashboardService = {
   getDashboardData,
+  updateSubjectProgress,
 };
 
 export default dashboardService;

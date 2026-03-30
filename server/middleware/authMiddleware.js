@@ -50,3 +50,11 @@ export const teacherOrAdmin = (req, res, next) => {
     res.status(403).json({ message: 'Accès réservé aux enseignants et administrateurs.' });
   }
 };
+
+export const teacherOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'teacher') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Accès réservé strictement aux enseignants.' });
+  }
+};

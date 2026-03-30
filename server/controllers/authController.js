@@ -9,7 +9,8 @@ const generateToken = (id) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    let { firstName, lastName, email, password, role } = req.body;
+    email = email?.toLowerCase();
 
     const userExists = await User.findOne({ email });
 
@@ -44,23 +45,33 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email?.trim().toLowerCase();
+    password = password?.trim();
+    console.log(`[AUTH] Login attempt for: ${email}`);
 
     const user = await User.findOne({ email });
+    if (!user) {
+      console.log(`[AUTH] User NOT found for email: ${email}`);
+      return res.status(401).json({ message: 'Identifiants invalides (utilisateur non trouvé).' });
+    }
 
-    if (user && (await user.comparePassword(password))) {
+    const isMatch = await user.comparePassword(password);
+    console.log(`[AUTH] Password match for ${email}: ${isMatch}`);
+
+    if (isMatch) {
+      const userObj = user.toObject();
+      delete userObj.password;
+      
       res.json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
+        ...userObj,
         token: generateToken(user._id),
       });
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+      res.status(401).json({ message: 'Identifiants invalides (mot de passe incorrect).' });
     }
   } catch (error) {
+    console.error(`[AUTH] Login error for ${req.body.email}:`, error);
     res.status(500).json({ message: error.message });
   }
 };

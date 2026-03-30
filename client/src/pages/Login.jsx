@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -72,18 +73,29 @@ const Login = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
                   Mot de passe
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green outline-none transition-all text-slate-800 font-medium"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green outline-none transition-all text-slate-800 font-medium pr-14"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-moroccan-green transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"

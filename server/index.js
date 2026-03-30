@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -13,6 +15,10 @@ import examRoutes from './routes/examRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
 import libraryRoutes from './routes/libraryRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
+import leaveRoutes from './routes/leaveRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +28,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -35,6 +45,10 @@ app.use('/api/exams', examRoutes);
 app.use('/api/finance', financeRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/leaves', leaveRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)

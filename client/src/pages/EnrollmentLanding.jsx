@@ -75,7 +75,7 @@ const EnrollmentLanding = () => {
         <div className="space-y-8">
           <div className="inline-flex items-center gap-2 bg-moroccan-green/10 text-moroccan-green px-4 py-2 rounded-full border border-moroccan-green/20">
             <span className="material-symbols-outlined text-sm">auto_awesome</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">Inscriptions Ouvertes 2024-2025</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Inscriptions Ouvertes 2026-2027</span>
           </div>
           <h1 className="text-5xl lg:text-7xl font-black text-deep-emerald tracking-tight leading-[0.9]">
             Façonner le <span className="text-moroccan-gold italic">Futur</span> à Atlas Academy
@@ -114,7 +114,7 @@ const EnrollmentLanding = () => {
                   placeholder="Ex: Adam Bennani"
                   value={form.studentName}
                   onChange={e => setForm(p => ({...p, studentName: e.target.value}))}
-                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
+                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
                 />
               </div>
               <div>
@@ -122,7 +122,7 @@ const EnrollmentLanding = () => {
                 <select 
                   value={form.grade}
                   onChange={e => setForm(p => ({...p, grade: e.target.value}))}
-                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all appearance-none"
+                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all appearance-none"
                 >
                   {ALL_LEVELS.map(g => (
                     <option key={g} value={g}>{g}</option>
@@ -139,7 +139,7 @@ const EnrollmentLanding = () => {
                 placeholder="Ex: Mohamed Bennani"
                 value={form.parentName}
                 onChange={e => setForm(p => ({...p, parentName: e.target.value}))}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
+                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
               />
             </div>
 
@@ -152,7 +152,7 @@ const EnrollmentLanding = () => {
                   placeholder="parent@example.com"
                   value={form.email}
                   onChange={e => setForm(p => ({...p, email: e.target.value}))}
-                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
+                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
                 />
               </div>
               <div>
@@ -163,7 +163,7 @@ const EnrollmentLanding = () => {
                   placeholder="+212 6..."
                   value={form.phone}
                   onChange={e => setForm(p => ({...p, phone: e.target.value}))}
-                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
+                  className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all"
                 />
               </div>
             </div>
@@ -175,7 +175,7 @@ const EnrollmentLanding = () => {
                 placeholder="Parlez-nous un peu de votre enfant..."
                 value={form.message}
                 onChange={e => setForm(p => ({...p, message: e.target.value}))}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all resize-none"
+                className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-4 focus:ring-moroccan-green/10 focus:border-moroccan-green transition-all resize-none"
               ></textarea>
             </div>
 
@@ -192,7 +192,7 @@ const EnrollmentLanding = () => {
       </main>
 
       <footer className="mt-24 p-12 bg-slate-900 text-white text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">Atlas Academy Education Group &copy; 2024</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">Atlas Academy Education Group &copy; 2025</p>
       </footer>
     </div>
   );

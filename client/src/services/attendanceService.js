@@ -18,8 +18,8 @@ const attendanceService = {
     return res.data;
   },
 
-  submit: async (subjectId, students) => {
-    const res = await axios.post(`${API_URL}/attendance`, { subjectId, students }, { headers: getAuthHeader() });
+  submit: async (payload) => {
+    const res = await axios.post(`${API_URL}/attendance`, payload, { headers: getAuthHeader() });
     return res.data;
   },
 };

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import userService from '../services/userService';
 
 const HRManagement = () => {
+  const navigate = useNavigate();
   const { lang, t } = useLanguage();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,11 +22,20 @@ const HRManagement = () => {
     setLoading(true);
     try {
       const data = await userService.getAll();
-      // Any non-student, non-parent user is staff or admin
-      // But we show teachers and other staff roles here.
-      setStaff(data.filter(u => ['teacher', 'admin'].includes(u.role)));
-    } catch {
-      showToast('Erreur lors du chargement du personnel.', 'bg-moroccan-red');
+      console.log('API Users Data:', data);
+      
+      // Inclusion criteria: any role that isn't 'student' or 'parent'
+      const staffMembers = data.filter(u => {
+        const role = u.role?.toLowerCase() || '';
+        return !['student', 'parent'].includes(role);
+      });
+      
+      console.log('Filtered Staff:', staffMembers);
+      setStaff(staffMembers);
+    } catch (err) {
+      console.error('HR Fetch Error:', err);
+      const errorMsg = err?.response?.data?.message || 'Erreur lors du chargement du personnel.';
+      showToast(errorMsg, 'bg-moroccan-red');
     } finally {
       setLoading(false);
     }
@@ -128,12 +139,11 @@ const HRManagement = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { icon: 'groups', label: 'Total Staff', val: staff.length, color: 'moroccan-green' },
           { icon: 'school', label: 'Enseignants', val: staff.filter(s => s.role === 'teacher').length, color: 'moroccan-gold' },
           { icon: 'support_agent', label: 'Administration', val: staff.filter(s => s.role === 'admin').length, color: 'deep-emerald' },
-          { icon: 'event_busy', label: 'Congés/Inactive', val: staff.filter(s => !s.isActive).length, color: 'moroccan-red' }
         ].map(st => (
           <div key={st.label} className={`bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 border-l-4 border-l-${st.color} hover:shadow-md transition-all`}>
             <div className={`w-12 h-12 rounded-2xl bg-${st.color}/10 text-${st.color} flex items-center justify-center shrink-0 shadow-inner`}>
@@ -147,25 +157,9 @@ const HRManagement = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column (Leave/Alerts) */}
-        <div className="lg:col-span-1 flex flex-col gap-8">
-           <section className="bg-white dark:bg-slate-900 p-8 rounded-4xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-slate-400 dark:text-slate-300">
-                <span className="material-symbols-outlined text-moroccan-red text-xl">pending_actions</span>
-                Demandes de Congé
-              </h2>
-            </div>
-            <div className="flex flex-col items-center justify-center py-10 opacity-30">
-               <span className="material-symbols-outlined text-4xl mb-2">inbox</span>
-               <p className="text-[10px] font-black uppercase tracking-widest text-center leading-relaxed">Aucune demande<br/>en attente</p>
-            </div>
-          </section>
-        </div>
-
-        {/* Staff Directory (Right Column) */}
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-8">
+        {/* Staff Directory */}
+        <div className="lg:col-span-1">
           <section className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden h-full flex flex-col">
             <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-slate-50/20">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2 text-slate-400 dark:text-slate-300">
@@ -192,33 +186,45 @@ const HRManagement = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                    {staff.map(s => (
-                      <tr key={s._id} className="hover:bg-slate-50/50 dark:hover:bg-white/2 transition-all cursor-pointer group">
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 group-hover:bg-moroccan-green group-hover:text-white transition-all transform group-hover:scale-105 shadow-inner">
-                              {s.firstName?.[0]}{s.lastName?.[0]}
-                            </div>
-                            <div>
-                              <p className="text-sm font-black text-slate-800 dark:text-white leading-none mb-1">{s.firstName} {s.lastName}</p>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{s.email}</p>
-                            </div>
+                    {staff.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="py-20 text-center">
+                          <div className="flex flex-col items-center justify-center opacity-40">
+                            <span className="material-symbols-outlined text-4xl mb-2">person_off</span>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Aucun personnel trouvé</p>
+                            <button onClick={fetchStaff} className="mt-4 px-4 py-2 bg-slate-100 rounded-lg text-[9px] font-black hover:bg-slate-200 uppercase tracking-widest transition-all">Actualiser la liste</button>
                           </div>
-                        </td>
-                        <td className="px-8 py-5">
-                           <span className="text-[10px] font-black px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700 uppercase tracking-widest">{s.role}</span>
-                        </td>
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-2">
-                             <div className={`w-2 h-2 rounded-full ${s.isActive ? 'bg-moroccan-green' : 'bg-slate-300'}`}></div>
-                             <span className={`text-[10px] font-black uppercase tracking-widest ${s.isActive ? 'text-moroccan-green' : 'text-slate-400'}`}>{s.isActive ? 'Active' : 'Offline'}</span>
-                          </div>
-                        </td>
-                        <td className="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-2 text-slate-400 hover:text-moroccan-gold"><span className="material-symbols-outlined">more_vert</span></button>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      staff.map(s => (
+                        <tr key={s._id} onClick={() => navigate(`/hr/${s._id}`)} className="hover:bg-slate-50/50 dark:hover:bg-white/2 transition-all cursor-pointer group">
+                          <td className="px-8 py-5">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 group-hover:bg-moroccan-green group-hover:text-white transition-all transform group-hover:scale-105 shadow-inner">
+                                {s.firstName?.[0]}{s.lastName?.[0]}
+                              </div>
+                              <div>
+                                <p className="text-sm font-black text-slate-800 dark:text-white leading-none mb-1">{s.firstName} {s.lastName}</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{s.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5">
+                             <span className="text-[10px] font-black px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700 uppercase tracking-widest">{s.role}</span>
+                          </td>
+                          <td className="px-8 py-5">
+                            <div className="flex items-center gap-2">
+                               <div className={`w-2 h-2 rounded-full ${s.isActive ? 'bg-moroccan-green' : 'bg-slate-300'}`}></div>
+                               <span className={`text-[10px] font-black uppercase tracking-widest ${s.isActive ? 'text-moroccan-green' : 'text-slate-400'}`}>{s.isActive ? 'Active' : 'Offline'}</span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="p-2 text-slate-400 hover:text-moroccan-gold"><span className="material-symbols-outlined">more_vert</span></button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               )}

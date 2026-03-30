@@ -22,6 +22,11 @@ const timetableService = {
     const res = await axios.delete(`${API_URL}/timetable/${id}`, { headers: getAuthHeader() });
     return res.data;
   },
+
+  updateSlot: async (id, slotData) => {
+    const res = await axios.put(`${API_URL}/timetable/${id}`, slotData, { headers: getAuthHeader() });
+    return res.data;
+  },
 };
 
 export default timetableService;

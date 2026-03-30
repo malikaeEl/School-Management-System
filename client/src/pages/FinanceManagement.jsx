@@ -19,7 +19,9 @@ const FinanceManagement = () => {
   const [students, setStudents] = useState([]);
   
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [invoiceForm, setInvoiceForm] = useState({ userId: '', amount: '', type: 'Scolarité' });
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
@@ -63,6 +65,111 @@ const FinanceManagement = () => {
     } catch {
       showToast('Erreur génération', 'bg-moroccan-red');
     }
+  };
+
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      await financeService.updateTransactionStatus(id, newStatus);
+      showToast('Statut mis à jour ✓');
+      fetchFinanceData();
+    } catch {
+      showToast('Erreur mise à jour', 'bg-moroccan-red');
+    }
+  };
+
+  const handleDeleteTransaction = async (id) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette facture ?')) return;
+    try {
+      await financeService.deleteTransaction(id);
+      showToast('Facture supprimée', 'bg-slate-500');
+      fetchFinanceData();
+    } catch {
+      showToast('Erreur suppression', 'bg-moroccan-red');
+    }
+  };
+
+  const handleEditClick = (transaction) => {
+    setEditingTransaction(transaction);
+    setInvoiceForm({
+      userId: transaction.user?._id,
+      amount: transaction.amount,
+      type: transaction.type
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateInvoice = async (e) => {
+    e.preventDefault();
+    try {
+      await financeService.updateTransaction(editingTransaction._id, invoiceForm);
+      showToast('Facture modifiée ✓');
+      setShowEditModal(false);
+      setEditingTransaction(null);
+      setInvoiceForm({ userId: '', amount: '', type: 'Scolarité' });
+      fetchFinanceData();
+    } catch {
+      showToast('Erreur modification', 'bg-moroccan-red');
+    }
+  };
+
+  const handlePrintInvoice = (invoice) => {
+    const printWindow = window.open('', '_blank');
+    if(!printWindow) return showToast('Veuillez autoriser les pop-ups', 'bg-amber-500');
+    
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Facture ${invoice.invoiceNumber}</title>
+          <style>
+            body { font-family: 'Inter', sans-serif; padding: 40px; color: #1e293b; max-width: 800px; margin: 0 auto; }
+            .header { border-bottom: 2px solid #e1e7ec; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+            h1 { color: #022c22; margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }
+            h2 { color: #0f766e; margin-top: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+            .details { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; background: #f8fafc; padding: 20px; border-radius: 12px; }
+            .details p { margin: 8px 0; font-size: 14px; }
+            .amount-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 12px; text-align: center; }
+            .amount { font-size: 32px; font-weight: 900; color: #166534; margin: 10px 0 0 0; }
+            .footer { margin-top: 50px; text-align: center; color: #64748b; font-size: 12px; }
+            @media print { body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <h1>Atlas Academy</h1>
+              <h2>Reçu de Transaction Financière</h2>
+            </div>
+            <div style="text-align: right;">
+              <p><strong>N° Facture:</strong> ${invoice.invoiceNumber}</p>
+              <p><strong>Date:</strong> ${new Date(invoice.date).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div class="details">
+            <div>
+              <p><strong>Élève:</strong> ${invoice.user?.firstName} ${invoice.user?.lastName}</p>
+              <p><strong>Niveau:</strong> ${invoice.user?.grade || 'N/A'}</p>
+            </div>
+            <div>
+              <p><strong>Type de frais:</strong> ${invoice.type}</p>
+              <p><strong>Statut:</strong> ${invoice.status === 'Paid' ? 'Payé' : invoice.status === 'Pending' ? 'En Attente' : 'Annulé'}</p>
+            </div>
+          </div>
+          <div class="amount-box">
+            <p style="margin:0; text-transform:uppercase; font-size:12px; font-weight:bold; color:#166534;">Montant Total</p>
+            <p class="amount">${invoice.amount.toLocaleString()} MAD</p>
+          </div>
+          <div class="footer">
+            <p>Document généré électroniquement par Atlas Academy School Management System.</p>
+          </div>
+          <script>
+            window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(html);
+    printWindow.document.close();
   };
 
   const exportFinanceCSV = () => {
@@ -132,7 +239,6 @@ const FinanceManagement = () => {
       <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-3xl w-fit border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
         <button onClick={() => setActiveTab('overview')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'overview' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Aperçu</button>
         <button onClick={() => setActiveTab('invoices')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'invoices' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Factures & Reçus</button>
-        <button onClick={() => setActiveTab('structure')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'structure' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Structure Frais</button>
       </div>
 
       {loading ? (
@@ -270,17 +376,33 @@ const FinanceManagement = () => {
                             <td className="px-8 py-5 text-xs font-bold text-slate-500">{new Date(t.date).toLocaleDateString()}</td>
                             <td className="px-8 py-5 text-sm font-black text-slate-900 dark:text-white tracking-tight">{t.amount.toLocaleString()} MAD</td>
                             <td className="px-8 py-5">
-                               <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                                  t.status === 'Paid' ? 'text-moroccan-green bg-moroccan-green/10' :
-                                  t.status === 'Pending' ? 'text-amber-500 bg-amber-500/10' :
-                                  'text-moroccan-red bg-moroccan-red/10'
-                               }`}>{t.status}</span>
+                               <select 
+                                 value={t.status} 
+                                 onChange={(e) => handleStatusUpdate(t._id, e.target.value)}
+                                 className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest outline-none border-none cursor-pointer transition-all ${
+                                   t.status === 'Paid' ? 'text-moroccan-green bg-moroccan-green/10 hover:bg-moroccan-green/20' :
+                                   t.status === 'Pending' ? 'text-amber-500 bg-amber-500/10 hover:bg-amber-500/20' :
+                                   'text-moroccan-red bg-moroccan-red/10 hover:bg-moroccan-red/20'
+                                 }`}
+                               >
+                                 <option value="Pending">En Attente</option>
+                                 <option value="Paid">Réglé</option>
+                                 <option value="Cancelled">Annulé</option>
+                               </select>
                             </td>
-                            <td className="px-8 py-5 text-right">
-                               <button className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-moroccan-gold hover:bg-moroccan-gold/10 flex items-center justify-center transition-all ml-auto">
-                                 <span className="material-symbols-outlined text-sm">print</span>
-                               </button>
-                            </td>
+                             <td className="px-8 py-5 text-right">
+                                <div className="flex justify-end gap-2">
+                                  <button onClick={() => handlePrintInvoice(t)} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-moroccan-gold hover:bg-moroccan-gold/10 flex items-center justify-center transition-all focus:outline-none" title="Imprimer">
+                                    <span className="material-symbols-outlined text-sm">print</span>
+                                  </button>
+                                  <button onClick={() => handleEditClick(t)} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 flex items-center justify-center transition-all focus:outline-none" title="Modifier">
+                                    <span className="material-symbols-outlined text-sm">edit</span>
+                                  </button>
+                                  <button onClick={() => handleDeleteTransaction(t._id)} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-all focus:outline-none" title="Supprimer">
+                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                  </button>
+                                </div>
+                             </td>
                          </tr>
                        ))}
                     </tbody>
@@ -289,49 +411,6 @@ const FinanceManagement = () => {
             </div>
           )}
 
-          {activeTab === 'structure' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 grid grid-cols-1 xl:grid-cols-3 gap-8">
-               {fees.map(fee => (
-                 <div key={fee._id} className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800 relative z-0 overflow-hidden group shadow-sm hover:shadow-2xl transition-all duration-500">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-moroccan-gold/5 rounded-bl-[100px] z-[-1] group-hover:bg-moroccan-gold/10 transition-colors"></div>
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-linear-to-r from-moroccan-green to-moroccan-gold"></div>
-                    
-                    <span className="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full text-[9px] font-black uppercase tracking-widest mb-6 inline-block">Niveau</span>
-                    <h3 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-10 leading-none">{fee.grade}</h3>
-                    
-                    <div className="space-y-6 mb-12">
-                       <div className="flex justify-between items-center text-xs font-bold text-slate-500 border-b border-slate-50 dark:border-slate-800 pb-4">
-                          <span className="uppercase tracking-widest flex items-center gap-2"><span className="material-symbols-outlined text-[10px] text-moroccan-green">menu_book</span> Scolarité</span>
-                          <span className="text-slate-900 dark:text-white font-black">{fee.tuition.toLocaleString()} MAD</span>
-                       </div>
-                       <div className="flex justify-between items-center text-xs font-bold text-slate-500 border-b border-slate-50 dark:border-slate-800 pb-4">
-                          <span className="uppercase tracking-widest flex items-center gap-2"><span className="material-symbols-outlined text-[10px] text-moroccan-gold">directions_bus</span> Transport</span>
-                          <span className="text-slate-900 dark:text-white font-black">{fee.transport.toLocaleString()} MAD</span>
-                       </div>
-                       <div className="flex justify-between items-center text-xs font-bold text-slate-500 border-b border-slate-50 dark:border-slate-800 pb-4">
-                          <span className="uppercase tracking-widest flex items-center gap-2"><span className="material-symbols-outlined text-[10px] text-moroccan-red">sports_soccer</span> Activités</span>
-                          <span className="text-slate-900 dark:text-white font-black">{fee.activities.toLocaleString()} MAD</span>
-                       </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-end bg-slate-50 dark:bg-slate-800/50 p-6 rounded-3xl">
-                       <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Mensuel</p>
-                          <p className="text-3xl font-black text-deep-emerald tracking-tighter">{(fee.tuition + fee.transport + fee.activities).toLocaleString()}</p>
-                       </div>
-                       <button className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 dark:hover:bg-moroccan-gold shadow-sm transition-all transform group-hover:rotate-12">
-                          <span className="material-symbols-outlined font-black">edit_square</span>
-                       </button>
-                    </div>
-                 </div>
-               ))}
-               {fees.length === 0 && (
-                 <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[3rem] opacity-50">
-                    <span className="text-[10px] font-black uppercase tracking-widest">Aucune structure de frais définie</span>
-                 </div>
-               )}
-            </div>
-          )}
         </>
       )}
 
@@ -381,6 +460,56 @@ const FinanceManagement = () => {
               <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button type="button" onClick={() => setShowInvoiceModal(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
                 <button type="submit" className="flex-1 py-4 rounded-2xl bg-deep-emerald text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-deep-emerald/20 hover:brightness-110 transition-all">Créer Facture</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl w-full max-w-md animate-in zoom-in duration-300 border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Modifier la Facture</h2>
+              <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-moroccan-red transition-colors bg-white dark:bg-slate-900 w-8 h-8 rounded-full flex items-center justify-center shadow-sm">
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleUpdateInvoice} className="p-8 space-y-6">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Élève Facturé</label>
+                <select 
+                  required 
+                  value={invoiceForm.userId} 
+                  onChange={e => setInvoiceForm(p => ({...p, userId: e.target.value}))}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green dark:focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
+                >
+                  {students.map(s => <option key={s._id} value={s._id}>{s.firstName} {s.lastName} ({s.grade})</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Montant (MAD)</label>
+                <input 
+                  type="number" required min="0"
+                  value={invoiceForm.amount} 
+                  onChange={e => setInvoiceForm(p => ({...p, amount: e.target.value}))} 
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Catégorie</label>
+                <select 
+                  value={invoiceForm.type} 
+                  onChange={e => setInvoiceForm(p => ({...p, type: e.target.value}))} 
+                  className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
+                >
+                  {['Scolarité', 'Transport', 'Activités', 'Autre'].map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
+                <button type="submit" className="flex-1 py-4 rounded-2xl bg-moroccan-gold text-deep-emerald text-[10px] font-black uppercase tracking-widest shadow-xl shadow-moroccan-gold/20 hover:brightness-110 transition-all">Mettre à jour</button>
               </div>
             </form>
           </div>

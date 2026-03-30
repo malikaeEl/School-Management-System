@@ -1,13 +1,13 @@
 import Attendance from '../models/Attendance.js';
 import User from '../models/User.js';
-import Subject from '../models/Subject.js';
 
 // ── GET /api/attendance — list attendance records (filtered) ────────────────
 export const getAttendance = async (req, res) => {
   try {
-    const { subjectId, date } = req.query;
+    const { timetableSlotId, grade, date } = req.query;
     const filter = {};
-    if (subjectId) filter.subject = subjectId;
+    if (timetableSlotId) filter.timetableSlot = timetableSlotId;
+    if (grade) filter.grade = grade;
     if (date) {
       const start = new Date(date);
       start.setHours(0,0,0,0);
@@ -17,9 +17,8 @@ export const getAttendance = async (req, res) => {
     }
 
     const records = await Attendance.find(filter)
-      .populate('subject', 'name grade')
-      .populate('teacher', 'firstName lastName')
-      .populate('students.student', 'firstName lastName')
+      .populate('teacher', 'firstName lastName subject')
+      .populate('students.student', 'firstName lastName grade')
       .sort({ date: -1 });
       
     res.json(records);
@@ -31,16 +30,28 @@ export const getAttendance = async (req, res) => {
 // ── POST /api/attendance — record attendance ───────────────────────────────
 export const recordAttendance = async (req, res) => {
   try {
-    const { subjectId, students } = req.body; // students: [{ studentId, status }]
+    const { timetableSlotId, subjectName, grade, students, date } = req.body;
     const teacherId = req.user._id;
 
-    // Verify subject
-    const subject = await Subject.findById(subjectId);
-    if (!subject) return res.status(404).json({ message: 'Matière introuvable.' });
+    const attendanceDate = date ? new Date(date) : new Date();
+    attendanceDate.setHours(12, 0, 0, 0);
+
+    const start = new Date(attendanceDate); start.setHours(0,0,0,0);
+    const end   = new Date(attendanceDate); end.setHours(23,59,59,999);
+
+    // Upsert: delete existing record for the same slot+date
+    await Attendance.deleteMany({
+      timetableSlot: timetableSlotId || null,
+      grade,
+      date: { $gte: start, $lte: end }
+    });
 
     const record = await Attendance.create({
-      subject: subjectId,
+      timetableSlot: timetableSlotId || null,
+      subjectName,
+      grade,
       teacher: teacherId,
+      date: attendanceDate,
       students: students.map(s => ({ student: s.studentId, status: s.status }))
     });
 
@@ -50,16 +61,13 @@ export const recordAttendance = async (req, res) => {
   }
 };
 
-// ── GET /api/attendance/stats — get student attendance stats ───────────────
+// ── GET /api/attendance/stats/:studentId ───────────────────────────────────
 export const getStudentStats = async (req, res) => {
   try {
     const studentId = req.params.studentId;
     const records = await Attendance.find({ 'students.student': studentId });
     
-    let total = 0;
-    let present = 0;
-    let absent = 0;
-
+    let total = 0, present = 0, absent = 0;
     records.forEach(r => {
       const entry = r.students.find(s => s.student.toString() === studentId);
       if (entry) {

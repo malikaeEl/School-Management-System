@@ -1,5 +1,5 @@
 import express from 'express';
-import { getFinanceOverview, getTransactions, generateInvoice, getFees, updateFees } from '../controllers/financeController.js';
+import { getFinanceOverview, getTransactions, generateInvoice, getFees, updateFees, updateTransactionStatus, updateTransaction, deleteTransaction } from '../controllers/financeController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -16,5 +16,11 @@ router.route('/fees')
 
 router.route('/fees/:id')
   .put(updateFees);
+
+router.route('/transactions/:id')
+  .put(updateTransaction)
+  .delete(deleteTransaction);
+
+router.put('/transactions/:id/status', updateTransactionStatus);
 
 export default router;

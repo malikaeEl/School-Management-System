@@ -20,7 +20,7 @@ export const SCHOOL_CYCLES = {
     levels: [
       'T.C',
       '1ère année S.M',
-      '1ère année S.Ex',
+      '1ère année S.X',
       '2ème année S.M',
       '2ème année SVT',
       '2ème année PC'

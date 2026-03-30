@@ -1,6 +1,7 @@
 import Transaction from '../models/Transaction.js';
 import FeeStructure from '../models/FeeStructure.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 
 // ── GET /api/finance/overview — financial summary ────────────────────────
 export const getFinanceOverview = async (req, res) => {
@@ -34,7 +35,7 @@ export const getFinanceOverview = async (req, res) => {
 export const getTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find()
-      .populate('user', 'firstName lastName role')
+      .populate('user', 'firstName lastName role grade')
       .sort({ date: -1 });
     res.json(transactions);
   } catch (error) {
@@ -51,13 +52,38 @@ export const generateInvoice = async (req, res) => {
     
     const transaction = await Transaction.create({
       user: userId,
-      amount,
+      amount: Number(amount),
       type,
       status: status || 'Pending',
       invoiceNumber
     });
     
-    const populated = await transaction.populate('user', 'firstName lastName role');
+    const populated = await transaction.populate('user', 'firstName lastName role grade parentId');
+    
+    // Notify User and Parent
+    const notifications = [];
+    notifications.push({
+      recipient: populated.user._id,
+      type: 'invoice',
+      title: 'Nouvelle Facture',
+      message: `Une facture ${invoiceNumber} d'un montant de ${amount} MAD a été générée.`,
+      link: '/finance'
+    });
+    
+    if (populated.user.parentId) {
+      notifications.push({
+        recipient: populated.user.parentId,
+        type: 'invoice',
+        title: 'Facture Enfant',
+        message: `Une facture ${invoiceNumber} (${amount} MAD) a été générée pour votre enfant ${populated.user.firstName}.`,
+        link: '/parent-dashboard'
+      });
+    }
+    
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
+
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -84,6 +110,57 @@ export const updateFees = async (req, res) => {
       { new: true, upsert: true }
     );
     res.json(fee);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── PUT /api/finance/transactions/:id/status — update status ────────────
+export const updateTransactionStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const transaction = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate('user', 'firstName lastName role grade');
+    
+    if (!transaction) return res.status(404).json({ message: 'Transaction non trouvée' });
+    res.json(transaction);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── PUT /api/finance/transactions/:id — update full record ──────────────
+export const updateTransaction = async (req, res) => {
+  try {
+    const { amount, type, status, userId } = req.body;
+    const updateData = {};
+    if (amount !== undefined) updateData.amount = Number(amount);
+    if (type) updateData.type = type;
+    if (status) updateData.status = status;
+    if (userId) updateData.user = userId;
+
+    const transaction = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    ).populate('user', 'firstName lastName role grade');
+
+    if (!transaction) return res.status(404).json({ message: 'Transaction non trouvée' });
+    res.json(transaction);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── DELETE /api/finance/transactions/:id — remove record ─────────────────
+export const deleteTransaction = async (req, res) => {
+  try {
+    const transaction = await Transaction.findByIdAndDelete(req.params.id);
+    if (!transaction) return res.status(404).json({ message: 'Transaction non trouvée' });
+    res.json({ message: 'Transaction supprimée' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

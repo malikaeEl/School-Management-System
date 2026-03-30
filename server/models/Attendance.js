@@ -1,11 +1,15 @@
 import mongoose from 'mongoose';
 
 const attendanceSchema = new mongoose.Schema({
-  subject: {
+  // Store timetable slot ID for reference (optional, not required)
+  timetableSlot: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Subject',
-    required: true,
+    ref: 'Timetable',
+    default: null,
   },
+  // Store subject/grade info as strings directly (no longer depends on Subject model)
+  subjectName: { type: String, default: '' },
+  grade: { type: String, default: '' },
   teacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
