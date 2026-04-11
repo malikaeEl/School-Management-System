@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import dashboardService from '../services/dashboardService';
 import { getSubjectBorderStyle, getSubjectAccentStyle } from '../utils/subjectColors';
+import { useNavigate } from 'react-router-dom';
 
 const ParentDashboard = () => {
   const { lang, t } = useLanguage();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeChildId, setActiveChildId] = useState(null);
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('academic'); // 'academic', 'schedule', 'finance'
 
   useEffect(() => {
@@ -305,6 +307,26 @@ const ParentDashboard = () => {
                     </div>
                  </div>
 
+                 {/* Messaging Hub (Like Admin Account) */}
+                 <div className="bg-slate-900 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group mb-8">
+                    <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
+                       <div className="text-center sm:text-left">
+                          <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 italic">Centre de Messagerie</h3>
+                          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Assistance & Communication en direct</p>
+                          <button 
+                            onClick={() => navigate('/messages')}
+                            className="mt-8 px-10 py-4 bg-moroccan-gold text-deep-emerald rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-moroccan-gold/20 mx-auto sm:mx-0"
+                          >
+                             <span className="material-symbols-outlined text-base">forum</span>
+                             Ouvrir la Messagerie
+                          </button>
+                       </div>
+                       <div className="w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-white/10 group-hover:scale-110 transition-transform duration-700">
+                          <span className="material-symbols-outlined text-6xl">auto_messages</span>
+                       </div>
+                    </div>
+                    <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[240px] text-white/5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000">chat_bubble</span>
+                 </div>
               </div>
 
               {/* Sidebar Widgets (Attendance) */}

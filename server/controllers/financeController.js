@@ -165,3 +165,25 @@ export const deleteTransaction = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ── GET /api/finance/my-transactions — user's own history ────────────────
+export const getMyTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user._id })
+      .sort({ date: -1 });
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ── GET /api/finance/user-transactions/:userId — admin view of user history ──
+export const getUserTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.params.userId })
+      .sort({ date: -1 });
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -19,6 +19,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)

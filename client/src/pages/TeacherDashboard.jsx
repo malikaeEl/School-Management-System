@@ -89,6 +89,10 @@ const TeacherDashboard = () => {
             <button onClick={() => navigate('/teacher/leaves')} className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
               Demander un Congé
             </button>
+            <button onClick={() => navigate('/messages')} className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">forum</span>
+              Contacter l'Admin
+            </button>
           </div>
         </div>
         <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[240px] text-white/5 rotate-12 pointer-events-none">auto_stories</span>
@@ -126,6 +130,46 @@ const TeacherDashboard = () => {
                    <h3 className="text-xl font-black text-slate-800">{profile?.salary?.toLocaleString() || 0} MAD</h3>
                 </div>
              </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
+              <span className="w-2 h-6 bg-moroccan-green rounded-full"></span>
+              Actions de Gestion
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button 
+                onClick={() => navigate('/messages')} 
+                className="flex items-center justify-between p-6 bg-white hover:bg-moroccan-gold hover:text-white rounded-4xl transition-all group/btn border border-slate-100 shadow-sm"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-moroccan-gold/10 rounded-2xl flex items-center justify-center text-moroccan-gold group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                    <span className="material-symbols-outlined">forum</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-black text-sm uppercase tracking-tight">Messagerie</p>
+                    <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Contact Administration</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+              </button>
+
+              <button 
+                onClick={() => navigate('/teacher/leaves')} 
+                className="flex items-center justify-between p-6 bg-white hover:bg-moroccan-green hover:text-white rounded-4xl transition-all group/btn border border-slate-100 shadow-sm"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-moroccan-green/10 rounded-2xl flex items-center justify-center text-moroccan-green group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                    <span className="material-symbols-outlined">event_busy</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-black text-sm uppercase tracking-tight">Mes Congés</p>
+                    <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Demandes & Statut</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+              </button>
+            </div>
           </div>
 
           {/* Timetable Overview */}

@@ -111,7 +111,7 @@ const Topbar = () => {
                           <div>
                              <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase leading-tight mb-1">{n.title}</p>
                              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-relaxed">{n.message}</p>
-                             <p className="text-[9px] text-slate-300 font-black uppercase italic mt-1.5">{new Date(n.createdAt).toLocaleDateString()} · {new Date(n.createdAt).toLocaleTimeString([], {hour: '2h', minute:'2h'})}</p>
+                             <p className="text-[9px] text-slate-300 font-black uppercase italic mt-1.5">{new Date(n.createdAt).toLocaleDateString()} · {new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                           </div>
                        </div>
                        {!n.read && <div className="absolute top-4 right-4 w-2 h-2 bg-moroccan-green rounded-full shadow-sm"></div>}
@@ -131,13 +131,10 @@ const Topbar = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 relative" ref={dropdownRef}>
+        <div className="flex items-center gap-2 relative">
           <div className="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
           
-          <button 
-            onClick={() => setShowDropdown(!showDropdown)}
-            className={`flex items-center justify-center gap-3 p-1 px-4 rounded-xl transition-all border ${showDropdown ? 'bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700' : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-transparent hover:border-slate-100 dark:hover:border-slate-700'}`}
-          >
+          <div className="flex items-center justify-center gap-3 p-1 px-4 rounded-xl border border-transparent">
             <div className="w-9 h-9 bg-moroccan-gold/10 rounded-lg flex items-center justify-center border border-moroccan-gold/20">
               <span className="material-symbols-outlined text-moroccan-gold">account_circle</span>
             </div>
@@ -147,20 +144,7 @@ const Topbar = () => {
                 {user?.role === 'admin' ? 'Administration' : user?.role === 'teacher' ? 'Enseignant' : user?.role === 'parent' ? 'Parent' : 'Élève'}
               </p>
             </div>
-          </button>
-
-          {/* Dropdown Menu */}
-          {showDropdown && (
-            <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-2 animate-in slide-in-from-top-2 duration-200 z-50">
-               <button 
-                 onClick={() => { setShowDropdown(false); setShowPassModal(true); }}
-                 className="w-full flex items-center justify-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-               >
-                 <span className="material-symbols-outlined text-lg">lock_reset</span>
-                 <span className="text-[11px] font-black uppercase tracking-widest text-center">Changer le mot de passe</span>
-               </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 

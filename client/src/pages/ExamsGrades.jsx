@@ -197,7 +197,6 @@ const ExamsGrades = () => {
                         onClick={() => handleViewDetails(exam)} 
                         className="text-[12px] font-black text-moroccan-green uppercase tracking-widest hover:text-moroccan-gold transition-colors flex items-center gap-1.5 group/btn"
                      >
-                        <span>{user.role === 'student' ? 'Consulter ma Note' : (user.role === 'parent' ? 'Consulter les Notes' : 'Consulter les Détails')}</span>
                         <span className="material-symbols-outlined text-[16px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
                      </button>
                   </div>

@@ -156,6 +156,22 @@ const AdminDashboard = () => {
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
             </button>
 
+            <button 
+              onClick={() => navigate('/messages')} 
+              className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-800 hover:bg-moroccan-gold hover:text-white rounded-3xl transition-all group/btn border border-transparent shadow-xs"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-2xl flex items-center justify-center text-moroccan-gold group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all shadow-sm">
+                  <span className="material-symbols-outlined">forum</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-sm uppercase tracking-tight">Messagerie</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Communications</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
+            </button>
+
           </div>
         </section>
       </div>

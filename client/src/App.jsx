@@ -11,7 +11,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import HRStaffManagement from './pages/HRManagement';
 import FinanceManagement from './pages/FinanceManagement';
 import AcademicAttendance from './pages/AcademicAttendance';
-import TransportGPS from './pages/TransportGPS';
 import ReportsAnalytics from './pages/ReportsAnalytics';
 import CommunicationHub from './pages/CommunicationHub';
 import StudentManagement from './pages/StudentManagement';
@@ -24,14 +23,16 @@ import ExamsGrades from './pages/ExamsGrades';
 import Timetable from './pages/Timetable';
 import InventoryManagement from './pages/InventoryManagement';
 import PersonnelProfile from './pages/PersonnelProfile';
+import Messages from './pages/Messages';
+import TeacherSalary from './pages/TeacherSalary';
+import TeacherLeaves from './pages/TeacherLeaves';
+import LeaveManagement from './pages/LeaveManagement';
 import StudentDashboard from './pages/StudentDashboard';
 import ParentDashboard from './pages/ParentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import Login from './pages/Login';
 import EnrollmentLanding from './pages/EnrollmentLanding';
 import UserManagement from './pages/UserManagement';
-import TeacherLeaves from './pages/TeacherLeaves';
-import LeaveManagement from './pages/LeaveManagement';
 
 const MainLayout = ({ children }) => {
   const { lang, t } = useLanguage();
@@ -95,7 +96,6 @@ function AppRoutes() {
       <Route path="/hr/:id" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><PersonnelProfile /></MainLayout></ProtectedRoute>} />
       <Route path="/finance" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><FinanceManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/attendance" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><AcademicAttendance /></MainLayout></ProtectedRoute>} />
-      <Route path="/transport" element={<ProtectedRoute allowedRoles={['admin', 'parent']}><MainLayout><TransportGPS /></MainLayout></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['admin', 'finance']}><MainLayout><ReportsAnalytics /></MainLayout></ProtectedRoute>} />
       <Route path="/students" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><StudentManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/students/:id" element={<ProtectedRoute allowedRoles={['admin', 'teacher']}><MainLayout><StudentProfile /></MainLayout></ProtectedRoute>} />
@@ -104,10 +104,12 @@ function AppRoutes() {
       <Route path="/library" element={<ProtectedRoute allowedRoles={['admin', 'librarian', 'student']}><MainLayout><LibraryManagement /></MainLayout></ProtectedRoute>} />
       <Route path="/events" element={<ProtectedRoute><MainLayout><EventsCalendar /></MainLayout></ProtectedRoute>} />
       <Route path="/exams" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><MainLayout><ExamsGrades /></MainLayout></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'parent', 'student']}><MainLayout><Messages /></MainLayout></ProtectedRoute>} />
       <Route path="/timetable" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student']}><MainLayout><Timetable /></MainLayout></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute allowedRoles={['admin', 'librarian', 'finance']}><MainLayout><InventoryManagement /></MainLayout></ProtectedRoute>} />
       
       <Route path="/teacher/leaves" element={<ProtectedRoute allowedRoles={['teacher']}><MainLayout><TeacherLeaves /></MainLayout></ProtectedRoute>} />
+      <Route path="/teacher/salary" element={<ProtectedRoute allowedRoles={['teacher']}><MainLayout><TeacherSalary /></MainLayout></ProtectedRoute>} />
       <Route path="/admin/leaves" element={<ProtectedRoute allowedRoles={['admin']}><MainLayout><LeaveManagement /></MainLayout></ProtectedRoute>} />
       
       <Route path="*" element={<Navigate to="/" replace />} />

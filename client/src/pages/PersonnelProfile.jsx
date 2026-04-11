@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { ALL_LEVELS } from '../constants/schoolLevels';
 import userService from '../services/userService';
+import financeService from '../services/financeService';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -24,6 +25,11 @@ const PersonnelProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [showPayEditModal, setShowPayEditModal] = useState(false);
+  const [editingPay, setEditingPay] = useState(null);
+  const [payEditForm, setPayEditForm] = useState({ amount: 0, status: 'Pending' });
   
   const avatarInputRef = useRef(null);
 
@@ -37,10 +43,23 @@ const PersonnelProfile = () => {
     try {
       const data = await userService.getById(id);
       setPerson(data);
+      fetchTransactions();
     } catch (err) {
       setError(err?.response?.data?.message || 'Erreur lors du chargement.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    setTransactionsLoading(true);
+    try {
+      const data = await financeService.getUserTransactions(id);
+      setTransactions(data);
+    } catch (err) {
+      console.error('Error fetching transactions:', err);
+    } finally {
+      setTransactionsLoading(false);
     }
   };
 
@@ -105,6 +124,32 @@ const PersonnelProfile = () => {
       showToast('Erreur mise à jour.', 'bg-moroccan-red');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpdateTransaction = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await financeService.updateTransaction(editingPay._id, payEditForm);
+      showToast('Transaction mise à jour ✓');
+      setShowPayEditModal(false);
+      fetchTransactions();
+    } catch {
+      showToast('Erreur lors de la mise à jour.', 'bg-moroccan-red');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteTransaction = async (tid) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cet enregistrement ?')) return;
+    try {
+      await financeService.deleteTransaction(tid);
+      showToast('Transaction supprimée ✓');
+      fetchTransactions();
+    } catch {
+      showToast('Erreur lors de la suppression.', 'bg-moroccan-red');
     }
   };
 
@@ -273,6 +318,126 @@ const PersonnelProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment History Section */}
+      <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8 overflow-hidden">
+         <div className="flex justify-between items-center mb-8">
+            <h3 className="text-lg font-black flex items-center text-deep-emerald uppercase tracking-widest">
+              <span className="w-2 h-7 bg-amber-500 rounded-full mr-4 ml-4"></span>
+              Historique des Paiements
+            </h3>
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
+               <span className="material-symbols-outlined text-sm text-slate-400">payments</span>
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{transactions.length} Transactions</span>
+            </div>
+         </div>
+
+         <div className="overflow-x-auto">
+            {transactionsLoading ? (
+               <div className="py-20 text-center"><span className="material-symbols-outlined animate-spin text-moroccan-green">progress_activity</span></div>
+            ) : transactions.length > 0 ? (
+               <table className="w-full text-left">
+                  <thead className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                     <tr>
+                        <th className="px-6 py-4">Date</th>
+                        <th className="px-6 py-4">Référence</th>
+                        <th className="px-6 py-4">Type</th>
+                        <th className="px-6 py-4">Montant</th>
+                        <th className="px-6 py-4">Statut</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                     {transactions.map(t => (
+                        <tr key={t._id} className="text-sm hover:bg-slate-50/50 transition-colors group/row">
+                           <td className="px-6 py-5 font-bold text-slate-600">{new Date(t.date).toLocaleDateString()}</td>
+                           <td className="px-6 py-5 font-black text-slate-900 uppercase tracking-tight">{t.invoiceNumber || 'N/A'}</td>
+                           <td className="px-6 py-5">
+                              <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                                 t.type === 'Salaire' ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500'
+                              }`}>
+                                 {t.type}
+                              </span>
+                           </td>
+                           <td className="px-6 py-5 font-black text-moroccan-green">{t.amount.toLocaleString()} MAD</td>
+                           <td className="px-6 py-5">
+                              <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                                 t.status === 'Paid' ? 'bg-emerald-100 text-emerald-600' : 
+                                 t.status === 'Pending' ? 'bg-amber-100 text-amber-600' : 
+                                 'bg-slate-100 text-slate-500'
+                              }`}>
+                                 {t.status === 'Paid' ? 'Payé' : t.status === 'Pending' ? 'En attente' : t.status}
+                              </span>
+                           </td>
+                           <td className="px-6 py-5 text-right opacity-0 group-hover/row:opacity-100 transition-opacity">
+                              <div className="flex justify-end gap-2">
+                                 <button 
+                                   onClick={() => { setEditingPay(t); setPayEditForm({ amount: t.amount, status: t.status }); setShowPayEditModal(true); }}
+                                   className="p-2 text-slate-400 hover:text-moroccan-green transition-colors"
+                                 >
+                                    <span className="material-symbols-outlined text-sm">edit</span>
+                                 </button>
+                                 <button 
+                                   onClick={() => handleDeleteTransaction(t._id)}
+                                   className="p-2 text-slate-400 hover:text-moroccan-red transition-colors"
+                                 >
+                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                 </button>
+                              </div>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            ) : (
+               <div className="py-20 text-center opacity-30">
+                  <span className="material-symbols-outlined text-4xl mb-2">history_edu</span>
+                  <p className="text-[10px] font-black uppercase tracking-widest">Aucun historique de paiement</p>
+               </div>
+            )}
+         </div>
+      </div>
+
+      {/* Pay Edit Modal */}
+      {showPayEditModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-sm animate-in zoom-in duration-200 border border-slate-100 dark:border-slate-800">
+             <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
+                <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Modifier Transaction</h3>
+                <button onClick={() => setShowPayEditModal(false)} className="material-symbols-outlined text-slate-400">close</button>
+             </div>
+             <form onSubmit={handleUpdateTransaction} className="p-8 space-y-6">
+                <div>
+                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Montant (MAD)</label>
+                   <input 
+                     type="number" 
+                     value={payEditForm.amount} 
+                     onChange={e => setPayEditForm({...payEditForm, amount: e.target.value})}
+                     className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none font-black text-slate-800 dark:text-white"
+                   />
+                </div>
+                <div>
+                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Statut</label>
+                   <select 
+                     value={payEditForm.status} 
+                     onChange={e => setPayEditForm({...payEditForm, status: e.target.value})}
+                     className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none font-black text-slate-800 dark:text-white"
+                   >
+                      <option value="Paid">Payé</option>
+                      <option value="Pending">En attente</option>
+                      <option value="Cancelled">Annulé</option>
+                   </select>
+                </div>
+                <div className="flex gap-4 pt-4">
+                   <button type="button" onClick={() => setShowPayEditModal(false)} className="flex-1 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Annuler</button>
+                   <button type="submit" disabled={saving} className="flex-1 py-4 bg-moroccan-green text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-moroccan-green/20 disabled:opacity-50">
+                      {saving ? 'Envoi...' : 'Enregistrer'}
+                   </button>
+                </div>
+             </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isEditing && (

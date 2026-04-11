@@ -47,6 +47,16 @@ const financeService = {
     const res = await axios.delete(`${API_URL}/finance/transactions/${id}`, { headers: getAuthHeader() });
     return res.data;
   },
+  
+  getMyTransactions: async () => {
+    const res = await axios.get(`${API_URL}/finance/my-transactions`, { headers: getAuthHeader() });
+    return res.data;
+  },
+
+  getUserTransactions: async (userId) => {
+    const res = await axios.get(`${API_URL}/finance/user-transactions/${userId}`, { headers: getAuthHeader() });
+    return res.data;
+  },
 };
 
 export default financeService;

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import dashboardService from '../services/dashboardService';
+import { useNavigate } from 'react-router-dom';
 
 const StudentDashboard = () => {
   const { lang, t } = useLanguage();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -166,9 +168,14 @@ const StudentDashboard = () => {
 
           {/* Quick Support */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">Contact Admin</h3>
-             <p className="text-[10px] text-slate-400 font-bold uppercase leading-relaxed mb-6">Un problème avec votre compte ?</p>
-             <button className="w-full py-4 bg-slate-50 text-slate-600 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border border-slate-100 hover:bg-slate-100 transition-all">Envoyer message</button>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">Contact Admin</h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase leading-relaxed mb-6">Un problème avec votre compte ?</p>
+              <button 
+                onClick={() => navigate('/messages')}
+                className="w-full py-4 bg-moroccan-gold text-deep-emerald rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border-none shadow-lg shadow-moroccan-gold/20 hover:scale-105 transition-all"
+              >
+                Envoyer message
+              </button>
           </div>
         </div>
       </div>

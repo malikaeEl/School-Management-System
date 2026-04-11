@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import userService from '../services/userService';
+import financeService from '../services/financeService';
 
 const HRManagement = () => {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ const HRManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ firstName: '', lastName: '', role: 'teacher', email: '', phone: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payingUser, setPayingUser] = useState(null);
+  const [payAmount, setPayAmount] = useState(0);
 
   const showToast = (msg, color = 'bg-moroccan-green') => {
     setToast({ msg, color });
@@ -219,7 +223,16 @@ const HRManagement = () => {
                                <span className={`text-[10px] font-black uppercase tracking-widest ${s.isActive ? 'text-moroccan-green' : 'text-slate-400'}`}>{s.isActive ? 'Active' : 'Offline'}</span>
                             </div>
                           </td>
-                          <td className="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+                          <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                            {s.role === 'teacher' && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); setPayingUser(s); setPayAmount(s.salary || 0); setShowPayModal(true); }}
+                                className="px-4 py-2 bg-moroccan-gold text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 shadow-lg shadow-moroccan-gold/20 transition-all flex items-center gap-1"
+                              >
+                                <span className="material-symbols-outlined text-sm">payments</span>
+                                Payer
+                              </button>
+                            )}
                             <button className="p-2 text-slate-400 hover:text-moroccan-gold"><span className="material-symbols-outlined">more_vert</span></button>
                           </td>
                         </tr>
@@ -232,6 +245,70 @@ const HRManagement = () => {
           </section>
         </div>
       </div>
+
+      {/* Payment Confirmation Modal */}
+      {showPayModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in zoom-in duration-200 overflow-hidden border border-slate-100 dark:border-slate-800">
+            <div className="p-8 border-b border-slate-50 dark:border-slate-800 bg-linear-to-r from-amber-500 to-moroccan-gold text-white flex justify-between items-center">
+               <div>
+                  <h2 className="text-xl font-black uppercase tracking-tight">Paiement Salaire</h2>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/80 mt-1">Confirmation du versement</p>
+               </div>
+               <button onClick={() => setShowPayModal(false)} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center"><span className="material-symbols-outlined">close</span></button>
+            </div>
+            
+            <div className="p-8 space-y-6">
+               <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+                  <div className="w-12 h-12 rounded-xl bg-moroccan-gold/20 text-moroccan-gold flex items-center justify-center font-black">
+                     {payingUser?.firstName?.[0]}{payingUser?.lastName?.[0]}
+                  </div>
+                  <div>
+                     <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">{payingUser?.firstName} {payingUser?.lastName}</p>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Enseignant</p>
+                  </div>
+               </div>
+
+               <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Montant à Verser (MAD)</label>
+                  <input 
+                    type="number" 
+                    value={payAmount} 
+                    onChange={e => setPayAmount(e.target.value)}
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-moroccan-gold/20 text-lg font-black text-slate-800 dark:text-white"
+                  />
+               </div>
+
+               <div className="flex gap-4 pt-4">
+                  <button onClick={() => setShowPayModal(false)} className="flex-1 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Annuler</button>
+                  <button 
+                    onClick={async () => {
+                      setSubmitting(true);
+                      try {
+                        await financeService.generateInvoice({
+                          userId: payingUser._id,
+                          amount: Number(payAmount),
+                          type: 'Salaire',
+                          status: 'Paid'
+                        });
+                        showToast(`Salaire de ${payingUser.firstName} versé avec succès ✓`);
+                        setShowPayModal(false);
+                      } catch (err) {
+                        showToast('Erreur lors du paiement.', 'bg-moroccan-red');
+                      } finally {
+                        setSubmitting(false);
+                      }
+                    }}
+                    disabled={submitting}
+                    className="flex-1 py-4 rounded-2xl bg-deep-emerald text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-deep-emerald/20 disabled:opacity-50"
+                  >
+                    {submitting ? 'Traitement...' : 'Confirmer Paiement'}
+                  </button>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

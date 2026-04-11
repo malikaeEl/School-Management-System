@@ -303,7 +303,6 @@ const FinanceManagement = () => {
                   <div className="space-y-6 flex-1">
                     {[
                       { label: 'Scolarité', color: 'bg-moroccan-green', type: 'Scolarité' },
-                      { label: 'Transport', color: 'bg-moroccan-gold', type: 'Transport' },
                       { label: 'Activités', color: 'bg-moroccan-red', type: 'Activités' },
                     ].map((item, i) => {
                        const totalType = transactions.filter(t => t.type === item.type && t.status === 'Paid').reduce((a, b) => a + b.amount, 0);
@@ -454,7 +453,7 @@ const FinanceManagement = () => {
                   onChange={e => setInvoiceForm(p => ({...p, type: e.target.value}))} 
                   className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
                 >
-                  {['Scolarité', 'Transport', 'Activités', 'Autre'].map(t => <option key={t} value={t}>{t}</option>)}
+                  {['Scolarité', 'Activités', 'Autre'].map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -504,7 +503,7 @@ const FinanceManagement = () => {
                   onChange={e => setInvoiceForm(p => ({...p, type: e.target.value}))} 
                   className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
                 >
-                  {['Scolarité', 'Transport', 'Activités', 'Autre'].map(t => <option key={t} value={t}>{t}</option>)}
+                  {['Scolarité', 'Activités', 'Autre'].map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">

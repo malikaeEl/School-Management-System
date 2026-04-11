@@ -1,14 +1,16 @@
 import express from 'express';
-import { getFinanceOverview, getTransactions, generateInvoice, getFees, updateFees, updateTransactionStatus, updateTransaction, deleteTransaction } from '../controllers/financeController.js';
+import { getFinanceOverview, getTransactions, getMyTransactions, getUserTransactions, generateInvoice, getFees, updateFees, updateTransactionStatus, updateTransaction, deleteTransaction } from '../controllers/financeController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(protect);
+router.get('/my-transactions', getMyTransactions);
 router.use(adminOnly);
 
 router.get('/overview', getFinanceOverview);
 router.get('/transactions', getTransactions);
+router.get('/user-transactions/:userId', getUserTransactions);
 router.post('/invoice', generateInvoice);
 
 router.route('/fees')

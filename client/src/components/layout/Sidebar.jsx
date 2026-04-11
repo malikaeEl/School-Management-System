@@ -34,6 +34,9 @@ const Sidebar = () => {
         { title: 'My Dashboard', icon: 'person_outline', path: '/student-dashboard', roles: ['student'], arabic: 'لوحتي', french: 'Mon Tableau de bord' },
         { title: 'My Dashboard', icon: 'person_outline', path: '/teacher-dashboard', roles: ['teacher'], arabic: 'لوحتي', french: 'Mon Tableau de bord' },
         { title: 'My Dashboard', icon: 'family_restroom', path: '/parent-dashboard', roles: ['parent'], arabic: 'لوحتي', french: 'Mon Tableau de bord' },
+        { title: 'My Leaves', icon: 'event_busy', path: '/teacher/leaves', roles: ['teacher'], arabic: 'طلبات الإجازة', french: 'Mes Congés' },
+        { title: 'My Salary', icon: 'payments', path: '/teacher/salary', roles: ['teacher'], arabic: 'تفاصيل الراتب', french: 'Bulletin de Paie' },
+        { title: 'Messages', icon: 'forum', path: '/messages', roles: ['admin', 'teacher', 'parent', 'student'], arabic: 'الرسائل', french: 'Messages' },
       ]
     },
     {
