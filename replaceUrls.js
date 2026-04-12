@@ -18,19 +18,15 @@ const walkSync = (dir, callback) => {
   });
 };
 
-console.log('🔄 Mise à jour des URLs en cours...');
+console.log('🔄 Remplacement brutal de localhost:5000 en cours...');
 
 let updatedCount = 0;
-// Note: on utilise des RegExp pour "http://localhost:5000" et "http://localhost:5000/api"
 walkSync(path.join(__dirname, 'client/src'), (filepath) => {
   let content = fs.readFileSync(filepath, 'utf8');
   let original = content;
 
-  // Remplace "http://localhost:5000/api" strict (le plus commun)
-  content = content.replace(/['"`]http:\/\/localhost:5000\/api(.*?)['"`]/g, "`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}$1`");
-  
-  // Remplace "http://localhost:5000" s'il en reste (sans le /api)
-  content = content.replace(/['"`]http:\/\/localhost:5000(.*?)['"`]/g, "`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}$1`");
+  // Remplace absolument tout ce qui est http://localhost:5000 par la nouvelle URL Vercel
+  content = content.replace(/http:\/\/localhost:5000/g, "https://school-management-system-one-rose.vercel.app");
 
   if (content !== original) {
     fs.writeFileSync(filepath, content);
