@@ -3,6 +3,10 @@ import Subject from '../models/Subject.js';
 import Timetable from '../models/Timetable.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Force node.js to resolve domain names to IPv4 first (fixes Render ENETUNREACH for Gmail IPv6)
+dns.setDefaultResultOrder('ipv4first');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
