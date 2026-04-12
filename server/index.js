@@ -52,11 +52,12 @@ app.use('/api/leaves', leaveRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000,
+  family: 4 // Force IPv4 (Fix for Node 18+ on Render connecting to Atlas)
+})
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
-
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
