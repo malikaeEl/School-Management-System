@@ -379,7 +379,7 @@ const AcademicManagement = () => {
                              </div>
                              <div className="flex items-center gap-2 shrink-0">
                                <a 
-                                 href={`http://localhost:5000${m.url}`} 
+                                 href={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${m.url}`} 
                                  target="_blank" 
                                  rel="noreferrer"
                                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-700 text-slate-400 hover:text-moroccan-green hover:shadow-sm border border-slate-100 dark:border-slate-600 transition-all"

@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { ALL_LEVELS } from '../constants/schoolLevels';
 import userService from '../services/userService';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${import.meta.env.VITE_API_URL || `${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}/api`}`;
 
 const getAuthHeader = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -206,7 +206,7 @@ const StudentProfile = () => {
     let avatarImgTag = '';
     if (student.avatar) {
       try {
-        const res = await fetch(`http://localhost:5000${student.avatar}`);
+        const res = await fetch(`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${student.avatar}`);
         const blob = await res.blob();
         const b64 = await new Promise(resolve => {
           const reader = new FileReader();
@@ -407,7 +407,7 @@ const StudentProfile = () => {
                     title="Cliquer pour changer la photo"
                   >
                     {student.avatar ? (
-                      <img src={`http://localhost:5000${student.avatar}`} alt="Photo" className="w-full h-full object-cover" />
+                      <img src={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${student.avatar}`} alt="Photo" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-3xl font-black text-white/50 flex items-center justify-center w-full h-full">{student.firstName?.[0]}{student.lastName?.[0]}</span>
                     )}
@@ -577,7 +577,7 @@ const StudentProfile = () => {
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <a
-                        href={`http://localhost:5000${doc.path}`}
+                        href={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${doc.path}`}
                         target="_blank"
                         rel="noreferrer"
                         className="p-1.5 text-slate-400 hover:text-moroccan-green hover:bg-moroccan-green/10 rounded-lg transition-all"

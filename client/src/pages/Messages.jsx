@@ -129,7 +129,7 @@ const Messages = () => {
                 >
                   <div className="relative">
                     <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black text-slate-400 overflow-hidden">
-                       {c.avatar ? <img src={`http://localhost:5000${c.avatar}`} alt="" className="w-full h-full object-cover" /> : c.firstName[0]}
+                       {c.avatar ? <img src={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${c.avatar}`} alt="" className="w-full h-full object-cover" /> : c.firstName[0]}
                     </div>
                     {c.isActive && <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-moroccan-green border-4 border-white dark:border-slate-900"></div>}
                   </div>

@@ -295,7 +295,7 @@ const TeacherDashboard = () => {
               {students?.length > 0 ? students.slice(0, 10).map((s, idx) => (
                 <div key={idx} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer group" onClick={() => navigate(`/students/${s._id}`)}>
                   <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs text-slate-400 group-hover:bg-moroccan-green group-hover:text-white transition-all overflow-hidden border border-slate-200">
-                    {s.avatar ? <img src={`http://localhost:5000${s.avatar}`} className="w-full h-full object-cover" /> : `${s.firstName?.[0]}${s.lastName?.[0]}`}
+                    {s.avatar ? <img src={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${s.avatar}`} className="w-full h-full object-cover" /> : `${s.firstName?.[0]}${s.lastName?.[0]}`}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-black text-slate-800 truncate leading-none mb-1">{s.firstName} {s.lastName}</p>

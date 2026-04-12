@@ -5,7 +5,7 @@ import { ALL_LEVELS } from '../constants/schoolLevels';
 import userService from '../services/userService';
 import financeService from '../services/financeService';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${import.meta.env.VITE_API_URL || `${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}/api`}`;
 
 const getAuthHeader = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -215,7 +215,7 @@ const PersonnelProfile = () => {
             className="w-32 h-32 rounded-3xl bg-slate-100 border-4 border-white shadow-xl overflow-hidden relative group cursor-pointer mb-6"
           >
             {person.avatar ? (
-              <img src={`http://localhost:5000${person.avatar}`} alt="Profile" className="w-full h-full object-cover" />
+              <img src={`${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}${person.avatar}`} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl font-black text-slate-300">
                 {person.firstName?.[0]}{person.lastName?.[0]}

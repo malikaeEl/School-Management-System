@@ -65,7 +65,7 @@ const AcademicAttendance = () => {
     setLoadingStudents(true);
     try {
       // Fetch only students for the slot's grade directly from API
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/users?role=student&grade=${slot.grade}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || `${(import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000')}/api`}`}/users?role=student&grade=${slot.grade}`, {
         headers: { 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}` }
       });
       if (!response.ok) throw new Error();
