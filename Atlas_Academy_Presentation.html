@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Atlas Academy - Project Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Reveal.js Core Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+  <!-- Modern Green Theme -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/theme/blood.min.css">
+  
+  <style>
+    .highlight { color: #2ecc71; font-weight: bold; }
+    .small-text { font-size: 0.65em; line-height: 1.4; }
+    .feature-list { text-align: left; margin: 0 auto; display: inline-block; }
+    .role-title { font-size: 1.2em; color: #e74c3c; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Title -->
+      <section>
+        <h1 style="color: #2ecc71;">Atlas Academy</h1>
+        <h3>Next-Generation School Management System</h3>
+        <p>A unified cloud platform for modern education</p>
+      </section>
+
+      <!-- Slide 2: The Problem -->
+      <section>
+        <h2>The Problem</h2>
+        <ul>
+          <li class="fragment">Schools struggle with fragmented legacy systems.</li>
+          <li class="fragment">Communication gaps between teachers, parents, and admins.</li>
+          <li class="fragment">Manual tracking for finances, attendance, and grading.</li>
+        </ul>
+      </section>
+
+      <!-- Slide 3: The Solution -->
+      <section>
+        <h2>Our Solution</h2>
+        <p>An <span class="highlight">all-in-one centralized platform</span> that automates administration and unifies communication.</p>
+        <p>Accessible everywhere. Secure by design.</p>
+      </section>
+
+      <!-- Slide 4: Role-Based Dashboards (Nested Slides) -->
+      <section>
+        <section>
+          <h2>Role-Based Dashboards 👥</h2>
+          <p>Four unique experiences connected to one secure database.</p>
+          <p class="small-text">(Swipe down to explore roles)</p>
+        </section>
+        
+        <!-- Admin -->
+        <section>
+          <h3 class="role-title">1. Administrator Dashboard</h3>
+          <p><em>The Command Center</em></p>
+          <ul class="feature-list small-text">
+            <li><strong>Global Overview:</strong> Real-time statistics on enrollments, attendance, and staff counts.</li>
+            <li><strong>Financial Control:</strong> Track tuition, operational expenses, and process teacher payroll.</li>
+            <li><strong>User Management:</strong> Create accounts, assign roles, and handle HR leave requests.</li>
+            <li><strong>Communication Hub:</strong> Broadcast urgent announcements across the platform.</li>
+          </ul>
+        </section>
+
+        <!-- Teacher -->
+        <section>
+          <h3 class="role-title">2. Teacher Dashboard</h3>
+          <p><em>The Academic Workspace</em></p>
+          <ul class="feature-list small-text">
+            <li><strong>Classroom Management:</strong> Interactive timetables and digital daily attendance.</li>
+            <li><strong>Grading & Exams:</strong> Upload results, assign grades, and update student progress dynamically.</li>
+            <li><strong>Personal HR:</strong> Track monthly pay slips and officially request days off.</li>
+            <li><strong>Direct Messaging:</strong> Secure channel to contact parents or answer student questions.</li>
+          </ul>
+        </section>
+
+        <!-- Student -->
+        <section>
+          <h3 class="role-title">3. Student Dashboard</h3>
+          <p><em>The Learning Hub</em></p>
+          <ul class="feature-list small-text">
+            <li><strong>Academic Tracking:</strong> Clear display of GPA, latest grades, and attendance rates.</li>
+            <li><strong>Scheduling:</strong> Current class timetables and events calendar.</li>
+            <li><strong>Resources:</strong> Browse the digital library and access online learning materials.</li>
+            <li><strong>Teacher Support:</strong> Message teachers directly for homework help or questions.</li>
+          </ul>
+        </section>
+
+        <!-- Parent -->
+        <section>
+          <h3 class="role-title">4. Parent Dashboard</h3>
+          <p><em>The Progress Monitor</em></p>
+          <ul class="feature-list small-text">
+            <li><strong>Child Monitoring:</strong> Switch between linked children to track specific grades and attendance.</li>
+            <li><strong>Financial Transparency:</strong> View pending tuition fees, payment histories, and deadlines.</li>
+            <li><strong>Parent-Teacher Communication:</strong> Instantly message teachers to discuss progress.</li>
+            <li><strong>Awareness:</strong> Direct access to school-wide announcements and the academic calendar.</li>
+          </ul>
+        </section>
+      </section>
+
+      <!-- Slide 5: Tech Stack -->
+      <section>
+        <h2>The Technology Stack</h2>
+        <p>A modern <strong>MERN</strong> Architecture</p>
+        <ul class="feature-list small-text">
+          <li><strong>Frontend:</strong> React.js, Vite, Tailwind CSS, Shadcn UI</li>
+          <li><strong>Backend:</strong> Node.js, Express.js, JWT</li>
+          <li><strong>Database:</strong> MongoDB Atlas (Cloud NoSQL)</li>
+        </ul>
+      </section>
+
+      <!-- Slide 6: Deployment -->
+      <section>
+        <h2>Cloud Deployment ☁️</h2>
+        <ul class="feature-list">
+          <li><span class="highlight">Client:</span> Hosted on <strong>Vercel</strong> for edge delivery</li>
+          <li><span class="highlight">Server:</span> Hosted on <strong>Render</strong> for robust API handling</li>
+          <li><span class="highlight">Data:</span> Hosted on <strong>MongoDB Atlas</strong> securely</li>
+        </ul>
+      </section>
+
+      <!-- Slide 7: Conclusion -->
+      <section>
+        <h1 style="color: #2ecc71;">Thank You!</h1>
+        <p>Live Demo Ready.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      transition: 'convex'
+    });
+  </script>
+</body>
+</html>
