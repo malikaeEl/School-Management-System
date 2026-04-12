@@ -34,6 +34,7 @@ const sendWelcomeEmail = async ({ email, firstName, lastName, password, role, pa
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT) || 587,
     secure: parseInt(process.env.SMTP_PORT) === 465,
+    family: 4, // Explicitly force IPv4 socket connection
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
