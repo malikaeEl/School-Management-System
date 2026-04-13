@@ -100,24 +100,24 @@ const HRManagement = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Email</label>
+                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('email') || 'Email'}</label>
                 <input required type="email" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} placeholder="alami@atlas.academy" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-moroccan-green/30 outline-none transition-all"/>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Téléphone</label>
+                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('phone') || 'Téléphone'}</label>
                 <input value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} placeholder="+212 6..." className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-moroccan-green/30 outline-none transition-all"/>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Rôle</label>
+                <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('role') || 'Rôle'}</label>
                 <select value={form.role} onChange={e => setForm(p => ({...p, role: e.target.value}))} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-sm focus:outline-none">
-                  <option value="teacher">Enseignant</option>
-                  <option value="admin">Administrateur</option>
+                  <option value="teacher">{t('teacher_role') || 'Enseignant'}</option>
+                  <option value="admin">{t('admin_role') || 'Administrateur'}</option>
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-black text-slate-600 dark:text-slate-300">Annuler</button>
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-black text-slate-600 dark:text-slate-300">{t('cancel') || 'Annuler'}</button>
                 <button type="submit" disabled={submitting} className="flex-1 py-3 rounded-xl bg-moroccan-green text-white text-sm font-black shadow-lg shadow-moroccan-green/20 disabled:opacity-50">
-                  {submitting ? 'Création...' : 'Créer & Envoyer'}
+                  {submitting ? (t('creating') || 'Création...') : (t('create_send') || 'Créer & Envoyer')}
                 </button>
               </div>
             </form>
@@ -130,15 +130,15 @@ const HRManagement = () => {
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
             <span className="w-2 h-8 bg-moroccan-green rounded-full"></span>
-            Ressources Humaines
+            {t('hr')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 uppercase text-[10px] font-black tracking-widest">
-            Gestion du personnel et des comptes d'administration
+            {t('hr_subtitle')}
           </p>
         </div>
         <button onClick={() => setShowModal(true)} className="bg-moroccan-green text-white px-7 py-3.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:opacity-90 shadow-xl shadow-moroccan-green/20 transition-all uppercase tracking-widest transform hover:-translate-y-1">
           <span className="material-symbols-outlined">person_add</span>
-          Déclarer un employé
+          {t('add_employee')}
         </button>
       </div>
 
@@ -146,7 +146,7 @@ const HRManagement = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { icon: 'groups', label: 'Total Staff', val: staff.length, color: 'moroccan-green' },
-          { icon: 'school', label: 'Enseignants', val: staff.filter(s => s.role === 'teacher').length, color: 'moroccan-gold' },
+          { icon: 'school', label: t('teachers'), val: staff.filter(s => s.role === 'teacher').length, color: 'moroccan-gold' },
           { icon: 'support_agent', label: 'Administration', val: staff.filter(s => s.role === 'admin').length, color: 'deep-emerald' },
         ].map(st => (
           <div key={st.label} className={`bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 border-l-4 border-l-${st.color} hover:shadow-md transition-all`}>
@@ -168,7 +168,7 @@ const HRManagement = () => {
             <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-slate-50/20">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2 text-slate-400 dark:text-slate-300">
                 <span className="material-symbols-outlined text-moroccan-gold text-xl">badge</span>
-                Registre du Personnel
+                {t('staff_directory')}
               </h2>
               <button onClick={exportHR} className="flex items-center gap-2 text-[10px] font-black text-moroccan-green uppercase tracking-widest hover:underline px-4 py-2 bg-moroccan-green/5 rounded-xl border border-moroccan-green/10">
                  <span className="material-symbols-outlined text-sm">download</span>

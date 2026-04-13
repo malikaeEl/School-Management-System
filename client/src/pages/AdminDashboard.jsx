@@ -34,10 +34,10 @@ const AdminDashboard = () => {
   const { stats } = data || {};
 
   const statCards = [
-    { label: 'Étudiants', value: stats?.students || 0, icon: 'group', color: 'bg-moroccan-green', text: 'text-moroccan-green' },
-    { label: 'Enseignants', value: stats?.teachers || 0, icon: 'work', color: 'bg-moroccan-red', text: 'text-moroccan-red' },
-    { label: 'Parents', value: stats?.parents || 0, icon: 'family_restroom', color: 'bg-moroccan-gold', text: 'text-moroccan-gold' },
-    { label: 'Matières', value: stats?.subjects || 0, icon: 'menu_book', color: 'bg-deep-emerald', text: 'text-deep-emerald' },
+    { label: t('students'), value: stats?.students || 0, icon: 'group', color: 'bg-moroccan-green', text: 'text-moroccan-green' },
+    { label: t('teachers'), value: stats?.teachers || 0, icon: 'work', color: 'bg-moroccan-red', text: 'text-moroccan-red' },
+    { label: t('parents'), value: stats?.parents || 0, icon: 'family_restroom', color: 'bg-moroccan-gold', text: 'text-moroccan-gold' },
+    { label: t('subjects'), value: stats?.subjects || 0, icon: 'menu_book', color: 'bg-deep-emerald', text: 'text-deep-emerald' },
   ];
 
   return (
@@ -47,9 +47,9 @@ const AdminDashboard = () => {
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
             <span className="w-2 h-8 bg-moroccan-gold rounded-full"></span>
-            Vue d'ensemble
+            {t('overview')}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 uppercase text-[10px] font-black tracking-[0.2em]">Pilotage de l'établissement Atlas Academy</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 uppercase text-[10px] font-black tracking-[0.2em]">{t('admin_dashboard_subtitle')}</p>
         </div>
       </div>
       
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
         <section className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 p-8 pt-10">
           <h2 className="text-lg font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3 uppercase tracking-tight">
             <span className="w-1.5 h-6 bg-moroccan-green rounded-full"></span>
-            Actions de Gestion
+            {t('management_actions')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <button 
@@ -85,8 +85,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">person_add</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">Comptes Utilisateurs</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Admin, Profs, Parents</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('user_accounts')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('user_accounts_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
@@ -101,8 +101,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">badge</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">RH & Personnel</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Équipe Atlas Academy</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('hr_staff')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('hr_staff_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
@@ -117,8 +117,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">how_to_reg</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">Inscriptions</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Nouveaux Élèves</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('enrollments')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('enrollments_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
@@ -133,8 +133,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">account_balance</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">Finances</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Facturation & Paie</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('finances')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('finances_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
@@ -149,8 +149,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">edit_calendar</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">Présences</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Suivi Quotidien</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('attendance_management')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('attendance_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
@@ -165,8 +165,8 @@ const AdminDashboard = () => {
                   <span className="material-symbols-outlined">forum</span>
                 </div>
                 <div className="text-left">
-                  <p className="font-black text-sm uppercase tracking-tight">Messagerie</p>
-                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">Communications</p>
+                  <p className="font-black text-sm uppercase tracking-tight">{t('messaging')}</p>
+                  <p className="text-[10px] opacity-60 uppercase tracking-widest mt-0.5">{t('messaging_desc')}</p>
                 </div>
               </div>
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>

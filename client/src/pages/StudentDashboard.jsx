@@ -44,13 +44,13 @@ const StudentDashboard = () => {
               <span className="material-symbols-outlined">warning</span>
             </div>
             <div>
-              <h3 className="text-moroccan-red font-black uppercase tracking-tight">Attention : Retard Bibliothèque</h3>
+              <h3 className="text-moroccan-red font-black uppercase tracking-tight">{t('library_alert')}</h3>
               <p className="text-moroccan-red/70 text-[10px] font-bold uppercase tracking-widest mt-0.5">
-                Vous avez {library.overdueBorrows} livre{library.overdueBorrows > 1 ? 's' : ''} en retard. Merci de les retourner au plus vite.
+                {t('overdue_notice_1')} {library.overdueBorrows} {t('overdue_notice_2')}
               </p>
             </div>
           </div>
-          <a href="/library" className="px-6 py-2 bg-moroccan-red text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-moroccan-red/20 hover:brightness-110 transition-all">Voir Mes Emprunts</a>
+          <a href="/library" className="px-6 py-2 bg-moroccan-red text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-moroccan-red/20 hover:brightness-110 transition-all">{t('view_borrows')}</a>
         </div>
       )}
 
@@ -60,22 +60,22 @@ const StudentDashboard = () => {
           <span className="material-symbols-outlined text-4xl text-white">face</span>
         </div>
         <div className="text-center md:text-left flex-1 relative z-10">
-          <p className="text-moroccan-gold text-[10px] font-black uppercase tracking-[0.3em] mb-2">Espace Étudiant</p>
-          <h1 className="text-3xl font-black uppercase tracking-tight">Bienvenue, {profile?.firstName}!</h1>
+          <p className="text-moroccan-gold text-[10px] font-black uppercase tracking-[0.3em] mb-2">{t('student_space')}</p>
+          <h1 className="text-3xl font-black uppercase tracking-tight">{t('welcome')}, {profile?.firstName}!</h1>
           <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
             <span className="px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/5">{profile?.grade}</span>
             <span className="px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/5">ID: {profile?._id?.substring(profile._id.length - 6).toUpperCase()}</span>
-            <span className="px-4 py-1.5 bg-moroccan-gold text-deep-emerald rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/20">Année Académique 2025-26</span>
+            <span className="px-4 py-1.5 bg-moroccan-gold text-deep-emerald rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/20">{t('academic_year')} 2025-26</span>
           </div>
         </div>
         <div className="hidden lg:grid grid-cols-2 gap-8 border-l border-white/10 pl-8 relative z-10">
            <div className="text-center">
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Matières</p>
+              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">{t('subjects')}</p>
               <p className="text-2xl font-black text-white">{subjects?.length || 0}</p>
            </div>
            <div className="text-center px-8 border-l border-white/10">
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Status</p>
-              <p className="text-2xl font-black text-moroccan-gold">Actif</p>
+              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">{t('status')}</p>
+              <p className="text-2xl font-black text-moroccan-gold">{t('active')}</p>
            </div>
         </div>
         <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[240px] text-white/5 rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-1000">school</span>
@@ -90,9 +90,9 @@ const StudentDashboard = () => {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-moroccan-gold text-2xl">event_upcoming</span>
-                    <h3 className="text-xl font-black uppercase tracking-tight">Examens à venir</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight">{t('upcoming_exams')}</h3>
                   </div>
-                  <a href="/exams" className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-moroccan-gold transition-colors">Tout voir</a>
+                  <a href="/exams" className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-moroccan-gold transition-colors">{t('view_all')}</a>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {exams?.length > 0 ? exams.slice(0, 4).map((exam, i) => (
@@ -104,7 +104,7 @@ const StudentDashboard = () => {
                       <h4 className="text-sm font-black uppercase tracking-tight group-hover/card:text-moroccan-gold transition-colors">{exam.title}</h4>
                     </div>
                   )) : (
-                    <p className="text-[10px] font-black text-white/40 uppercase tracking-widest py-8 text-center col-span-2">Pas d'examens programmés</p>
+                    <p className="text-[10px] font-black text-white/40 uppercase tracking-widest py-8 text-center col-span-2">{t('no_scheduled_exams')}</p>
                   )}
                 </div>
              </div>
@@ -116,7 +116,7 @@ const StudentDashboard = () => {
              <div className="flex items-center justify-between mb-8">
                 <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
                   <span className="w-2 h-6 bg-moroccan-green rounded-full"></span>
-                  Suivi des Présences
+                  {t('attendance_tracking')}
                 </h3>
              </div>
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -137,7 +137,7 @@ const StudentDashboard = () => {
                     )}
                   </div>
                 )) : (
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center py-8 col-span-3">Pas encore de relevés</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center py-8 col-span-3">{t('no_records_yet')}</p>
                 )}
              </div>
           </div>
@@ -147,19 +147,19 @@ const StudentDashboard = () => {
         <div className="space-y-8">
           {/* Quick Links / Status */}
           <div className="bg-linear-to-br from-moroccan-gold to-[#c29d6d] p-8 rounded-[2.5rem] text-white shadow-xl shadow-moroccan-gold/20 relative overflow-hidden group hover:shadow-2xl transition-all">
-             <h3 className="text-lg font-black uppercase tracking-tight mb-6">Mon École</h3>
+             <h3 className="text-lg font-black uppercase tracking-tight mb-6">{t('my_school')}</h3>
              <div className="space-y-4 relative z-10">
                 <a href="/timetable" className="flex items-center justify-between p-4 bg-white/10 rounded-2xl border border-white/5 hover:bg-white/20 transition-all">
                    <div className="flex items-center gap-3">
                      <span className="material-symbols-outlined text-white">calendar_today</span>
-                     <span className="text-[10px] font-black uppercase tracking-widest">Emploi du temps</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest">{t('timetable')}</span>
                    </div>
                    <span className="material-symbols-outlined text-sm">chevron_right</span>
                 </a>
                 <a href="/library" className="flex items-center justify-between p-4 bg-white/10 rounded-2xl border border-white/5 hover:bg-white/20 transition-all">
                    <div className="flex items-center gap-3">
                      <span className="material-symbols-outlined text-white">menu_book</span>
-                     <span className="text-[10px] font-black uppercase tracking-widest">Ma Bibliothèque</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest">{t('my_library')}</span>
                    </div>
                    <span className="material-symbols-outlined text-sm">chevron_right</span>
                 </a>
@@ -168,13 +168,13 @@ const StudentDashboard = () => {
 
           {/* Quick Support */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">Contact Admin</h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase leading-relaxed mb-6">Un problème avec votre compte ?</p>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">{t('contact_admin')}</h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase leading-relaxed mb-6">{t('account_issue')}</p>
               <button 
                 onClick={() => navigate('/messages')}
                 className="w-full py-4 bg-moroccan-gold text-deep-emerald rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border-none shadow-lg shadow-moroccan-gold/20 hover:scale-105 transition-all"
               >
-                Envoyer message
+                {t('send_message')}
               </button>
           </div>
         </div>

@@ -218,28 +218,28 @@ const FinanceManagement = () => {
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
              <span className="w-2 h-8 bg-moroccan-gold rounded-full"></span>
-             Tableau de Bord Financier
+             {t('financial_dashboard')}
           </h1>
           <p className="text-slate-500 mt-1 uppercase text-[10px] font-black tracking-widest leading-relaxed">
-             Gérez les revenus, les frais de scolarité et les analyses budgétaires
+             {t('finance_subtitle')}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <button onClick={exportFinanceCSV} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300 shadow-sm">
             <span className="material-symbols-outlined text-lg">file_download</span>
-            Exporter Excel
+            {t('export_csv')}
           </button>
           <button onClick={() => setShowInvoiceModal(true)} className="flex-1 md:flex-none flex justify-center items-center gap-2 px-8 py-3 bg-moroccan-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-moroccan-green/20">
             <span className="material-symbols-outlined text-lg">add</span>
-            Générer Facture
+            {t('generate_invoice')}
           </button>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-3xl w-fit border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
-        <button onClick={() => setActiveTab('overview')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'overview' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Aperçu</button>
-        <button onClick={() => setActiveTab('invoices')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'invoices' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Factures & Reçus</button>
+        <button onClick={() => setActiveTab('overview')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'overview' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{t('overview')}</button>
+        <button onClick={() => setActiveTab('invoices')} className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'invoices' ? 'bg-white dark:bg-slate-900 text-deep-emerald shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{t('invoices_receipts')}</button>
       </div>
 
       {loading ? (

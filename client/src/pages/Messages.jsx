@@ -103,8 +103,8 @@ const Messages = () => {
         <div className="w-1/3 border-r border-slate-50 dark:border-slate-800 flex flex-col">
           <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-black text-deep-emerald tracking-tight uppercase">Messages</h2>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Discussions scolaires</p>
+              <h2 className="text-xl font-black text-deep-emerald tracking-tight uppercase">{t('messaging')}</h2>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{t('school_discussions')}</p>
             </div>
             <button 
               onClick={handleOpenNewChat}
@@ -229,7 +229,7 @@ const Messages = () => {
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in zoom-in duration-200 border border-slate-100 dark:border-slate-800 overflow-hidden">
              <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
-                <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Nouvelle Discussion</h3>
+                <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">{t('new_discussion')}</h3>
                 <button onClick={() => setShowNewChatModal(false)} className="material-symbols-outlined text-slate-400">close</button>
              </div>
              

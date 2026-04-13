@@ -240,10 +240,10 @@ const UserManagement = () => {
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase flex items-center gap-3">
             <span className="w-2 h-8 bg-moroccan-gold rounded-full"></span>
-            Gestion des Comptes
+            {t('user_management')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 font-bold uppercase text-[10px] tracking-[0.2em]">
-            Créer et gérer les comptes élèves, enseignants et parents
+            {t('user_management_subtitle')}
           </p>
         </div>
         <button
@@ -251,7 +251,7 @@ const UserManagement = () => {
           className="flex items-center gap-2 bg-moroccan-green text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-moroccan-green/20 hover:bg-deep-emerald transition-all transform hover:-translate-y-0.5"
         >
           <span className="material-symbols-outlined">person_add</span>
-          Nouveau Compte
+          {t('add_user')}
         </button>
       </div>
 
