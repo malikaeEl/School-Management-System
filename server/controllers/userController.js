@@ -2,7 +2,6 @@ import User from '../models/User.js';
 import Subject from '../models/Subject.js';
 import Timetable from '../models/Timetable.js';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import dns from 'dns';
 
 // Force node.js to resolve domain names to IPv4 first (fixes Render ENETUNREACH for Gmail IPv6)
@@ -22,24 +21,12 @@ const generatePassword = () => {
   return password;
 };
 
-// Send welcome email using nodemailer (SMTP config from .env)
+// Send welcome email using Mailgun API (HTTP config from .env)
 const sendWelcomeEmail = async ({ email, firstName, lastName, password, role, parentContext = false }) => {
-  // Guard: only send if email config present
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
-    console.log(`[EMAIL SKIPPED] Credentials for ${email}: ${password}`);
+  if (!process.env.MAILGUN_DOMAIN || !process.env.MAILGUN_API_KEY) {
+    console.log(`[EMAIL SKIPPED] Mailgun not configured. Credentials for ${email}: ${password}`);
     return;
   }
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: parseInt(process.env.SMTP_PORT) === 465,
-    family: 4, // Explicitly force IPv4 socket connection
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
 
   const roleLabels = {
     student: 'Élève',
@@ -48,38 +35,55 @@ const sendWelcomeEmail = async ({ email, firstName, lastName, password, role, pa
   };
 
   const studentEmail = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@atlass.com`.replace(/\s+/g, '');
+  const subject = parentContext ? `Atlas Academy — Accès de votre enfant ${firstName}` : 'Bienvenue à Atlas Academy — Vos identifiants';
+
+  const htmlContent = `
+    <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:32px;background:#f8fafc;border-radius:16px">
+      <h2 style="color:#1a3c34;font-weight:900">Bienvenue à Atlas Academy</h2>
+      ${parentContext ? `
+        <p>Bonjour,</p>
+        <p>Le compte élève de votre enfant <strong>${firstName} ${lastName}</strong> a été créé.</p>
+        <p>Voici les identifiants pour accéder à son espace personnel :</p>
+      ` : `
+        <p>Bonjour <strong>${firstName} ${lastName}</strong>,</p>
+        <p>Votre compte <strong>${roleLabels[role] || role}</strong> a été créé par l'administration.</p>
+      `}
+      
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0">
+        <p style="margin:0 0 8px"><strong>Identifiant (Email) :</strong> ${parentContext ? studentEmail : email}</p>
+        <p style="margin:0"><strong>Mot de passe :</strong> <code style="background:#f1f5f9;padding:4px 8px;border-radius:6px">${password}</code></p>
+      </div>
+      <p style="color:#64748b;font-size:13px">Vous pouvez vous connecter à la plateforme en utilisant ces informations.</p>
+      <a href="${process.env.APP_URL || 'http://localhost:5173'}/login"
+         style="display:inline-block;margin-top:16px;padding:12px 24px;background:#1a3c34;color:#fff;border-radius:12px;text-decoration:none;font-weight:bold">
+        Accéder à la plateforme
+      </a>
+      <p style="margin-top:32px;color:#94a3b8;font-size:11px">© ${new Date().getFullYear()} Atlas Academy</p>
+    </div>
+  `;
 
   try {
-    await transporter.sendMail({
-      from: `"Atlas Academy" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: parentContext ? `Atlas Academy — Accès de votre enfant ${firstName}` : 'Bienvenue à Atlas Academy — Vos identifiants',
-      html: `
-        <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:32px;background:#f8fafc;border-radius:16px">
-          <h2 style="color:#1a3c34;font-weight:900">Bienvenue à Atlas Academy</h2>
-          ${parentContext ? `
-            <p>Bonjour,</p>
-            <p>Le compte élève de votre enfant <strong>${firstName} ${lastName}</strong> a été créé.</p>
-            <p>Voici les identifiants pour accéder à son espace personnel :</p>
-          ` : `
-            <p>Bonjour <strong>${firstName} ${lastName}</strong>,</p>
-            <p>Votre compte <strong>${roleLabels[role] || role}</strong> a été créé par l'administration.</p>
-          `}
-          
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0">
-            <p style="margin:0 0 8px"><strong>Identifiant (Email) :</strong> ${parentContext ? studentEmail : email}</p>
-            <p style="margin:0"><strong>Mot de passe :</strong> <code style="background:#f1f5f9;padding:4px 8px;border-radius:6px">${password}</code></p>
-          </div>
-          <p style="color:#64748b;font-size:13px">Vous pouvez vous connecter à la plateforme en utilisant ces informations.</p>
-          <a href="${process.env.APP_URL || 'http://localhost:5173'}/login"
-             style="display:inline-block;margin-top:16px;padding:12px 24px;background:#1a3c34;color:#fff;border-radius:12px;text-decoration:none;font-weight:bold">
-            Accéder à la plateforme
-          </a>
-          <p style="margin-top:32px;color:#94a3b8;font-size:11px">© ${new Date().getFullYear()} Atlas Academy</p>
-        </div>
-      `,
+    const formData = new URLSearchParams();
+    formData.append('from', `Atlas Academy <postmaster@${process.env.MAILGUN_DOMAIN}>`);
+    formData.append('to', email);
+    formData.append('subject', subject);
+    formData.append('html', htmlContent);
+
+    const response = await fetch(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from('api:' + process.env.MAILGUN_API_KEY).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData.toString()
     });
-    console.log(`[EMAIL SENT] Welcome email sent to ${email}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Mailgun API error: ${response.status} ${errorText}`);
+    }
+
+    console.log(`[EMAIL SENT] Welcome email sent to ${email} via Mailgun`);
   } catch (error) {
     console.error(`[EMAIL ERROR] Failed to send email to ${email}:`, error.message);
   }
@@ -195,6 +199,7 @@ export const createUser = async (req, res) => {
       phone: user.phone,
       isActive: user.isActive,
       createdAt: user.createdAt,
+      generatedPassword: rawPassword // Sent to admin UI since emails are disabled
     });
 
     // Auto-sync Subjects for Teacher

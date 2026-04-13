@@ -119,7 +119,7 @@ const UserManagement = () => {
         if (form.hasLogin) {
           setSuccessData({
             email: created.email,
-            password: form.password || 'Généré (voir email)'
+            password: created.generatedPassword || form.password || 'Généré aléatoirement'
           });
         }
         showToast('Compte créé avec succès.');
