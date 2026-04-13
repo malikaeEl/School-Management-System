@@ -4,7 +4,7 @@ import messageService from '../services/messageService';
 import userService from '../services/userService';
 
 const Messages = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [conversations, setConversations] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [messages, setMessages] = useState([]);
