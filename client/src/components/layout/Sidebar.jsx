@@ -28,7 +28,7 @@ const Sidebar = () => {
   const menuCategories = [
     {
       id: 'portail',
-      labels: { fr: 'PORTAIL', ar: 'البوابة' },
+      labels: { fr: 'PORTAIL', ar: 'البوابة', en: 'PORTAL' },
       items: [
         { title: 'Dashboard', icon: 'grid_view', path: '/', roles: ['admin'], arabic: 'لوحة الإدارة', french: 'Tableau de bord' },
         { title: 'My Dashboard', icon: 'person_outline', path: '/student-dashboard', roles: ['student'], arabic: 'لوحتي', french: 'Mon Tableau de bord' },
@@ -41,7 +41,7 @@ const Sidebar = () => {
     },
     {
       id: 'administration',
-      labels: { fr: 'ADMINISTRATION', ar: 'الإدارة' },
+      labels: { fr: 'ADMINISTRATION', ar: 'الإدارة', en: 'ADMINISTRATION' },
       roles: ['admin', 'finance'],
       items: [
         { title: 'Accounts', icon: 'manage_accounts', path: '/users', roles: ['admin'], arabic: 'إدارة الحسابات', french: 'Gestion des Comptes' },
@@ -52,7 +52,7 @@ const Sidebar = () => {
     },
     {
       id: 'academique',
-      labels: { fr: 'ACADÉMIQUE', ar: 'الأكاديمي' },
+      labels: { fr: 'ACADÉMIQUE', ar: 'الأكاديمي', en: 'ACADEMICS' },
       roles: ['admin', 'teacher', 'student', 'parent'],
       items: [
         { title: 'Students', icon: 'school', path: '/students', roles: ['admin', 'teacher'], arabic: 'الطلاب', french: 'Étudiants' },
@@ -63,7 +63,7 @@ const Sidebar = () => {
     },
     {
       id: 'services',
-      labels: { fr: 'SERVICES', ar: 'الخدمات' },
+      labels: { fr: 'SERVICES', ar: 'الخدمات', en: 'SERVICES' },
       roles: ['admin', 'librarian', 'student', 'parent', 'finance'],
       items: [
         { title: 'Library', icon: 'local_library', path: '/library', roles: ['admin', 'librarian', 'student'], arabic: 'المكتبة', french: 'Bibliothèque' },
@@ -101,7 +101,7 @@ const Sidebar = () => {
           return (
             <div key={cat.id} className="space-y-1.5">
               <p className="px-4 text-[9px] font-black text-white/30 tracking-[0.2em] uppercase mb-2">
-                {lang === 'ar' ? cat.labels.ar : cat.labels.fr}
+                {lang === 'ar' ? cat.labels.ar : lang === 'en' ? cat.labels.en : cat.labels.fr}
               </p>
               {filteredItems.map((item) => (
                 <Link
@@ -116,7 +116,7 @@ const Sidebar = () => {
                     {item.icon}
                   </span>
                   <span className="text-xs font-bold tracking-wide truncate">
-                    {lang === 'ar' ? (item.arabic || item.title) : (item.french || item.title)}
+                    {lang === 'ar' ? (item.arabic || item.title) : lang === 'en' ? item.title : (item.french || item.title)}
                   </span>
                   
                   {/* Notification Badge for Library Overdue */}

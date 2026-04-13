@@ -1,15 +1,20 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const lang = 'fr';
-  const dir = 'ltr';
+  const [lang, setLangState] = useState(() => localStorage.getItem('lang') || 'fr');
+  const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  const setLang = (newLang) => {
+    setLangState(newLang);
+    localStorage.setItem('lang', newLang);
+  };
 
   useEffect(() => {
     document.documentElement.dir = dir;
     document.documentElement.lang = lang;
-  }, [lang]);
+  }, [lang, dir]);
 
   const toggleLanguage = () => {};
 
@@ -78,13 +83,77 @@ export const LanguageProvider = ({ children }) => {
         performance_heatmap: 'Carte de Performance',
         attendance_trends: 'Tendances de Présence',
         financial_forecast: 'Prévisions Financières'
+      },
+      en: {
+        dashboard: 'Dashboard',
+        students: 'Students',
+        teachers: 'Teachers',
+        revenue: 'Revenue',
+        attendance: 'Attendance',
+        recent_activity: 'Recent Activity',
+        quick_actions: 'Quick Actions',
+        add_student: 'Add Student',
+        mark_attendance: 'Mark Attendance',
+        generate_report: 'Generate Report',
+        search: 'Search...',
+        profile: 'Profile',
+        logout: 'Logout',
+        welcome: 'Welcome',
+        english: 'English',
+        monday: 'Monday',
+        tuesday: 'Tuesday',
+        wednesday: 'Wednesday',
+        thursday: 'Thursday',
+        friday: 'Friday',
+        saturday: 'Saturday',
+        sunday: 'Sunday',
+        academics: 'Academics',
+        hr: 'Human Resources',
+        payroll: 'Payroll',
+        leave_requests: 'Leave Requests',
+        timetable: 'Timetable',
+        exams: 'Exams',
+        admissions: 'Admissions',
+        inventory: 'Inventory',
+        events: 'Events',
+        learning: 'E-learning',
+        reports: 'Reports',
+        grades: 'Grades & Results',
+        marks: 'Enter Marks',
+        report_cards: 'Report Cards',
+        schedule_exam: 'Schedule Exam',
+        library_inventory: 'Library Inventory',
+        borrowing: 'Borrowing',
+        overdue: 'Overdue',
+        messaging: 'Messages',
+        announcements: 'Announcements',
+        bus_routes: 'Bus Routes',
+        gps_tracking: 'GPS Tracking',
+        drivers: 'Drivers',
+        invoices: 'Invoices',
+        fees_structure: 'Fees Structure',
+        total_revenue: 'Total Revenue',
+        pending_fees: 'Pending Fees',
+        collection_rate: 'Collection Rate',
+        scholarships: 'Scholarships',
+        paid: 'Paid',
+        pending: 'Pending',
+        total_assets: 'Total Assets',
+        consumables: 'Consumables',
+        stock_alerts: 'Stock Alerts',
+        maintenance: 'Maintenance',
+        categories: 'Categories',
+        low_stock: 'Low Stock',
+        performance_heatmap: 'Performance Heatmap',
+        attendance_trends: 'Attendance Trends',
+        financial_forecast: 'Financial Forecast'
       }
     };
-    return translations.fr[key] || key;
+    return translations[lang]?.[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, dir, toggleLanguage, setLang: () => {}, t }}>
+    <LanguageContext.Provider value={{ lang, dir, toggleLanguage, setLang, t }}>
       {children}
     </LanguageContext.Provider>
   );

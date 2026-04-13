@@ -7,7 +7,7 @@ import notificationService from '../../services/notificationService';
 
 const Topbar = () => {
   const { user } = useAuth();
-  const { lang, t } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   
   const [showDropdown, setShowDropdown] = useState(false);
@@ -61,6 +61,24 @@ const Topbar = () => {
       <div className="flex-1"></div>
       
       <div className="flex items-center gap-4 lg:gap-6">
+
+        {/* Language Toggle */}
+        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shadow-sm border border-slate-200/50 dark:border-slate-700 mr-1">
+          <button
+            onClick={() => setLang('fr')}
+            className={`px-3 py-1.5 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all ${lang === 'fr' ? 'bg-white dark:bg-slate-600 text-moroccan-green dark:text-emerald-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            title="Français"
+          >
+            FR
+          </button>
+          <button
+            onClick={() => setLang('en')}
+            className={`px-3 py-1.5 text-[10px] font-black rounded-lg uppercase tracking-widest transition-all ${lang === 'en' ? 'bg-white dark:bg-slate-600 text-moroccan-green dark:text-emerald-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            title="English"
+          >
+            EN
+          </button>
+        </div>
 
         {/* Theme Toggle */}
         <button 
