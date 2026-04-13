@@ -20,7 +20,7 @@ const FinanceManagement = () => {
   
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [invoiceForm, setInvoiceForm] = useState({ userId: '', amount: '', type: 'Scolarité' });
+  const [invoiceForm, setInvoiceForm] = useState({ userId: '', userName: '', amount: '', type: 'Scolarité' });
   const [editingTransaction, setEditingTransaction] = useState(null);
 
   const showToast = (msg, color = 'bg-moroccan-green') => {
@@ -60,7 +60,7 @@ const FinanceManagement = () => {
       await financeService.generateInvoice(invoiceForm);
       showToast('Facture générée ✓');
       setShowInvoiceModal(false);
-      setInvoiceForm({ userId: '', amount: '', type: 'Scolarité' });
+      setInvoiceForm({ userId: '', userName: '', amount: '', type: 'Scolarité' });
       fetchFinanceData(); // Refresh data
     } catch {
       showToast('Erreur génération', 'bg-moroccan-red');
@@ -92,6 +92,7 @@ const FinanceManagement = () => {
     setEditingTransaction(transaction);
     setInvoiceForm({
       userId: transaction.user?._id,
+      userName: transaction.user ? `${transaction.user.firstName} ${transaction.user.lastName}` : '',
       amount: transaction.amount,
       type: transaction.type
     });
@@ -105,7 +106,7 @@ const FinanceManagement = () => {
       showToast('Facture modifiée ✓');
       setShowEditModal(false);
       setEditingTransaction(null);
-      setInvoiceForm({ userId: '', amount: '', type: 'Scolarité' });
+      setInvoiceForm({ userId: '', userName: '', amount: '', type: 'Scolarité' });
       fetchFinanceData();
     } catch {
       showToast('Erreur modification', 'bg-moroccan-red');
@@ -426,15 +427,29 @@ const FinanceManagement = () => {
             <form onSubmit={handleGenerateInvoice} className="p-8 space-y-6">
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Élève Facturé</label>
-                <select 
-                  required 
-                  value={invoiceForm.userId} 
-                  onChange={e => setInvoiceForm(p => ({...p, userId: e.target.value}))}
+                <input 
+                  type="text"
+                  required
+                  list="student-datalist"
+                  value={invoiceForm.userName}
+                  onChange={e => {
+                    const name = e.target.value;
+                    const found = students.find(s => `${s.firstName} ${s.lastName}` === name);
+                    setInvoiceForm(p => ({
+                      ...p, 
+                      userName: name, 
+                      userId: found ? found._id : ''
+                    }));
+                  }}
                   className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green dark:focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
-                >
-                  <option value="">-- Choisir un élève --</option>
-                  {students.map(s => <option key={s._id} value={s._id}>{s.firstName} {s.lastName} ({s.grade})</option>)}
-                </select>
+                  placeholder="Tapez le nom de l'élève..."
+                />
+                <datalist id="student-datalist">
+                  {students.map(s => <option key={s._id} value={`${s.firstName} ${s.lastName}`}>{s.grade}</option>)}
+                </datalist>
+                {!invoiceForm.userId && invoiceForm.userName && (
+                  <p className="text-moroccan-red text-[10px] uppercase font-black tracking-widest mt-2 ml-1">Sélectionnez un élève valide dans la liste</p>
+                )}
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Montant (MAD)</label>
@@ -478,14 +493,29 @@ const FinanceManagement = () => {
             <form onSubmit={handleUpdateInvoice} className="p-8 space-y-6">
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Élève Facturé</label>
-                <select 
-                  required 
-                  value={invoiceForm.userId} 
-                  onChange={e => setInvoiceForm(p => ({...p, userId: e.target.value}))}
+                <input 
+                  type="text"
+                  required
+                  list="student-datalist-edit"
+                  value={invoiceForm.userName}
+                  onChange={e => {
+                    const name = e.target.value;
+                    const found = students.find(s => `${s.firstName} ${s.lastName}` === name);
+                    setInvoiceForm(p => ({
+                      ...p, 
+                      userName: name, 
+                      userId: found ? found._id : ''
+                    }));
+                  }}
                   className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-moroccan-green dark:focus:border-moroccan-green rounded-2xl px-5 py-4 text-sm font-black text-slate-800 dark:text-white outline-none transition-all uppercase tracking-widest"
-                >
-                  {students.map(s => <option key={s._id} value={s._id}>{s.firstName} {s.lastName} ({s.grade})</option>)}
-                </select>
+                  placeholder="Tapez le nom de l'élève..."
+                />
+                <datalist id="student-datalist-edit">
+                  {students.map(s => <option key={s._id} value={`${s.firstName} ${s.lastName}`}>{s.grade}</option>)}
+                </datalist>
+                {!invoiceForm.userId && invoiceForm.userName && (
+                  <p className="text-moroccan-red text-[10px] uppercase font-black tracking-widest mt-2 ml-1">Sélectionnez un élève valide dans la liste</p>
+                )}
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Montant (MAD)</label>
