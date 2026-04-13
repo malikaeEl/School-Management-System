@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const emptyForm = { firstName: '', lastName: '', email: '', role: 'student', grade: 'CP', subject: '', phone: '' };
 
 const StudentManagement = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const navigate = useNavigate();
 
   const [students, setStudents]   = useState([]);

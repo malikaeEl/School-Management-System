@@ -14,7 +14,7 @@ const getAuthHeader = () => {
 const StudentProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);

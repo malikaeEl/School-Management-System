@@ -15,7 +15,7 @@ const getAuthHeader = () => {
 const PersonnelProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   const [person, setPerson] = useState(null);
   const [loading, setLoading] = useState(true);

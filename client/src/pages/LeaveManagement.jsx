@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import leaveService from '../services/leaveService';
 
 const LeaveManagement = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);

@@ -27,7 +27,7 @@ const emptyForm = {
 };
 
 const UserManagement = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const location = useLocation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
