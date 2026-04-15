@@ -31,7 +31,7 @@ const StudentDashboard = () => {
     );
   }
 
-  const { profile, subjects, exams, attendance, timetable, library } = data || {};
+  const { profile, subjects, exams, attendance, timetable, library, events } = data || {};
 
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
@@ -164,6 +164,43 @@ const StudentDashboard = () => {
                    <span className="material-symbols-outlined text-sm">chevron_right</span>
                 </a>
              </div>
+          </div>
+
+          {/* Upcoming Events */}
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-2 h-5 bg-moroccan-gold rounded-full"></span>
+                {t('events') || 'Événements'}
+              </h3>
+              <a href="/events" className="text-[9px] font-black text-moroccan-green uppercase tracking-widest hover:underline">{t('view_all')}</a>
+            </div>
+            <div className="space-y-3">
+              {events?.length > 0 ? events.map((ev, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 hover:border-moroccan-gold/30 transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-moroccan-gold/10 text-moroccan-gold flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-sm">event</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-black text-slate-800 uppercase leading-tight truncate">{ev.title}</p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                      {new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} · {ev.time}
+                    </p>
+                    {ev.location && (
+                      <p className="text-[9px] text-moroccan-green font-bold uppercase tracking-widest mt-0.5 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[9px]">location_on</span>
+                        {ev.location}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )) : (
+                <p className="text-[10px] text-slate-300 font-black uppercase italic text-center py-4">Aucun événement à venir</p>
+              )}
+            </div>
+            <a href="/events" className="mt-4 block w-full py-3 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-moroccan-gold/5 hover:text-moroccan-gold hover:border-moroccan-gold/30 transition-all text-center">
+              Voir le calendrier complet
+            </a>
           </div>
 
           {/* Quick Support */}

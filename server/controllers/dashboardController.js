@@ -7,6 +7,7 @@ import Grade from '../models/Grade.js';
 import Transaction from '../models/Transaction.js';
 import Borrow from '../models/Borrow.js';
 import LeaveRequest from '../models/LeaveRequest.js';
+import Event from '../models/Event.js';
 
 export const getDashboardData = async (req, res) => {
   try {
@@ -59,11 +60,13 @@ export const getDashboardData = async (req, res) => {
       const mySubjects = await Subject.find({ grade: req.user.grade }).populate('teacher', 'firstName lastName');
       const subjectIds = mySubjects.map(s => s._id);
       
-      const [exams, attendance, timetable, libraryBorrows] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+      const [exams, attendance, timetable, libraryBorrows, events] = await Promise.all([
         Exam.find({ grade: req.user.grade }).populate('subject', 'name'),
         Attendance.find({ 'students.student': req.user._id }).populate('subject', 'name').sort({ date: -1 }).limit(5),
         Timetable.find({ grade: req.user.grade }).populate('teacher', 'firstName lastName subject'),
-        Borrow.find({ user: req.user._id, status: { $ne: 'Returned' } }).populate('book', 'title author')
+        Borrow.find({ user: req.user._id, status: { $ne: 'Returned' } }).populate('book', 'title author'),
+        Event.find({ date: { $gte: today } }).sort({ date: 1 }).limit(5)
       ]);
 
       data = { 
@@ -72,6 +75,7 @@ export const getDashboardData = async (req, res) => {
         exams, 
         attendance, 
         timetable,
+        events,
         library: {
           activeBorrows: libraryBorrows.length,
           overdueBorrows: libraryBorrows.filter(b => b.status === 'Overdue').length,
