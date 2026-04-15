@@ -13,6 +13,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     // Redirect to their default dashboard if not authorized
     const rolePaths = {
+      teacher: '/teacher-dashboard',
       student: '/student-dashboard',
       parent: '/parent-dashboard',
       librarian: '/library',
