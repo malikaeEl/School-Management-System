@@ -37,7 +37,7 @@ const ParentDashboard = () => {
     );
   }
 
-  const { profile, children } = data || {};
+  const { profile, children, events } = data || {};
   const activeChild = children?.find(c => c._id === activeChildId);
 
   const handlePrintInvoice = (invoice) => {
@@ -348,6 +348,33 @@ const ParentDashboard = () => {
                           </div>
                        )) : (
                          <p className="text-center text-[10px] font-black text-slate-300 uppercase py-8">Aucun relevé</p>
+                       )}
+                    </div>
+                 </div>
+
+                 {/* Upcoming Events */}
+                 <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group mt-8">
+                    <div className="flex items-center justify-between mb-6">
+                       <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight mb-0">
+                          {t('events') || 'Événements'}
+                       </h3>
+                       <button onClick={() => navigate('/events')} className="text-[9px] font-black text-moroccan-green uppercase tracking-widest hover:underline">{t('view_all')}</button>
+                    </div>
+                    <div className="space-y-4">
+                       {events?.length > 0 ? events.map((ev, i) => (
+                         <div key={i} className="flex justify-between items-center px-4 py-3 bg-slate-50 rounded-2xl border border-slate-100/50">
+                            <div className="min-w-0">
+                               <p className="text-[10px] font-black text-slate-800 truncate uppercase">{ev.title}</p>
+                               <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">
+                                  {new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} · {ev.time}
+                               </p>
+                            </div>
+                            <div className="text-right shrink-0">
+                               <span className="material-symbols-outlined text-sm text-moroccan-gold">event</span>
+                            </div>
+                         </div>
+                       )) : (
+                         <p className="text-center text-[10px] font-black text-slate-300 uppercase py-8">Aucun événement</p>
                        )}
                     </div>
                  </div>

@@ -22,8 +22,8 @@ const EventsCalendar = () => {
     setTimeout(() => setToast(null), 3000);
   };
   
-  // Use relative API path (proxied via Vite)
-  const API_URL = '/api/events';
+  // Use an absolute API path that works in dev and production
+  const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/events`;
 
   const fetchEvents = async () => {
     try {

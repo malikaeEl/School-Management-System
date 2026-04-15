@@ -15,11 +15,13 @@ export const getDashboardData = async (req, res) => {
     let data = {};
 
     if (role === 'admin') {
-      const [students, teachers, parents, subjects] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+      const [students, teachers, parents, subjects, events] = await Promise.all([
         User.countDocuments({ role: 'student' }),
         User.countDocuments({ role: 'teacher' }),
         User.countDocuments({ role: 'parent' }),
-        Subject.countDocuments()
+        Subject.countDocuments(),
+        Event.find({ date: { $gte: today } }).sort({ date: 1 }).limit(5)
       ]);
       data = {
         stats: {
@@ -27,7 +29,8 @@ export const getDashboardData = async (req, res) => {
           teachers,
           parents,
           subjects
-        }
+        },
+        events
       };
     } 
     else if (role === 'teacher') {
@@ -39,11 +42,13 @@ export const getDashboardData = async (req, res) => {
         ? [...new Set(subjects.map(s => s.grade))] 
         : (req.user.classes || []);
       
-      const [students, timetable, leaveRequests, salaryTransactions] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+      const [students, timetable, leaveRequests, salaryTransactions, events] = await Promise.all([
         User.find({ role: 'student', grade: { $in: teacherGrades } }).select('firstName lastName grade email phone avatar'),
         Timetable.find({ teacher: req.user._id }).populate('teacher', 'firstName lastName subject'),
         LeaveRequest.find({ teacher: req.user._id }).sort({ createdAt: -1 }).limit(5),
-        Transaction.find({ user: req.user._id, type: 'Salaire' }).sort({ date: -1 }).limit(10)
+        Transaction.find({ user: req.user._id, type: 'Salaire' }).sort({ date: -1 }).limit(10),
+        Event.find({ date: { $gte: today } }).sort({ date: 1 }).limit(5)
       ]);
       
       data = { 
@@ -53,7 +58,8 @@ export const getDashboardData = async (req, res) => {
         studentsCount: students.length, 
         timetable,
         leaveRequests,
-        salaryTransactions
+        salaryTransactions,
+        events
       };
     }
     else if (role === 'student') {
@@ -126,9 +132,13 @@ export const getDashboardData = async (req, res) => {
             }
           };
       }));
+      const today = new Date().toISOString().split('T')[0];
+      const events = await Event.find({ date: { $gte: today } }).sort({ date: 1 }).limit(5);
+      
       data = { 
         profile: req.user,
-        children: childrenReports 
+        children: childrenReports,
+        events
       };
     }
 

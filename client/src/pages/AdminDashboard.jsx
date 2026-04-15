@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     );
   }
 
-  const { stats } = data || {};
+  const { stats, events } = data || {};
 
   const statCards = [
     { label: t('students'), value: stats?.students || 0, icon: 'group', color: 'bg-moroccan-green', text: 'text-moroccan-green' },
@@ -172,6 +172,42 @@ const AdminDashboard = () => {
               <span className="material-symbols-outlined text-slate-300 group-hover/btn:text-white transform group-hover/btn:translate-x-1 transition-all">chevron_right</span>
             </button>
 
+          </div>
+        </section>
+
+        {/* Upcoming Events (Admin) */}
+        <section className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">
+              <span className="w-1.5 h-6 bg-moroccan-gold rounded-full"></span>
+              {t('events') || 'Événements'}
+            </h2>
+            <button onClick={() => navigate('/events')} className="text-[10px] font-black text-moroccan-green uppercase tracking-widest hover:underline">{t('view_all')}</button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events?.length > 0 ? events.map((ev, i) => (
+              <div key={i} className="flex items-start gap-4 p-5 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 hover:border-moroccan-gold/30 transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-moroccan-gold/10 text-moroccan-gold flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-lg">event</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-black text-slate-800 dark:text-white uppercase leading-tight truncate">{ev.title}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">
+                    {new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })} · {ev.time}
+                  </p>
+                  {ev.location && (
+                    <p className="text-[10px] text-moroccan-green font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[10px]">location_on</span>
+                      {ev.location}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )) : (
+              <div className="col-span-full py-8 text-center text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-widest italic">
+                Aucun événement à venir
+              </div>
+            )}
           </div>
         </section>
       </div>
