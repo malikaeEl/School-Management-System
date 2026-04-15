@@ -38,10 +38,11 @@ export const getDashboardData = async (req, res) => {
         ? [...new Set(subjects.map(s => s.grade))] 
         : (req.user.classes || []);
       
-      const [students, timetable, leaveRequests] = await Promise.all([
+      const [students, timetable, leaveRequests, salaryTransactions] = await Promise.all([
         User.find({ role: 'student', grade: { $in: teacherGrades } }).select('firstName lastName grade email phone avatar'),
         Timetable.find({ teacher: req.user._id }).populate('teacher', 'firstName lastName subject'),
-        LeaveRequest.find({ teacher: req.user._id }).sort({ createdAt: -1 }).limit(5)
+        LeaveRequest.find({ teacher: req.user._id }).sort({ createdAt: -1 }).limit(5),
+        Transaction.find({ user: req.user._id, type: 'Salaire' }).sort({ date: -1 }).limit(10)
       ]);
       
       data = { 
@@ -50,7 +51,8 @@ export const getDashboardData = async (req, res) => {
         students,
         studentsCount: students.length, 
         timetable,
-        leaveRequests
+        leaveRequests,
+        salaryTransactions
       };
     }
     else if (role === 'student') {

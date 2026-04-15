@@ -64,7 +64,8 @@ const TeacherDashboard = () => {
     );
   }
 
-  const { profile, subjects, studentsCount, students, timetable } = data || {};
+  const { profile, subjects, studentsCount, students, timetable, salaryTransactions } = data || {};
+  const lastSalaryPayment = salaryTransactions?.[0]; // most recent, already sorted desc
 
   return (
     <div className={`animate-in fade-in duration-500 w-full flex flex-col gap-8 ${lang === 'ar' ? 'font-arabic' : ''}`}>
@@ -199,8 +200,17 @@ const TeacherDashboard = () => {
                       <h3 className="text-lg font-black uppercase tracking-tight" style={getSubjectAccentStyle(subjectName)}>{subjectName}</h3>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[10px] font-black text-slate-300 uppercase italic">{t('room')} {item.room}</p>
+                  <div className="text-right space-y-1">
+                    {item.grade && (
+                      <p className="text-[10px] font-black text-moroccan-green uppercase tracking-widest">
+                        <span className="material-symbols-outlined text-[10px] align-middle mr-0.5">school</span>
+                        {item.grade}
+                      </p>
+                    )}
+                    <p className="text-[10px] font-black text-slate-300 uppercase italic">
+                      <span className="material-symbols-outlined text-[10px] align-middle mr-0.5">location_on</span>
+                      {t('room')} {item.room}
+                    </p>
                   </div>
                 </div>
               );
@@ -267,8 +277,23 @@ const TeacherDashboard = () => {
                    </div>
                    <div className="flex justify-between items-center px-2">
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">{t('last_payment')}</span>
-                      <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">02 Mars 2026</span>
+                      <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
+                        {lastSalaryPayment
+                          ? new Date(lastSalaryPayment.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+                          : '—'}
+                      </span>
                    </div>
+                   {lastSalaryPayment && (
+                     <div className="flex justify-between items-center px-2">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Dernier montant</span>
+                        <span className="text-[10px] font-black text-moroccan-green uppercase tracking-widest">{lastSalaryPayment.amount?.toLocaleString()} MAD</span>
+                     </div>
+                   )}
+                   {!lastSalaryPayment && (
+                     <div className="px-2">
+                        <p className="text-[9px] text-amber-400 font-bold uppercase italic">Aucun paiement enregistré</p>
+                     </div>
+                   )}
                    <div className="pt-2 border-t border-slate-50">
                       <p className="text-[9px] text-slate-300 font-bold uppercase italic leading-relaxed">{t('payroll_info')}</p>
                    </div>
